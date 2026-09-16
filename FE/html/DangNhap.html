@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập / Đăng Ký | Teddy Yêu Thương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/DangNhap.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/auth-api.js"></script>
+    <script src="../js/header.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/page-links.js" defer></script>
+</head>
+<body class="shared-auth-layout">
+    <site-header></site-header>
+
+    <!-- Floating emojis -->
+    <span class="floating-emoji e1">🧸</span>
+    <span class="floating-emoji e2">💛</span>
+    <span class="floating-emoji e3">🌸</span>
+    <span class="floating-emoji e4">✨</span>
+    <span class="floating-emoji e5">🎀</span>
+    <span class="floating-emoji e6">💝</span>
+
+    <!-- AUTH WRAPPER -->
+    <div class="auth-wrapper">
+
+        <!-- LEFT PANEL -->
+        <div class="auth-left">
+            <div class="auth-left-content">
+                <div class="auth-logo">
+                    <div class="auth-logo-icon">🧸</div>
+                    <div class="auth-logo-text">
+                        <h1>Teddy <span>Yêu Thương</span></h1>
+                        <p>Soft • Cute • Lovely</p>
+                    </div>
+                </div>
+
+                <h2>Chào mừng đến với <span>thế giới gấu bông</span> đáng yêu!</h2>
+                <p>Đăng nhập để trải nghiệm mua sắm tuyệt vời, tích điểm thành viên và nhận nhiều ưu đãi hấp dẫn.</p>
+
+                <div class="auth-features">
+                    <div class="auth-feature">
+                        <div class="auth-feature-icon"><i class="fas fa-gift"></i></div>
+                        <div class="auth-feature-text">
+                            <strong>Ưu đãi thành viên</strong>
+                            <span>Giảm giá độc quyền mỗi tháng</span>
+                        </div>
+                    </div>
+                    <div class="auth-feature">
+                        <div class="auth-feature-icon"><i class="fas fa-coins"></i></div>
+                        <div class="auth-feature-text">
+                            <strong>Tích điểm đổi quà</strong>
+                            <span>1.000đ = 1 điểm thưởng</span>
+                        </div>
+                    </div>
+                    <div class="auth-feature">
+                        <div class="auth-feature-icon"><i class="fas fa-truck-fast"></i></div>
+                        <div class="auth-feature-text">
+                            <strong>Miễn phí vận chuyển</strong>
+                            <span>Cho đơn từ 500K</span>
+                        </div>
+                    </div>
+                    <div class="auth-feature">
+                        <div class="auth-feature-icon"><i class="fas fa-headset"></i></div>
+                        <div class="auth-feature-text">
+                            <strong>Hỗ trợ 24/7</strong>
+                            <span>Tư vấn tận tình mọi lúc</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-left-illustration">🧸💛</div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="auth-right">
+            <div class="auth-form-header">
+                <h2>Xin chào <span>bạn!</span></h2>
+                <p>Đăng nhập hoặc tạo tài khoản mới</p>
+            </div>
+
+            <p id="authStatus" class="auth-status" role="status" aria-live="polite"></p>
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-form="login">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+                <button class="auth-tab" data-form="register">
+                    <i class="fas fa-user-plus"></i> Đăng ký
+                </button>
+            </div>
+
+            <!-- ============ LOGIN FORM ============ -->
+            <form class="auth-form active" id="form-login" novalidate>
+                <div class="form-group">
+                    <label class="form-label" for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="email" class="form-input has-icon" id="loginEmail" placeholder="Nhập email..." autocomplete="username" required maxlength="254">
+                        <span class="input-status"></span>
+                    </div>
+                    <div class="error-message" id="err-loginEmail"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-lock"></i> Mật khẩu</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" class="form-input has-icon" id="loginPassword" required maxlength="128" placeholder="Nhập mật khẩu..." autocomplete="current-password">
+                        <button type="button" class="input-toggle" data-target="loginPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="error-message" id="err-loginPassword"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-wrap">
+                        <input type="checkbox" id="rememberMe" checked>
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">Ghi nhớ đăng nhập</span>
+                    </label>
+                    <a href="#" class="forgot-link" id="forgotLink">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="btn-submit" id="loginSubmit">
+                    <span class="spinner"></span>
+                    <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Đăng nhập</span>
+                </button>
+
+                <p class="switch-link">
+                    Chưa có tài khoản? <a href="#" data-switch="register">Đăng ký ngay</a>
+                </p>
+            </form>
+
+            <!-- ============ REGISTER FORM ============ -->
+            <form class="auth-form" id="form-register" novalidate>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-user"></i> Họ và tên</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" class="form-input has-icon" id="regName" required minlength="2" maxlength="120" placeholder="Nhập họ và tên..." autocomplete="name">
+                        <span class="input-status"></span>
+                    </div>
+                    <div class="error-message" id="err-regName"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" class="form-input has-icon" id="regEmail" required maxlength="254" placeholder="Nhập email..." autocomplete="email">
+                        <span class="input-status"></span>
+                    </div>
+                    <div class="error-message" id="err-regEmail"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-phone"></i> Số điện thoại</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-phone input-icon"></i>
+                        <input type="tel" class="form-input has-icon" id="regPhone" required maxlength="24" placeholder="Nhập số điện thoại..." autocomplete="tel">
+                        <span class="input-status"></span>
+                    </div>
+                    <div class="error-message" id="err-regPhone"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-lock"></i> Mật khẩu</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" class="form-input has-icon" id="regPassword" required minlength="8" maxlength="128" placeholder="Tạo mật khẩu..." autocomplete="new-password">
+                        <button type="button" class="input-toggle" data-target="regPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="pwStrength">
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                    </div>
+                    <div class="strength-text" id="pwStrengthText"></div>
+                    <div class="error-message" id="err-regPassword"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-lock"></i> Xác nhận mật khẩu</label>
+                    <div class="form-input-wrap">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" class="form-input has-icon" id="regConfirmPassword" required minlength="8" maxlength="128" placeholder="Nhập lại mật khẩu..." autocomplete="new-password">
+                        <button type="button" class="input-toggle" data-target="regConfirmPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <span class="input-status"></span>
+                    </div>
+                    <div class="error-message" id="err-regConfirmPassword"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+                </div>
+
+                <label class="terms-wrap">
+                    <input type="checkbox" id="agreeTerms" required>
+                    <span class="checkbox-custom"></span>
+                    <span class="terms-text">
+                        Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a> của Teddy Yêu Thương
+                    </span>
+                </label>
+                <div class="error-message dangnhap-inline-1" id="err-agreeTerms"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+
+                <button type="submit" class="btn-submit" id="registerSubmit">
+                    <span class="spinner"></span>
+                    <span class="btn-text"><i class="fas fa-user-plus"></i> Tạo tài khoản</span>
+                </button>
+
+                <p class="switch-link">
+                    Đã có tài khoản? <a href="#" data-switch="login">Đăng nhập ngay</a>
+                </p>
+            </form>
+            <form class="auth-form" id="form-forgot">
+                <p class="recovery-description">Nhập email đã đăng ký để nhận liên kết đặt lại mật khẩu. Liên kết có hiệu lực trong 15 phút.</p>
+                <div class="form-group">
+                    <label class="form-label" for="forgotEmail">Email đăng ký</label>
+                    <input class="form-input" id="forgotEmail" type="email" autocomplete="email" required maxlength="254">
+                </div>
+                <button type="submit" class="btn-submit"><span class="spinner"></span><span class="btn-text">Gửi liên kết khôi phục</span></button>
+                <p class="switch-link"><a href="#" data-switch="login">Quay lại đăng nhập</a></p>
+            </form>
+            <form class="auth-form" id="form-reset">
+                <p class="recovery-description">Đặt mật khẩu mới cho tài khoản của bạn.</p>
+                <div class="form-group">
+                    <label class="form-label" for="resetPassword">Mật khẩu mới</label>
+                    <input class="form-input" id="resetPassword" type="password" autocomplete="new-password" required minlength="8" maxlength="128">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="resetConfirm">Xác nhận mật khẩu mới</label>
+                    <input class="form-input" id="resetConfirm" type="password" autocomplete="new-password" required minlength="8" maxlength="128">
+                </div>
+                <button type="submit" class="btn-submit"><span class="spinner"></span><span class="btn-text">Lưu mật khẩu mới</span></button>
+                <p class="switch-link"><a href="#" data-switch="forgot">Yêu cầu liên kết mới</a></p>
+            </form>
+        </div>
+    </div>
+
+    <site-footer></site-footer>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Thông báo!</span>
+    </div>
+
+    <script src="../js/DangNhap.js"></script>
+</body>
+</html>

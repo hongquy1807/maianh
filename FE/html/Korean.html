@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Tiếng Hàn | Teddy Yêu Thương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/Korean.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/auth-api.js"></script>
+    <script src="../js/header.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/page-links.js" defer></script>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <i class="fas fa-language"></i> Học tiếng Hàn mỗi ngày — 화이팅!
+        <i class="fas fa-heart"></i>
+        Flashcard • Gõ từ • Chatbot
+        <i class="fas fa-star"></i>
+    </div>
+
+    <!-- HEADER -->
+    <site-header></site-header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-tag"><i class="fas fa-fire"></i> Học mỗi ngày, giỏi mỗi ngày</span>
+            <h1>Học Tiếng Hàn <span class="korean">한국어</span> <span>Cùng Teddy!</span></h1>
+            <p>3 chế độ học thông minh: Flashcard lật thẻ, Gõ lại từ vựng, và Chatbot hội thoại. Chinh phục tiếng Hàn chỉ với 15 phút mỗi ngày!</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <i class="fas fa-book-open"></i>
+                    <div>
+                        <strong>24</strong>
+                        <span>Từ vựng</span>
+                    </div>
+                </div>
+                <div class="hero-stat">
+                    <i class="fas fa-layer-group"></i>
+                    <div>
+                        <strong>6</strong>
+                        <span>Chủ đề</span>
+                    </div>
+                </div>
+                <div class="hero-stat">
+                    <i class="fas fa-fire"></i>
+                    <div>
+                        <strong>7</strong>
+                        <span>Ngày streak</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODE TABS -->
+    <div class="mode-tabs-wrap">
+        <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="flashcard">
+                <i class="fas fa-clone"></i> Flashcard
+            </button>
+            <button class="mode-tab" data-mode="typing">
+                <i class="fas fa-keyboard"></i> Gõ từ vựng
+            </button>
+            <button class="mode-tab" data-mode="chatbot">
+                <i class="fas fa-comments"></i> Chatbot hội thoại
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <!-- ========== MODE 1: FLASHCARD ========== -->
+        <div class="mode-panel active" id="panel-flashcard">
+            <div class="filter-bar">
+                <span class="filter-label"><i class="fas fa-filter"></i> Chủ đề:</span>
+                <button class="filter-btn active" data-cat="all">Tất cả</button>
+                <button class="filter-btn" data-cat="greeting">Chào hỏi</button>
+                <button class="filter-btn" data-cat="family">Gia đình</button>
+                <button class="filter-btn" data-cat="food">Đồ ăn</button>
+                <button class="filter-btn" data-cat="color">Màu sắc</button>
+                <button class="filter-btn" data-cat="animal">Động vật</button>
+                <button class="filter-btn" data-cat="number">Số đếm</button>
+            </div>
+
+            <div class="flashcard-container">
+                <div class="flashcard-area">
+                    <div class="progress-info">
+                        <span class="progress-text"><i class="fas fa-layer-group"></i> Thẻ <span id="fcCurrent">1</span> / <span id="fcTotal">24</span></span>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill korean-inline-1" id="fcProgressBar"></div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-3d" id="flashcard">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-face flashcard-front">
+                                <span class="card-label kr">Tiếng Hàn</span>
+                                <div class="card-korean" id="fcKorean">안녕하세요</div>
+                                <div class="card-romanization" id="fcRomanization">annyeonghaseyo</div>
+                                <div class="card-hint">
+                                    <i class="fas fa-hand-pointer"></i> Nhấn để xem nghĩa
+                                </div>
+                            </div>
+                            <div class="flashcard-face flashcard-back">
+                                <span class="card-label">Tiếng Việt</span>
+                                <div class="card-vietnamese" id="fcVietnamese">Xin chào</div>
+                                <div class="card-example">
+                                    <div class="ex-kr" id="fcExampleKr">안녕하세요, 만나서 반갑습니다.</div>
+                                    <div class="ex-vi" id="fcExampleVi">Xin chào, rất vui được gặp bạn.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-controls">
+                        <button class="btn-card" id="fcPrev" title="Thẻ trước">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn-card unknown" id="fcUnknown" title="Chưa biết">
+                            <div class="btn-card-label">
+                                <i class="fas fa-times"></i>
+                                <small>CHƯA BIẾT</small>
+                            </div>
+                        </button>
+                        <button class="btn-card next" id="fcFlip" title="Lật thẻ">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="btn-card known" id="fcKnown" title="Đã biết">
+                            <div class="btn-card-label">
+                                <i class="fas fa-check"></i>
+                                <small>ĐÃ BIẾT</small>
+                            </div>
+                        </button>
+                        <button class="btn-card" id="fcNext" title="Thẻ sau">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="flashcard-sidebar">
+                    <div class="sidebar-card">
+                        <div class="sidebar-title"><i class="fas fa-info-circle"></i> Thông tin thẻ</div>
+                        <div class="word-info-row">
+                            <span>Chủ đề</span>
+                            <span class="badge-cat" id="fcCategory"><i class="fas fa-tag"></i> Chào hỏi</span>
+                        </div>
+                        <div class="word-info-row">
+                            <span>Từ loại</span>
+                            <span id="fcType">Cụm từ</span>
+                        </div>
+                        <div class="word-info-row">
+                            <span>Phiên âm</span>
+                            <span id="fcRoman">annyeonghaseyo</span>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="sidebar-title"><i class="fas fa-chart-line"></i> Tiến độ hôm nay</div>
+                        <div class="stats-grid">
+                            <div class="stat-box green">
+                                <span class="stat-num" id="statKnown">0</span>
+                                <span class="stat-label">ĐÃ BIẾT</span>
+                            </div>
+                            <div class="stat-box red">
+                                <span class="stat-num" id="statUnknown">0</span>
+                                <span class="stat-label">CHƯA BIẾT</span>
+                            </div>
+                            <div class="stat-box pink">
+                                <span class="stat-num" id="statStreak">7</span>
+                                <span class="stat-label">STREAK</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-num" id="statTotal">24</span>
+                                <span class="stat-label">TỔNG THẺ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="sidebar-title"><i class="fas fa-keyboard"></i> Phím tắt</div>
+                        <ul class="kbd-list">
+                            <li><span>Lật thẻ</span> <span class="kbd">Space</span></li>
+                            <li><span>Thẻ trước</span> <span class="kbd">←</span></li>
+                            <li><span>Thẻ sau</span> <span class="kbd">→</span></li>
+                            <li><span>Đã biết</span> <span class="kbd">K</span></li>
+                            <li><span>Chưa biết</span> <span class="kbd">J</span></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <!-- ========== MODE 2: TYPING ========== -->
+        <div class="mode-panel" id="panel-typing">
+            <div class="filter-bar">
+                <span class="filter-label"><i class="fas fa-filter"></i> Chủ đề:</span>
+                <button class="filter-btn active" data-cat="all">Tất cả</button>
+                <button class="filter-btn" data-cat="greeting">Chào hỏi</button>
+                <button class="filter-btn" data-cat="family">Gia đình</button>
+                <button class="filter-btn" data-cat="food">Đồ ăn</button>
+                <button class="filter-btn" data-cat="color">Màu sắc</button>
+                <button class="filter-btn" data-cat="animal">Động vật</button>
+                <button class="filter-btn" data-cat="number">Số đếm</button>
+            </div>
+
+            <div class="typing-container">
+                <div class="typing-area">
+                    <div class="progress-info korean-inline-2">
+                        <span class="progress-text"><i class="fas fa-keyboard"></i> Câu <span id="typingCurrent">1</span> / <span id="typingTotal">24</span></span>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill korean-inline-3" id="typingProgressBar"></div>
+                        </div>
+                    </div>
+
+                    <div class="typing-prompt">
+                        <div class="typing-prompt-label">Nhìn tiếng Hàn → Gõ tiếng Việt</div>
+                        <div class="typing-korean" id="typingKorean">안녕하세요</div>
+                        <div class="typing-romanization" id="typingRoman">annyeonghaseyo</div>
+                    </div>
+
+                    <div class="typing-input-wrap">
+                        <input type="text" class="typing-input" id="typingInput" placeholder="Nhập nghĩa tiếng Việt..." autocomplete="off">
+                    </div>
+
+                    <div class="typing-actions">
+                        <button class="btn-typing hint" id="typingHint">
+                            <i class="fas fa-lightbulb"></i> Gợi ý
+                        </button>
+                        <button class="btn-typing primary" id="typingCheck">
+                            <i class="fas fa-check"></i> Kiểm tra
+                        </button>
+                        <button class="btn-typing hint" id="typingSkip">
+                            <i class="fas fa-forward"></i> Bỏ qua
+                        </button>
+                    </div>
+
+                    <div class="typing-feedback" id="typingFeedback">
+                        <div class="fb-icon" id="fbIcon">✅</div>
+                        <div class="fb-text" id="fbText">Chính xác!</div>
+                        <div class="fb-answer" id="fbAnswer">안녕하세요 = Xin chào</div>
+                    </div>
+                </div>
+
+                <aside class="flashcard-sidebar">
+                    <div class="sidebar-card">
+                        <div class="sidebar-title"><i class="fas fa-chart-line"></i> Kết quả</div>
+                        <div class="stats-grid">
+                            <div class="stat-box green">
+                                <span class="stat-num" id="typingCorrect">0</span>
+                                <span class="stat-label">ĐÚNG</span>
+                            </div>
+                            <div class="stat-box red">
+                                <span class="stat-num" id="typingWrong">0</span>
+                                <span class="stat-label">SAI</span>
+                            </div>
+                            <div class="stat-box pink">
+                                <span class="stat-num" id="typingAccuracy">0%</span>
+                                <span class="stat-label">CHÍNH XÁC</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-num" id="typingDone">0</span>
+                                <span class="stat-label">ĐÃ LÀM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="sidebar-title"><i class="fas fa-keyboard"></i> Phím tắt</div>
+                        <ul class="kbd-list">
+                            <li><span>Kiểm tra</span> <span class="kbd">Enter</span></li>
+                            <li><span>Gợi ý</span> <span class="kbd">Ctrl+H</span></li>
+                            <li><span>Bỏ qua</span> <span class="kbd">Ctrl+→</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-card korean-inline-4">
+                        <div class="sidebar-title"><i class="fas fa-lightbulb"></i> Mẹo hay</div>
+                        <p class="korean-inline-5">
+                            Không phân biệt chữ hoa chữ thường. Bạn có thể bỏ dấu câu nếu muốn. 
+                            Ví dụ: "xin chao" cũng được tính đúng!
+                        </p>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <!-- ========== MODE 3: CHATBOT ========== -->
+        <div class="mode-panel" id="panel-chatbot">
+            <div class="chatbot-container">
+                <div class="chat-window">
+                    <div class="chat-header">
+                        <div class="chat-bot-avatar">🤖</div>
+                        <div class="chat-bot-info">
+                            <h3>Chatbot Hàn Ngữ <span class="online-dot"></span></h3>
+                            <p>Hội thoại 2 chiều: Việt ↔ Hàn</p>
+                        </div>
+                        <div class="chat-header-actions">
+                            <button class="chat-header-btn" id="chatReset" title="Bắt đầu lại">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            <button class="chat-header-btn" id="chatInfo" title="Thông tin">
+                                <i class="fas fa-info"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages render bằng JS -->
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="chat-lang-toggle">
+                            <button class="lang-btn active" data-lang="vi">
+                                <i class="fas fa-flag"></i> Tiếng Việt
+                            </button>
+                            <button class="lang-btn" data-lang="kr">
+                                <i class="fas fa-flag"></i> 한국어
+                            </button>
+                        </div>
+                        <div class="chat-input-row">
+                            <textarea class="chat-input" id="chatInput" rows="1" placeholder="Nhập tin nhắn... (VD: Xin chào, Cảm ơn, Tôi yêu bạn)"></textarea>
+                            <button class="btn-send" id="chatSend">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="quick-suggestions" id="quickSuggestions">
+                            <button class="quick-chip" data-text="Xin chào"><i class="fas fa-comment"></i> Xin chào</button>
+                            <button class="quick-chip" data-text="Cảm ơn"><i class="fas fa-comment"></i> Cảm ơn</button>
+                            <button class="quick-chip" data-text="Tôi yêu bạn"><i class="fas fa-comment"></i> Tôi yêu bạn</button>
+                            <button class="quick-chip" data-text="Tạm biệt"><i class="fas fa-comment"></i> Tạm biệt</button>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="chat-sidebar">
+                    <div class="sidebar-card">
+                        <div class="sidebar-title"><i class="fas fa-theater-masks"></i> Tình huống</div>
+                        <div class="scene-list" id="sceneList">
+                            <button class="scene-btn active" data-scene="greeting">
+                                <i class="fas fa-hand-wave"></i>
+                                <div>
+                                    <div>Chào hỏi</div>
+                                </div>
+                            </button>
+                            <button class="scene-btn" data-scene="restaurant">
+                                <i class="fas fa-utensils"></i>
+                                <div>
+                                    <div>Nhà hàng</div>
+                                </div>
+                            </button>
+                            <button class="scene-btn" data-scene="shopping">
+                                <i class="fas fa-shopping-bag"></i>
+                                <div>
+                                    <div>Mua sắm</div>
+                                </div>
+                            </button>
+                            <button class="scene-btn" data-scene="love">
+                                <i class="fas fa-heart"></i>
+                                <div>
+                                    <div>Tình yêu</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="sidebar-title"><i class="fas fa-lightbulb"></i> Cách dùng</div>
+                        <p class="korean-inline-6">
+                            Gõ tiếng Việt và chatbot sẽ dịch sang tiếng Hàn. Hoặc gõ tiếng Hàn để dịch ngược lại!
+                        </p>
+                        <div class="korean-inline-7">
+                            <i class="fas fa-quote-left korean-inline-8"></i>
+                            Xin chào → 안녕하세요
+                            <br>
+                            <i class="fas fa-quote-right korean-inline-9"></i>
+                            감사합니다 → Cảm ơn
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="sidebar-title"><i class="fas fa-chart-bar"></i> Thống kê</div>
+                        <div class="word-info-row">
+                            <span>Tin nhắn đã gửi</span>
+                            <span id="chatMsgCount">0</span>
+                        </div>
+                        <div class="word-info-row">
+                            <span>Từ vựng đã học</span>
+                            <span id="chatWordCount">0</span>
+                        </div>
+                        <div class="word-info-row">
+                            <span>Thời gian chat</span>
+                            <span id="chatTime">00:00</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <site-footer></site-footer>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Thông báo!</span>
+    </div>
+
+    <script src="../js/Korean.js"></script>
+</body>
+</html>

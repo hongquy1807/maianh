@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng | Teddy Yêu Thương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/Cart.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/auth-api.js"></script>
+    <script src="../js/header.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/page-links.js" defer></script>
+    <link rel="stylesheet" href="../css/product-media.css">
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <i class="fas fa-truck"></i> Miễn phí vận chuyển cho đơn từ 500K
+        <i class="fas fa-heart"></i>
+        Nhập mã <strong>TEDDY20</strong> giảm thêm 20%
+        <i class="fas fa-gift"></i>
+    </div>
+
+    <!-- HEADER -->
+    <site-header></site-header>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <nav class="breadcrumb">
+            <a href="Home.html"><i class="fas fa-home"></i> Trang chủ</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current">Giỏ hàng</span>
+        </nav>
+
+        <div class="page-title-wrap">
+            <div class="page-title-icon">🛒</div>
+            <div class="page-title-text">
+                <h1>Giỏ hàng <span>của bạn</span></h1>
+                <p id="cartSummaryText">Bạn có 4 sản phẩm trong giỏ hàng</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEPS -->
+    <div class="steps-bar">
+        <div class="steps-inner">
+            <div class="steps-line"><div class="steps-line-fill" id="stepsLineFill"></div></div>
+            <div class="step active">
+                <div class="step-circle"><span>1</span></div>
+                <div class="step-text">Giỏ hàng</div>
+            </div>
+            <div class="step">
+                <div class="step-circle"><span>2</span></div>
+                <div class="step-text">Thanh toán</div>
+            </div>
+            <div class="step">
+                <div class="step-circle"><span>3</span></div>
+                <div class="step-text">Hoàn tất</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART LAYOUT -->
+    <div class="cart-layout">
+
+        <!-- CART ITEMS -->
+        <div class="cart-items-card">
+            <div class="cart-header-row" id="cartHeaderRow">
+                <div>Sản phẩm</div>
+                <div>Đơn giá</div>
+                <div class="cart-inline-1">Số lượng</div>
+                <div class="cart-inline-2">Tổng</div>
+                <div></div>
+            </div>
+
+            <div id="cartItemsList">
+                <!-- Render bằng JS -->
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-cart" id="emptyCart">
+                <div class="empty-cart-icon">🧸💔</div>
+                <h2>Giỏ hàng đang trống</h2>
+                <p>Bạn chưa có chú gấu bông nào trong giỏ. Hãy khám phá bộ sưu tập đáng yêu của chúng tôi nhé!</p>
+                <a href="Home.html" class="btn-shop-now">
+                    <i class="fas fa-shopping-bag"></i> Mua sắm ngay
+                </a>
+            </div>
+
+            <!-- Footer actions -->
+            <div class="cart-footer-actions" id="cartFooterActions">
+                <a href="Home.html" class="btn-continue">
+                    <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
+                </a>
+                <button class="btn-clear" id="clearCartBtn">
+                    <i class="fas fa-trash-alt"></i> Xoá toàn bộ giỏ hàng
+                </button>
+            </div>
+        </div>
+
+        <!-- SUMMARY SIDEBAR -->
+        <aside class="summary-sidebar" id="summarySidebar">
+            <div class="summary-card">
+                <div class="summary-title"><i class="fas fa-receipt"></i> Tóm tắt đơn hàng</div>
+
+                <!-- Coupon -->
+                <div class="coupon-form">
+                    <input type="text" class="coupon-input" id="couponInput" placeholder="Nhập mã giảm giá...">
+                    <button class="btn-coupon" id="applyCouponBtn">
+                        <i class="fas fa-tag"></i> Áp dụng
+                    </button>
+                </div>
+
+                <div class="applied-coupons" id="appliedCoupons"></div>
+
+                <!-- Free ship progress -->
+                <div class="freeship-box" id="freeshipBox">
+                    <div class="freeship-text">
+                        <i class="fas fa-truck-fast"></i>
+                        <span id="freeshipText">Mua thêm 150.000đ để được miễn phí ship!</span>
+                    </div>
+                    <div class="freeship-track">
+                        <div class="freeship-fill cart-inline-3" id="freeshipFill"></div>
+                    </div>
+                    <div class="freeship-note" id="freeshipNote">350.000đ / 500.000đ</div>
+                </div>
+
+                <!-- Summary rows -->
+                <div class="summary-row">
+                    <span>Tạm tính (<span id="itemCountText">4</span> sản phẩm)</span>
+                    <span id="subtotalText">1.480.000đ</span>
+                </div>
+
+                <div class="summary-row discount cart-inline-4" id="discountRow">
+                    <span><i class="fas fa-tag"></i> Giảm giá</span>
+                    <span id="discountText">-0đ</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Phí vận chuyển</span>
+                    <span id="shippingText">Miễn phí</span>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Tổng cộng</span>
+                    <span id="totalText">1.480.000đ</span>
+                </div>
+
+                <!-- Payment methods -->
+                <div class="payment-methods" id="paymentMethods">
+                    <label class="payment-option active" data-method="cod">
+                        <span class="payment-radio"></span>
+                        <i class="fas fa-money-bill-wave payment-icon"></i>
+                        <span class="payment-name">Thanh toán khi nhận hàng (COD)</span>
+                    </label>
+                    <label class="payment-option" data-method="bank">
+                        <span class="payment-radio"></span>
+                        <i class="fas fa-university payment-icon"></i>
+                        <span class="payment-name">Chuyển khoản ngân hàng</span>
+                    </label>
+                    <label class="payment-option" data-method="wallet">
+                        <span class="payment-radio"></span>
+                        <i class="fas fa-wallet payment-icon"></i>
+                        <span class="payment-name">Ví điện tử (Momo, ZaloPay)</span>
+                    </label>
+                </div>
+
+                <button class="btn-checkout" id="checkoutBtn">
+                    <i class="fas fa-credit-card"></i> Tiến hành thanh toán
+                </button>
+
+                <!-- Trust -->
+                <div class="trust-badges">
+                    <div class="trust-item">
+                        <i class="fas fa-shield-heart"></i>
+                        <span>Bảo hành chất lượng 12 tháng</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-rotate-left"></i>
+                        <span>Đổi trả miễn phí trong 7 ngày</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-lock"></i>
+                        <span>Thanh toán bảo mật 100%</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- SUGGESTED PRODUCTS -->
+    <section class="suggested-section">
+        <div class="section-header">
+            <span class="section-sub">Có thể bạn thích</span>
+            <h2>Sản phẩm <span>gợi ý</span></h2>
+            <div class="title-divider">
+                <span></span>
+                <i class="fas fa-heart"></i>
+                <span></span>
+            </div>
+        </div>
+
+        <div class="suggested-grid" id="suggestedGrid">
+            <!-- Render bằng JS -->
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <site-footer></site-footer>
+
+    <!-- CONFIRM MODAL -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-icon-wrap">
+                <div class="modal-icon">🗑️</div>
+            </div>
+            <div class="modal-body">
+                <h3 id="confirmTitle">Xoá sản phẩm?</h3>
+                <p id="confirmMessage">Bạn có chắc muốn xoá sản phẩm này khỏi giỏ hàng không?</p>
+                <div class="modal-actions">
+                    <button class="btn-modal cancel" id="confirmCancel">Huỷ</button>
+                    <button class="btn-modal confirm" id="confirmOk">
+                        <i class="fas fa-trash-alt"></i> Xoá
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Thông báo!</span>
+    </div>
+
+    <script src="../js/Cart.js"></script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng Xoay Đặc Sản Đà Nẵng | Teddy Yêu Thương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/Random.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/auth-api.js"></script>
+    <script src="../js/header.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/page-links.js" defer></script>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <i class="fas fa-utensils"></i> Khám phá ẩm thực Đà Nẵng
+        <i class="fas fa-heart"></i>
+        Hơn 100+ món ngon đang chờ bạn
+        <i class="fas fa-star"></i>
+    </div>
+
+    <!-- HEADER -->
+    <site-header></site-header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-tag"><i class="fas fa-dice"></i> Random món ăn</span>
+            <h1>Hôm nay ăn gì? <span>Để vòng xoay quyết định!</span></h1>
+            <p>Chọn thể loại bạn muốn, nhấn "Quay" và để vòng xoay chọn giúp bạn một món ngon Đà Nẵng. Không còn phải đắn đo "ăn gì" nữa nhé!</p>
+        </div>
+    </section>
+
+    <!-- SPINNER SECTION -->
+    <section class="spinner-section">
+        <!-- Wheel -->
+        <div class="wheel-container">
+            <h2 class="wheel-title">🎡 Vòng Xoay Đặc Sản</h2>
+            <p class="wheel-subtitle">Nhấn nút bên dưới để bắt đầu quay</p>
+
+            <div class="wheel-wrap">
+                <div class="wheel-pointer" id="wheelPointer">▼</div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-center">🍜</div>
+                </div>
+            </div>
+
+            <button class="btn-spin" id="spinBtn">
+                <i class="fas fa-dice"></i> QUAY NGAY
+            </button>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <!-- Category -->
+            <div class="control-card">
+                <div class="control-title"><i class="fas fa-filter"></i> Chọn thể loại</div>
+                <div class="category-options" id="categoryOptions">
+                    <label class="cat-option active" data-cat="all">
+                        <input type="radio" name="category" value="all" checked>
+                        <span class="cat-radio"></span>
+                        <span class="cat-icon">🎲</span>
+                        <span>Tất cả</span>
+                        <span class="cat-count" id="countAll">0</span>
+                    </label>
+                    <label class="cat-option" data-cat="main">
+                        <input type="radio" name="category" value="main">
+                        <span class="cat-radio"></span>
+                        <span class="cat-icon">🍜</span>
+                        <span>Món ăn chính</span>
+                        <span class="cat-count" id="countMain">0</span>
+                    </label>
+                    <label class="cat-option" data-cat="snack">
+                        <input type="radio" name="category" value="snack">
+                        <span class="cat-radio"></span>
+                        <span class="cat-icon">🍢</span>
+                        <span>Ăn vặt</span>
+                        <span class="cat-count" id="countSnack">0</span>
+                    </label>
+                    <label class="cat-option" data-cat="dessert">
+                        <input type="radio" name="category" value="dessert">
+                        <span class="cat-radio"></span>
+                        <span class="cat-icon">🍧</span>
+                        <span>Đồ ngọt</span>
+                        <span class="cat-count" id="countDessert">0</span>
+                    </label>
+                    <label class="cat-option" data-cat="drink">
+                        <input type="radio" name="category" value="drink">
+                        <span class="cat-radio"></span>
+                        <span class="cat-icon">🥤</span>
+                        <span>Đồ uống</span>
+                        <span class="cat-count" id="countDrink">0</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div class="result-card" id="resultCard">
+                <div class="result-placeholder" id="resultPlaceholder">
+                    <i class="fas fa-dice"></i>
+                    Nhấn "Quay ngay" để chọn món!
+                </div>
+                <div class="random-inline-1" id="resultContent">
+                    <div class="result-label">🎉 Bạn nên ăn</div>
+                    <div class="result-emoji" id="resultEmoji">🍜</div>
+                    <div class="result-name" id="resultName">Mì Quảng</div>
+                    <div class="result-cat" id="resultCat"><i class="fas fa-utensils"></i> Món ăn chính</div>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="control-card">
+                <div class="control-title"><i class="fas fa-history"></i> Lịch sử quay</div>
+                <ul class="history-list" id="historyList">
+                    <li class="history-empty">Chưa có lịch sử quay</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENU SECTION -->
+    <section class="menu-section" id="menuSection">
+        <div class="section-header">
+            <span class="section-sub">Khám phá ẩm thực</span>
+            <h2>Danh mục <span>món ngon</span></h2>
+            <div class="title-divider">
+                <span></span>
+                <i class="fas fa-heart"></i>
+                <span></span>
+            </div>
+        </div>
+
+        <div class="menu-tabs" id="menuTabs">
+            <button class="menu-tab active" data-tab="all"><i class="fas fa-th"></i> Tất cả</button>
+            <button class="menu-tab" data-tab="main"><i class="fas fa-utensils"></i> Món chính</button>
+            <button class="menu-tab" data-tab="snack"><i class="fas fa-cookie-bite"></i> Ăn vặt</button>
+            <button class="menu-tab" data-tab="dessert"><i class="fas fa-ice-cream"></i> Đồ ngọt</button>
+            <button class="menu-tab" data-tab="drink"><i class="fas fa-mug-hot"></i> Đồ uống</button>
+        </div>
+
+        <div class="menu-grid" id="menuGrid">
+            <!-- Render bằng JS -->
+        </div>
+    </section>
+
+    <!-- MUST TRY SECTION -->
+    <section class="must-try-section" id="mustTrySection">
+        <div class="section-header">
+            <span class="section-sub">Checklist du lịch</span>
+            <h2>Phải thử khi <span>đến Đà Nẵng</span></h2>
+            <div class="title-divider">
+                <span></span>
+                <i class="fas fa-star"></i>
+                <span></span>
+            </div>
+        </div>
+
+        <div class="must-try-grid">
+            <!-- Món ăn -->
+            <div class="must-try-card">
+                <div class="must-try-header">
+                    <div class="icon">🍜</div>
+                    <div>
+                        <h3>Món ăn</h3>
+                        <p>8 món must-try</p>
+                    </div>
+                </div>
+                <ul class="must-try-list" data-cat="main">
+                    <li><span class="checkbox"></span><span class="item-text">Mì Quảng</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Bánh tráng cuốn thịt heo</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Bún chả cá</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Bún mắm nêm</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Bánh xèo + nem lụi</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Bê thui Cầu Mống</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Gỏi cá Nam Ô</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Hải sản</span></li>
+                </ul>
+            </div>
+
+            <!-- Ăn vặt -->
+            <div class="must-try-card">
+                <div class="must-try-header">
+                    <div class="icon">🍢</div>
+                    <div>
+                        <h3>Ăn vặt</h3>
+                        <p>7 món must-try</p>
+                    </div>
+                </div>
+                <ul class="must-try-list" data-cat="snack">
+                    <li><span class="checkbox"></span><span class="item-text">Ốc hút</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Mít trộn</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Bánh tráng kẹp</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Ram cuốn cải</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Chè sầu riêng</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Kem bơ</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Yaourt muối</span></li>
+                </ul>
+            </div>
+
+            <!-- Đồ uống -->
+            <div class="must-try-card">
+                <div class="must-try-header">
+                    <div class="icon">🥤</div>
+                    <div>
+                        <h3>Đồ uống</h3>
+                        <p>6 món must-try</p>
+                    </div>
+                </div>
+                <ul class="must-try-list" data-cat="drink">
+                    <li><span class="checkbox"></span><span class="item-text">Cà phê muối</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Cà phê cốt dừa</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Nước mía</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Sinh tố bơ</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Trà mãng cầu</span></li>
+                    <li><span class="checkbox"></span><span class="item-text">Nước dừa</span></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <site-footer></site-footer>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Thông báo!</span>
+    </div>
+
+    <script src="../js/Random.js"></script>
+</body>
+</html>

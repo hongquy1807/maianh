@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cộng đồng Teddy | Teddy Yêu Thương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/TinTuc.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/auth-api.js"></script>
+    <script src="../js/header.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/page-links.js" defer></script>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <i class="fas fa-comments"></i> Cộng đồng Teddy — Nơi chia sẻ yêu thương
+        <i class="fas fa-heart"></i>
+        Hơn 5.000 thành viên đang hoạt động
+        <i class="fas fa-gift"></i>
+    </div>
+
+    <!-- HEADER -->
+    <site-header></site-header>
+
+    <!-- HERO -->
+    <section class="forum-hero">
+        <div class="forum-hero-text">
+            <span class="forum-tag"><i class="fas fa-fire"></i> Cộng đồng sôi động</span>
+            <h1>Chào mừng đến <span>Cộng đồng Teddy</span> 🧸</h1>
+            <p>Nơi bạn có thể chia sẻ niềm yêu thích với gấu bông, khoe bộ sưu tập, hỏi đáp và kết bạn với những người cùng đam mê.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <strong>5.248</strong>
+                        <span>Thành viên</span>
+                    </div>
+                </div>
+                <div class="hero-stat">
+                    <i class="fas fa-comments"></i>
+                    <div>
+                        <strong>1.876</strong>
+                        <span>Bài viết</span>
+                    </div>
+                </div>
+                <div class="hero-stat">
+                    <i class="fas fa-heart"></i>
+                    <div>
+                        <strong>12.5K</strong>
+                        <span>Lượt thích</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="forum-hero-visual">🧸💬</div>
+    </section>
+
+    <!-- FORUM LAYOUT -->
+    <div class="forum-layout">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar">
+            <!-- User profile -->
+            <div class="sidebar-card user-profile">
+                <div class="user-avatar-lg">👩</div>
+                <h4>Mai Anh</h4>
+                <p>@maianh_teddy • Thành viên Vàng</p>
+                <div class="user-stats">
+                    <div class="user-stat-item">
+                        <strong>42</strong>
+                        <span>Bài viết</span>
+                    </div>
+                    <div class="user-stat-item">
+                        <strong>328</strong>
+                        <span>Lượt thích</span>
+                    </div>
+                    <div class="user-stat-item">
+                        <strong>156</strong>
+                        <span>Theo dõi</span>
+                    </div>
+                </div>
+                <button class="btn-new-post" id="openPostModal">
+                    <i class="fas fa-pen"></i> Đăng bài mới
+                </button>
+            </div>
+
+            <!-- Categories -->
+            <div class="sidebar-card">
+                <div class="sidebar-title"><i class="fas fa-folder-open"></i> Chủ đề</div>
+                <ul class="category-list">
+                    <li><a href="#" class="active" data-cat="all"><i class="fas fa-globe"></i> Tất cả <span class="count">1876</span></a></li>
+                    <li><a href="#" data-cat="collection"><i class="fas fa-star"></i> Khoe bộ sưu tập <span class="count">428</span></a></li>
+                    <li><a href="#" data-cat="review"><i class="fas fa-thumbs-up"></i> Đánh giá sản phẩm <span class="count">356</span></a></li>
+                    <li><a href="#" data-cat="question"><i class="fas fa-question-circle"></i> Hỏi đáp <span class="count">289</span></a></li>
+                    <li><a href="#" data-cat="diy"><i class="fas fa-scissors"></i> Tự làm gấu <span class="count">214</span></a></li>
+                    <li><a href="#" data-cat="chat"><i class="fas fa-coffee"></i> Tán gẫu <span class="count">589</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Tags -->
+            <div class="sidebar-card">
+                <div class="sidebar-title"><i class="fas fa-hashtag"></i> Tag phổ biến</div>
+                <div class="tag-cloud">
+                    <a href="#" class="tag-item">#gấubông</a>
+                    <a href="#" class="tag-item">#teddy</a>
+                    <a href="#" class="tag-item">#collection</a>
+                    <a href="#" class="tag-item">#đánhgiá</a>
+                    <a href="#" class="tag-item">#diy</a>
+                    <a href="#" class="tag-item">#quàtặng</a>
+                    <a href="#" class="tag-item">#valentine</a>
+                    <a href="#" class="tag-item">#pastel</a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN FEED -->
+        <main class="main-feed">
+            <!-- Filter bar -->
+            <div class="filter-bar">
+                <span class="filter-label"><i class="fas fa-filter"></i> Sắp xếp:</span>
+                <button class="filter-btn active" data-sort="new">Mới nhất</button>
+                <button class="filter-btn" data-sort="popular">Nổi bật</button>
+                <button class="filter-btn" data-sort="trending">Xu hướng</button>
+                <button class="filter-btn" data-sort="following">Đang theo dõi</button>
+            </div>
+
+            <!-- Post composer quick -->
+            <div class="post-composer">
+                <div class="composer-avatar">👩</div>
+                <div class="composer-body">
+                    <textarea class="composer-input" id="quickInput" placeholder="Bạn đang nghĩ gì về chú gấu bông của mình? Chia sẻ với cộng đồng nhé..."></textarea>
+                    <div class="composer-actions">
+                        <div class="composer-tools">
+                            <button class="composer-tool" title="Thêm ảnh"><i class="fas fa-image"></i></button>
+                            <button class="composer-tool" title="Thêm emoji"><i class="fas fa-smile"></i></button>
+                            <button class="composer-tool" title="Đính kèm"><i class="fas fa-paperclip"></i></button>
+                        </div>
+                        <button class="btn-post" id="quickPostBtn">
+                            <i class="fas fa-paper-plane"></i> Đăng bài
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post list -->
+            <div id="postList">
+                <!-- Post 1 -->
+                <article class="post-card" data-category="collection" data-likes="342">
+                    <div class="post-header">
+                        <div class="post-avatar">👩</div>
+                        <div class="post-meta">
+                            <div class="post-author">
+                                <strong>Mai Anh</strong>
+                                <span class="author-badge"><i class="fas fa-crown"></i> Vàng</span>
+                            </div>
+                            <div class="post-time">
+                                <i class="fas fa-clock"></i> 2 giờ trước • <i class="fas fa-eye"></i> 1.2K lượt xem
+                            </div>
+                        </div>
+                        <button class="post-menu"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
+                    <span class="post-category"><i class="fas fa-star"></i> Khoe bộ sưu tập</span>
+                    <h3 class="post-title">Bộ sưu tập gấu bông pastel của mình sau 2 năm 🧸💖</h3>
+                    <p class="post-content">Cuối cùng cũng hoàn thành bộ sưu tập gấu pastel mà mình ấp ủ bấy lâu nay! Mỗi chú gấu đều có câu chuyện riêng, từ chú gấu hồng mua ở Hàn Quốc đến chú gấu vàng order từ Nhật. Cả nhà thấy bộ sưu tập của mình thế nào?</p>
+                    <div class="post-image">🧸🌸🧸💛🧸</div>
+                    <div class="post-actions">
+                        <button class="action-btn like-btn"><i class="far fa-heart"></i> <span class="like-count">342</span></button>
+                        <button class="action-btn comment-toggle"><i class="far fa-comment"></i> 28 bình luận</button>
+                        <button class="action-btn share-btn"><i class="fas fa-share"></i> <span class="hide-sm">Chia sẻ</span></button>
+                        <button class="action-btn bookmark-btn"><i class="far fa-bookmark"></i></button>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comment-form">
+                            <div class="comment-avatar">👩</div>
+                            <div class="comment-input-wrap">
+                                <input type="text" class="comment-input" placeholder="Viết bình luận...">
+                                <button class="btn-send-comment"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <div class="comment-avatar">🧑</div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <strong>Minh Quân</strong>
+                                        <span>1 giờ trước</span>
+                                    </div>
+                                    <p>Bộ sưu tập xinh quá bạn ơi! Chú gấu hồng ở giữa mua ở đâu vậy ạ?</p>
+                                    <div class="comment-actions">
+                                        <button>Thích</button>
+                                        <button>Trả lời</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-item">
+                                <div class="comment-avatar">👧</div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <strong>Thu Hà</strong>
+                                        <span>45 phút trước</span>
+                                    </div>
+                                    <p>Ước gì mình cũng có bộ sưu tập đẹp như vậy 😍</p>
+                                    <div class="comment-actions">
+                                        <button>Thích</button>
+                                        <button>Trả lời</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Post 2 -->
+                <article class="post-card" data-category="review" data-likes="218">
+                    <div class="post-header">
+                        <div class="post-avatar">🧑</div>
+                        <div class="post-meta">
+                            <div class="post-author">
+                                <strong>Minh Quân</strong>
+                                <span class="author-badge admin"><i class="fas fa-shield"></i> Admin</span>
+                            </div>
+                            <div class="post-time">
+                                <i class="fas fa-clock"></i> 5 giờ trước • <i class="fas fa-eye"></i> 890 lượt xem
+                            </div>
+                        </div>
+                        <button class="post-menu"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
+                    <span class="post-category"><i class="fas fa-thumbs-up"></i> Đánh giá sản phẩm</span>
+                    <h3 class="post-title">[Review] Gấu Nâu Mật Ong size 60cm — Đáng đồng tiền không?</h3>
+                    <p class="post-content">Mình vừa nhận em gấu Nâu Mật Ong size 60cm sau 3 ngày đặt hàng. Chất liệu nhung siêu mềm, form gấu chuẩn, màu y hình. Nhược điểm duy nhất là hơi nặng so với mấy em khác nhưng bù lại ôm rất đã. Đánh giá tổng thể: 9/10. Mọi người có câu hỏi gì thì comment nhé!</p>
+                    <div class="post-actions">
+                        <button class="action-btn like-btn"><i class="far fa-heart"></i> <span class="like-count">218</span></button>
+                        <button class="action-btn comment-toggle"><i class="far fa-comment"></i> 45 bình luận</button>
+                        <button class="action-btn share-btn"><i class="fas fa-share"></i> <span class="hide-sm">Chia sẻ</span></button>
+                        <button class="action-btn bookmark-btn"><i class="far fa-bookmark"></i></button>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comment-form">
+                            <div class="comment-avatar">👩</div>
+                            <div class="comment-input-wrap">
+                                <input type="text" class="comment-input" placeholder="Viết bình luận...">
+                                <button class="btn-send-comment"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <div class="comment-avatar">👩</div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <strong>Mai Anh</strong>
+                                        <span>4 giờ trước</span>
+                                    </div>
+                                    <p>Mình cũng đang phân vân em này với em 80cm. Nghe bạn review chắc chốt em 60cm luôn!</p>
+                                    <div class="comment-actions">
+                                        <button>Thích</button>
+                                        <button>Trả lời</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Post 3 -->
+                <article class="post-card" data-category="diy" data-likes="456">
+                    <div class="post-header">
+                        <div class="post-avatar">👧</div>
+                        <div class="post-meta">
+                            <div class="post-author">
+                                <strong>Thu Hà</strong>
+                                <span class="author-badge"><i class="fas fa-scissors"></i> DIY Master</span>
+                            </div>
+                            <div class="post-time">
+                                <i class="fas fa-clock"></i> 1 ngày trước • <i class="fas fa-eye"></i> 2.1K lượt xem
+                            </div>
+                        </div>
+                        <button class="post-menu"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
+                    <span class="post-category"><i class="fas fa-scissors"></i> Tự làm gấu</span>
+                    <h3 class="post-title">Hướng dẫn tự may gấu bông tại nhà cho người mới bắt đầu 🌸</h3>
+                    <p class="post-content">Hôm nay mình sẽ chia sẻ quy trình may một chú gấu bông đơn giản chỉ với vải nỉ, bông gòn và kim chỉ. Mình sẽ up chi tiết từng bước kèm hình ảnh nhé. Ai đang muốn thử thì lưu bài lại nha! Đặc biệt là chú gấu này chỉ mất 2 tiếng là xong, siêu nhanh cho người mới.</p>
+                    <div class="post-image">🧸✂️🧵🪡</div>
+                    <div class="post-actions">
+                        <button class="action-btn like-btn"><i class="far fa-heart"></i> <span class="like-count">456</span></button>
+                        <button class="action-btn comment-toggle"><i class="far fa-comment"></i> 67 bình luận</button>
+                        <button class="action-btn share-btn"><i class="fas fa-share"></i> <span class="hide-sm">Chia sẻ</span></button>
+                        <button class="action-btn bookmark-btn"><i class="far fa-bookmark"></i></button>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comment-form">
+                            <div class="comment-avatar">👩</div>
+                            <div class="comment-input-wrap">
+                                <input type="text" class="comment-input" placeholder="Viết bình luận...">
+                                <button class="btn-send-comment"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <div class="comment-avatar">🧑</div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <strong>Minh Quân</strong>
+                                        <span>20 giờ trước</span>
+                                    </div>
+                                    <p>Bài viết chi tiết quá! Mình sẽ thử làm cho bé nhà mình. Cảm ơn bạn nhiều 💛</p>
+                                    <div class="comment-actions">
+                                        <button>Thích</button>
+                                        <button>Trả lời</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Post 4 -->
+                <article class="post-card" data-category="question" data-likes="125">
+                    <div class="post-header">
+                        <div class="post-avatar">🧒</div>
+                        <div class="post-meta">
+                            <div class="post-author">
+                                <strong>Hoàng Long</strong>
+                                <span class="author-badge"><i class="fas fa-seedling"></i> Mới</span>
+                            </div>
+                            <div class="post-time">
+                                <i class="fas fa-clock"></i> 1 ngày trước • <i class="fas fa-eye"></i> 542 lượt xem
+                            </div>
+                        </div>
+                        <button class="post-menu"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
+                    <span class="post-category"><i class="fas fa-question-circle"></i> Hỏi đáp</span>
+                    <h3 class="post-title">Gấu bông bị xẹp sau khi giặt thì làm sao phồng lại ạ?</h3>
+                    <p class="post-content">Chuyện là mình lỡ giặt em gấu yêu quý bằng máy, giờ em nó xẹp lép nhìn thương lắm. Có cách nào làm phồng lại không ạ? Mình đã thử phơi nắng nhưng không ăn thua. Mong mọi người giúp đỡ!</p>
+                    <div class="post-actions">
+                        <button class="action-btn like-btn"><i class="far fa-heart"></i> <span class="like-count">125</span></button>
+                        <button class="action-btn comment-toggle"><i class="far fa-comment"></i> 23 bình luận</button>
+                        <button class="action-btn share-btn"><i class="fas fa-share"></i> <span class="hide-sm">Chia sẻ</span></button>
+                        <button class="action-btn bookmark-btn"><i class="far fa-bookmark"></i></button>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comment-form">
+                            <div class="comment-avatar">👩</div>
+                            <div class="comment-input-wrap">
+                                <input type="text" class="comment-input" placeholder="Viết bình luận...">
+                                <button class="btn-send-comment"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <div class="comment-avatar">👧</div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <strong>Thu Hà</strong>
+                                        <span>1 ngày trước</span>
+                                    </div>
+                                    <p>Bạn thử dùng máy sấy ở chế độ gió mát, kết hợp vỗ nhẹ cho bông tơi ra nhé. Mình từng bị và làm cách này thành công!</p>
+                                    <div class="comment-actions">
+                                        <button>Thích</button>
+                                        <button>Trả lời</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Load more -->
+            <div class="load-more">
+                <button class="btn-load-more" id="loadMoreBtn">
+                    <i class="fas fa-arrow-down"></i> Xem thêm bài viết
+                </button>
+            </div>
+        </main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="sidebar sidebar-right">
+            <!-- Top members -->
+            <div class="sidebar-card">
+                <div class="sidebar-title"><i class="fas fa-trophy"></i> Thành viên nổi bật</div>
+                <div class="top-member">
+                    <span class="member-rank">🥇</span>
+                    <div class="member-avatar">👩</div>
+                    <div class="member-info">
+                        <strong>Mai Anh</strong>
+                        <span>42 bài viết</span>
+                    </div>
+                    <span class="member-points">2.4K</span>
+                </div>
+                <div class="top-member">
+                    <span class="member-rank">🥈</span>
+                    <div class="member-avatar">👧</div>
+                    <div class="member-info">
+                        <strong>Thu Hà</strong>
+                        <span>38 bài viết</span>
+                    </div>
+                    <span class="member-points">1.9K</span>
+                </div>
+                <div class="top-member">
+                    <span class="member-rank">🥉</span>
+                    <div class="member-avatar">🧑</div>
+                    <div class="member-info">
+                        <strong>Minh Quân</strong>
+                        <span>35 bài viết</span>
+                    </div>
+                    <span class="member-points">1.7K</span>
+                </div>
+                <div class="top-member">
+                    <span class="member-rank">4</span>
+                    <div class="member-avatar">🧒</div>
+                    <div class="member-info">
+                        <strong>Hoàng Long</strong>
+                        <span>28 bài viết</span>
+                    </div>
+                    <span class="member-points">1.2K</span>
+                </div>
+                <div class="top-member">
+                    <span class="member-rank">5</span>
+                    <div class="member-avatar">👨</div>
+                    <div class="member-info">
+                        <strong>Đức Anh</strong>
+                        <span>24 bài viết</span>
+                    </div>
+                    <span class="member-points">980</span>
+                </div>
+            </div>
+
+            <!-- Mini rules -->
+            <div class="sidebar-card">
+                <div class="sidebar-title"><i class="fas fa-shield-heart"></i> Nội quy cộng đồng</div>
+                <ul class="tintuc-inline-1">
+                    <li class="tintuc-inline-2">
+                        <i class="fas fa-check-circle tintuc-inline-3"></i>
+                        Tôn trọng mọi thành viên, không spam
+                    </li>
+                    <li class="tintuc-inline-4">
+                        <i class="fas fa-check-circle tintuc-inline-5"></i>
+                        Đăng bài đúng chủ đề, có ý nghĩa
+                    </li>
+                    <li class="tintuc-inline-6">
+                        <i class="fas fa-check-circle tintuc-inline-7"></i>
+                        Không quảng cáo, bán hàng trái phép
+                    </li>
+                    <li class="tintuc-inline-8">
+                        <i class="fas fa-check-circle tintuc-inline-9"></i>
+                        Chia sẻ tích cực, lan toả yêu thương
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Small ad -->
+            <div class="sidebar-card tintuc-inline-10">
+                <div class="tintuc-inline-11">🧸💝</div>
+                <h4 class="tintuc-inline-12">Gấu đôi -20%</h4>
+                <p class="tintuc-inline-13">Nhân dịp lễ tình yêu</p>
+                <a class="tintuc-inline-14" href="ChiTiet.html">
+                    Mua ngay <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </aside>
+    </div>
+
+    <!-- POST MODAL -->
+    <div class="modal-overlay" id="postModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-pen-fancy"></i> Đăng bài viết mới</h3>
+                <button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-heading"></i> Tiêu đề bài viết</label>
+                    <input type="text" class="form-input" id="postTitle" placeholder="Ví dụ: Bộ sưu tập gấu của mình...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-folder"></i> Chủ đề</label>
+                    <select class="form-select" id="postCategory">
+                        <option value="collection">⭐ Khoe bộ sưu tập</option>
+                        <option value="review">👍 Đánh giá sản phẩm</option>
+                        <option value="question">❓ Hỏi đáp</option>
+                        <option value="diy">✂️ Tự làm gấu</option>
+                        <option value="chat">☕ Tán gẫu</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-align-left"></i> Nội dung</label>
+                    <textarea class="form-textarea" id="postContent" placeholder="Chia sẻ câu chuyện, cảm nhận của bạn với cộng đồng..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-smile"></i> Chèn emoji nhanh</label>
+                    <div class="emoji-picker" id="emojiPicker">
+                        <button class="emoji-btn" data-emoji="🧸">🧸</button>
+                        <button class="emoji-btn" data-emoji="💛">💛</button>
+                        <button class="emoji-btn" data-emoji="🌸">🌸</button>
+                        <button class="emoji-btn" data-emoji="✨">✨</button>
+                        <button class="emoji-btn" data-emoji="💖">💖</button>
+                        <button class="emoji-btn" data-emoji="🎀">🎀</button>
+                        <button class="emoji-btn" data-emoji="😍">😍</button>
+                        <button class="emoji-btn" data-emoji="🥰">🥰</button>
+                        <button class="emoji-btn" data-emoji="🎉">🎉</button>
+                        <button class="emoji-btn" data-emoji="🌼">🌼</button>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-cancel" id="cancelBtn">Huỷ</button>
+                    <button class="btn-submit" id="submitPost">
+                        <i class="fas fa-paper-plane"></i> Đăng bài
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <site-footer></site-footer>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Đã đăng bài thành công!</span>
+    </div>
+
+    <script src="../js/TinTuc.js"></script>
+</body>
+</html>

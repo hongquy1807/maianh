@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teddy Yêu Thương | Gấu Bông Cao Cấp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/Home.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/auth-api.js"></script>
+    <script src="../js/header.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/page-links.js" defer></script>
+    <link rel="stylesheet" href="../css/product-media.css">
+</head>
+<body>
+
+    <!-- ============ TOP BAR ============ -->
+    <div class="top-bar">
+        <i class="fas fa-truck"></i> Miễn phí vận chuyển cho đơn từ 500K
+        <i class="fas fa-heart"></i>
+        Giảm 20% gấu đôi nhân dịp lễ tình yêu
+        <i class="fas fa-gift"></i>
+    </div>
+
+    <!-- ============ HEADER ============ -->
+    <site-header></site-header>
+
+    <!-- ============ SLIDESHOW ============ -->
+    <section class="slideshow" id="slideshow">
+        <!-- Slide 1 -->
+        <div class="slide slide-1 active">
+            <div class="slide-content">
+                <span class="slide-tag"><i class="fas fa-heart"></i> Bộ sưu tập mới</span>
+                <h2 class="slide-title">Gấu bông <span>mềm mại</span><br>ôm là mê li</h2>
+                <p class="slide-desc">Những chú gấu bông với chất liệu nhung cao cấp, siêu mềm mịn, mang đến cảm giác ấm áp và dễ chịu mỗi khi ôm vào lòng.</p>
+                <a href="#" class="slide-btn">
+                    <i class="fas fa-shopping-bag"></i> Khám phá ngay
+                </a>
+            </div>
+            <div class="slide-visual">
+                <span class="slide-decoration d1">💛</span>
+                <span class="slide-decoration d2">🌸</span>
+                <span class="slide-decoration d3">✨</span>
+                <div class="slide-emoji">🧸</div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide slide-2">
+            <div class="slide-content">
+                <span class="slide-tag"><i class="fas fa-gift"></i> Quà tặng ý nghĩa</span>
+                <h2 class="slide-title">Trao <span>yêu thương</span><br>qua từng chú gấu</h2>
+                <p class="slide-desc">Món quà hoàn hảo dành cho người thương, bạn bè hay chính bản thân bạn. Mỗi chú gấu là một lời yêu thương ngọt ngào.</p>
+                <a href="#" class="slide-btn">
+                    <i class="fas fa-heart"></i> Xem quà tặng
+                </a>
+            </div>
+            <div class="slide-visual">
+                <span class="slide-decoration d1">🎀</span>
+                <span class="slide-decoration d2">💝</span>
+                <span class="slide-decoration d3">🌟</span>
+                <div class="slide-emoji">🧸💕</div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide slide-3">
+            <div class="slide-content">
+                <span class="slide-tag"><i class="fas fa-star"></i> Ưu đãi đặc biệt</span>
+                <h2 class="slide-title">Giảm <span>20%</span><br>cho gấu đôi</h2>
+                <p class="slide-desc">Nhân dịp lễ tình yêu, Teddy Yêu Thương dành tặng ưu đãi đặc biệt cho các cặp đôi. Sắm ngay gấu đôi để đôi ta thêm gắn kết!</p>
+                <a href="#" class="slide-btn">
+                    <i class="fas fa-tags"></i> Săn ưu đãi
+                </a>
+            </div>
+            <div class="slide-visual">
+                <span class="slide-decoration d1">💛</span>
+                <span class="slide-decoration d2">💖</span>
+                <span class="slide-decoration d3">🎉</span>
+                <div class="slide-emoji">🧸🧸</div>
+            </div>
+        </div>
+
+        <!-- Điều hướng -->
+        <button class="slide-arrow prev" id="prevSlide"><i class="fas fa-chevron-left"></i></button>
+        <button class="slide-arrow next" id="nextSlide"><i class="fas fa-chevron-right"></i></button>
+
+        <div class="slide-nav" id="slideNav">
+            <div class="dot active" data-index="0"></div>
+            <div class="dot" data-index="1"></div>
+            <div class="dot" data-index="2"></div>
+        </div>
+    </section>
+
+    <!-- ============ FEATURES ============ -->
+    <section class="features">
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-truck-fast"></i></div>
+            <div class="feature-text">
+                <h4>Giao hàng nhanh</h4>
+                <p>Nội thành trong 24h</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-shield-heart"></i></div>
+            <div class="feature-text">
+                <h4>Chất liệu an toàn</h4>
+                <p>100% bông nhập khẩu</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-rotate-left"></i></div>
+            <div class="feature-text">
+                <h4>Đổi trả dễ dàng</h4>
+                <p>Trong vòng 7 ngày</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-headset"></i></div>
+            <div class="feature-text">
+                <h4>Hỗ trợ 24/7</h4>
+                <p>Tư vấn tận tình</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ SECTION HEADER ============ -->
+    <div class="section-header" id="products">
+        <span class="section-sub">Bạn gấu đáng yêu</span>
+        <h2>Sản phẩm <span>nổi bật</span></h2>
+        <p>Những chú gấu bông được yêu thích nhất tại Teddy Yêu Thương, với chất liệu mềm mại và thiết kế dễ thương.</p>
+        <div class="title-divider">
+            <span></span>
+            <i class="fas fa-heart"></i>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- ============ PRODUCTS ============ -->
+    <section class="products-container">
+        <div class="product-grid" id="productGrid">
+            <!-- Sản phẩm 1 -->
+            <div class="product-card" data-category="gau-bong" data-id="1" data-name="Gấu Nâu Mật Ong" data-price="350000">
+                <div class="product-badge">HOT 🔥</div>
+                <div class="product-wish"><i class="far fa-heart"></i></div>
+                <span class="product-edge-icon" aria-hidden="true">🧸</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                <div class="product-name">Gấu Nâu Mật Ong</div>
+                <div class="product-cat">Gấu cỡ vừa • 45cm</div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    <span>(128)</span>
+                </div>
+                <div class="product-price">350.000đ <small>420.000đ</small></div>
+                <button class="btn-add" data-id="1"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            </div>
+
+            <!-- Sản phẩm 2 -->
+            <div class="product-card" data-category="gau-bong" data-id="2" data-name="Gấu Hồng Kẹo Ngọt" data-price="390000">
+                <div class="product-badge">Mới 🌸</div>
+                <div class="product-wish"><i class="far fa-heart"></i></div>
+                <span class="product-edge-icon" aria-hidden="true">🧸🌸</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                <div class="product-name">Gấu Hồng Kẹo Ngọt</div>
+                <div class="product-cat">Gấu cỡ lớn • 60cm</div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    <span>(96)</span>
+                </div>
+                <div class="product-price">390.000đ</div>
+                <button class="btn-add" data-id="2"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            </div>
+
+            <!-- Sản phẩm 3 -->
+            <div class="product-card" data-category="gau-bong" data-id="3" data-name="Gấu Vàng Nắng Mai" data-price="420000">
+                <div class="product-badge">Bán chạy</div>
+                <div class="product-wish"><i class="far fa-heart"></i></div>
+                <span class="product-edge-icon" aria-hidden="true">🧸☀️</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                <div class="product-name">Gấu Vàng Nắng Mai</div>
+                <div class="product-cat">Gấu cỡ vừa • 50cm</div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    <span>(210)</span>
+                </div>
+                <div class="product-price">420.000đ</div>
+                <button class="btn-add" data-id="3"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            </div>
+
+            <!-- Sản phẩm 4 -->
+            <div class="product-card" data-category="gau-bong" data-id="4" data-name="Gấu Bông Kem Dâu" data-price="370000">
+                <div class="product-badge">Yêu thích</div>
+                <div class="product-wish"><i class="far fa-heart"></i></div>
+                <span class="product-edge-icon" aria-hidden="true">🧸🍓</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                <div class="product-name">Gấu Bông Kem Dâu</div>
+                <div class="product-cat">Gấu cỡ nhỏ • 35cm</div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    <span>(75)</span>
+                </div>
+                <div class="product-price">370.000đ</div>
+                <button class="btn-add" data-id="4"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            </div>
+
+            <!-- Sản phẩm 5 -->
+            <div class="product-card" data-category="gau-bong" data-id="5" data-name="Gấu Cún Con" data-price="450000">
+                <div class="product-wish"><i class="far fa-heart"></i></div>
+                <span class="product-edge-icon" aria-hidden="true">🧸🐶</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                <div class="product-name">Gấu Cún Con</div>
+                <div class="product-cat">Gấu cỡ lớn • 65cm</div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    <span>(54)</span>
+                </div>
+                <div class="product-price">450.000đ</div>
+                <button class="btn-add" data-id="5"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            </div>
+
+            <!-- Sản phẩm 6 -->
+            <div class="product-card" data-category="gau-bong" data-id="6" data-name="Gấu Mây Bồng Bềnh" data-price="520000">
+                <div class="product-badge">Limited</div>
+                <div class="product-wish"><i class="far fa-heart"></i></div>
+                <span class="product-edge-icon" aria-hidden="true">🧸☁️</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                <div class="product-name">Gấu Mây Bồng Bềnh</div>
+                <div class="product-cat">Gấu đặc biệt • 70cm</div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    <span>(42)</span>
+                </div>
+                <div class="product-price">520.000đ</div>
+                <button class="btn-add" data-id="6"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            </div>
+
+            <!-- Sản phẩm 7 -->
+            <div class="product-card" data-category="gau-bong" data-id="7" data-name="Gấu Trúc Panda" data-price="480000">
+                <div class="product-wish"><i class="far fa-heart"></i></div>
+                <span class="product-edge-icon" aria-hidden="true">🧸🐼</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                <div class="product-name">Gấu Trúc Panda</div>
+                <div class="product-cat">Gấu cỡ vừa • 55cm</div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    <span>(88)</span>
+                </div>
+                <div class="product-price">480.000đ</div>
+                <button class="btn-add" data-id="7"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            </div>
+
+            <!-- Sản phẩm 8 -->
+            <div class="product-card" data-category="gau-bong" data-id="8" data-name="Gấu Nơ Hồng" data-price="410000">
+                <div class="product-badge">Mới 🌸</div>
+                <div class="product-wish"><i class="far fa-heart"></i></div>
+                <span class="product-edge-icon" aria-hidden="true">🧸🎀</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                <div class="product-name">Gấu Nơ Hồng</div>
+                <div class="product-cat">Gấu cỡ vừa • 48cm</div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    <span>(63)</span>
+                </div>
+                <div class="product-price">410.000đ</div>
+                <button class="btn-add" data-id="8"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ CART FOOTER ============ -->
+    <section class="cart-footer">
+        <div class="cart-inner">
+            <div class="cart-info">
+                <div class="cart-icon-wrap">
+                    <i class="fas fa-shopping-basket"></i>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </div>
+                <div class="cart-text">
+                    <h4>Giỏ hàng của bạn</h4>
+                    <p>Tổng cộng: <span id="cartTotal">0đ</span> • <span id="cartItems">0 sản phẩm</span></p>
+                </div>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">
+                <i class="fas fa-credit-card"></i> Thanh toán ngay
+            </button>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <site-footer></site-footer>
+
+    <!-- ============ TOAST ============ -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Đã thêm vào giỏ hàng!</span>
+    </div>
+
+    <script src="../js/Home.js"></script>
+</body>
+</html>

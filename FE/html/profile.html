@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Cá Nhân | Teddy Yêu Thương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script src="../js/auth-api.js"></script>
+    <script src="../js/header.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/page-links.js" defer></script>
+    <link rel="stylesheet" href="../css/product-media.css">
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <i class="fas fa-crown"></i> Thành viên Vàng — Tích điểm đổi quà
+        <i class="fas fa-heart"></i>
+        Ưu đãi riêng cho bạn
+        <i class="fas fa-gift"></i>
+    </div>
+
+    <!-- HEADER -->
+    <site-header></site-header>
+
+    <!-- PROFILE HERO -->
+    <section class="profile-hero">
+        <div class="profile-hero-card">
+            <div class="hero-avatar">
+                👩
+                <div class="avatar-edit" title="Đổi ảnh đại diện">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+
+            <div class="hero-info">
+                <div class="hero-name-row">
+                    <h1>Mai Anh</h1>
+                    <span class="hero-rank">
+                        <i class="fas fa-crown"></i> Thành viên Vàng
+                    </span>
+                </div>
+                <p>
+                    <span><i class="fas fa-envelope"></i> maianh.teddy@gmail.com</span>
+                    <span><i class="fas fa-phone"></i> 0912 345 678</span>
+                    <span><i class="fas fa-calendar-alt"></i> Tham gia từ 03/2023</span>
+                </p>
+                <div class="hero-stats-row">
+                    <div class="hero-stat">
+                        <div class="stat-icon"><i class="fas fa-box"></i></div>
+                        <div class="stat-info">
+                            <strong>24</strong>
+                            <span>ĐƠN HÀNG</span>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                        <div class="stat-info">
+                            <strong>2.480</strong>
+                            <span>ĐIỂM TÍCH LUỸ</span>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                        <div class="stat-info">
+                            <strong>18</strong>
+                            <span>YÊU THÍCH</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-actions">
+                <button class="btn-hero primary" id="editProfileBtn">
+                    <i class="fas fa-edit"></i> Chỉnh sửa hồ sơ
+                </button>
+                <button class="btn-hero outline" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROFILE LAYOUT -->
+    <div class="profile-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="profile-sidebar">
+            <nav class="sidebar-nav" id="sidebarNav">
+                <button class="sidebar-nav-item active" data-tab="info">
+                    <i class="fas fa-user-circle"></i> Thông tin cá nhân
+                </button>
+                <button class="sidebar-nav-item" data-tab="orders">
+                    <i class="fas fa-box"></i> Đơn hàng
+                    <span class="nav-count">4</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="addresses">
+                    <i class="fas fa-map-marker-alt"></i> Địa chỉ
+                    <span class="nav-count">2</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="wishlist">
+                    <i class="fas fa-heart"></i> Yêu thích
+                    <span class="nav-count">18</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="notifications">
+                    <i class="fas fa-bell"></i> Thông báo
+                    <span class="nav-count">3</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="settings">
+                    <i class="fas fa-cog"></i> Cài đặt
+                </button>
+            </nav>
+
+            <!-- Membership card -->
+            <div class="membership-card">
+                <div class="mem-icon">👑</div>
+                <h4>Hạng Vàng</h4>
+                <p>Còn 520 điểm để lên hạng Kim Cương</p>
+                <div class="membership-progress">
+                    <div class="membership-track">
+                        <div class="membership-fill profile-inline-1"></div>
+                    </div>
+                    <div class="membership-labels">
+                        <span>2.480 điểm</span>
+                        <span>3.000 điểm</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="profile-main">
+
+            <!-- ========== TAB: INFO ========== -->
+            <div class="tab-panel active" id="tab-info">
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-user-circle"></i> Thông tin cá nhân
+                        <button class="title-action" id="editInfoBtn">
+                            <i class="fas fa-edit"></i> Chỉnh sửa
+                        </button>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-field">
+                            <label><i class="fas fa-user"></i> Họ và tên</label>
+                            <div class="info-value editable" data-field="name">
+                                <i class="fas fa-user value-icon"></i> Mai Anh
+                            </div>
+                        </div>
+                        <div class="info-field">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <div class="info-value editable" data-field="email">
+                                <i class="fas fa-envelope value-icon"></i> maianh.teddy@gmail.com
+                            </div>
+                        </div>
+                        <div class="info-field">
+                            <label><i class="fas fa-phone"></i> Số điện thoại</label>
+                            <div class="info-value editable" data-field="phone">
+                                <i class="fas fa-phone value-icon"></i> 0912 345 678
+                            </div>
+                        </div>
+                        <div class="info-field">
+                            <label><i class="fas fa-birthday-cake"></i> Ngày sinh</label>
+                            <div class="info-value editable" data-field="birthday">
+                                <i class="fas fa-birthday-cake value-icon"></i> 15/08/1998
+                            </div>
+                        </div>
+                        <div class="info-field">
+                            <label><i class="fas fa-venus-mars"></i> Giới tính</label>
+                            <div class="info-value editable" data-field="gender">
+                                <i class="fas fa-venus value-icon"></i> Nữ
+                            </div>
+                        </div>
+                        <div class="info-field">
+                            <label><i class="fas fa-map-marker-alt"></i> Địa chỉ</label>
+                            <div class="info-value editable" data-field="address">
+                                <i class="fas fa-map-marker-alt value-icon"></i> 123 Đường Yêu Thương, Q.1, TP.HCM
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB: ORDERS ========== -->
+            <div class="tab-panel" id="tab-orders">
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-box"></i> Đơn hàng của tôi
+                    </div>
+
+                    <div class="order-status-tabs" id="orderTabs">
+                        <button class="order-tab active" data-status="all">
+                            <i class="fas fa-th"></i> Tất cả <span class="tab-count">4</span>
+                        </button>
+                        <button class="order-tab" data-status="pending">
+                            <i class="fas fa-clock"></i> Chờ xác nhận <span class="tab-count">1</span>
+                        </button>
+                        <button class="order-tab" data-status="confirmed">
+                            <i class="fas fa-check"></i> Đã xác nhận <span class="tab-count">1</span>
+                        </button>
+                        <button class="order-tab" data-status="shipping">
+                            <i class="fas fa-truck"></i> Đang giao <span class="tab-count">1</span>
+                        </button>
+                        <button class="order-tab" data-status="delivered">
+                            <i class="fas fa-box-open"></i> Đã giao <span class="tab-count">1</span>
+                        </button>
+                    </div>
+
+                    <div id="ordersList">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB: ADDRESSES ========== -->
+            <div class="tab-panel" id="tab-addresses">
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-map-marker-alt"></i> Sổ địa chỉ
+                    </div>
+
+                    <div class="address-list" id="addressList">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB: WISHLIST ========== -->
+            <div class="tab-panel" id="tab-wishlist">
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-heart"></i> Sản phẩm yêu thích
+                    </div>
+                    <div id="wishlistContent">
+                        <div class="empty-orders">
+                            <div class="icon">💝</div>
+                            <h3>Chưa có sản phẩm yêu thích</h3>
+                            <p>Hãy khám phá và thêm những chú gấu bông bạn yêu thích vào đây nhé!</p>
+                            <a href="Home.html" class="btn-hero primary profile-inline-2">
+                                <i class="fas fa-shopping-bag"></i> Khám phá ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB: NOTIFICATIONS ========== -->
+            <div class="tab-panel" id="tab-notifications">
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-bell"></i> Thông báo
+                    </div>
+                    <div id="notificationsList">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== TAB: SETTINGS ========== -->
+            <div class="tab-panel" id="tab-settings">
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-cog"></i> Cài đặt tài khoản
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-icon"><i class="fas fa-bell"></i></div>
+                            <div class="setting-text">
+                                <h4>Thông báo đơn hàng</h4>
+                                <p>Nhận thông báo khi đơn hàng thay đổi trạng thái</p>
+                            </div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-label"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-icon"><i class="fas fa-tags"></i></div>
+                            <div class="setting-text">
+                                <h4>Khuyến mãi & Ưu đãi</h4>
+                                <p>Nhận thông báo về các chương trình khuyến mãi</p>
+                            </div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-label"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-icon"><i class="fas fa-envelope-open-text"></i></div>
+                            <div class="setting-text">
+                                <h4>Email marketing</h4>
+                                <p>Nhận bản tin và gợi ý sản phẩm qua email</p>
+                            </div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox">
+                            <span class="toggle-label"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-icon"><i class="fas fa-comment-dots"></i></div>
+                            <div class="setting-text">
+                                <h4>Tin nhắn SMS</h4>
+                                <p>Nhận thông báo qua tin nhắn SMS</p>
+                            </div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-label"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="setting-text">
+                                <h4>Xác thực 2 lớp</h4>
+                                <p>Bảo vệ tài khoản với xác thực 2 lớp</p>
+                            </div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox">
+                            <span class="toggle-label"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- FOOTER -->
+    <site-footer></site-footer>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Thông báo!</span>
+    </div>
+
+    <script src="../js/profile.js"></script>
+</body>
+</html>

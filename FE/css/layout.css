@@ -1,0 +1,108 @@
+/* Shared layout: keep these selectors independent from page-specific styles. */
+site-header, site-footer { display: block; width: 100%; font-family: 'Quicksand', sans-serif; color: #5c4033; }
+site-header { position: sticky; top: 0; z-index: 99; }
+site-header *, site-footer * { box-sizing: border-box; }
+site-header a, site-footer a { text-decoration: none; color: inherit; }
+site-header button, site-header input { font: inherit; }
+site-header button { cursor: pointer; }
+site-header :focus-visible, site-footer :focus-visible { outline: 3px solid #ab6500; outline-offset: 4px; }
+.sh-header { position: static; background: #fffdf7; border-bottom: 2px solid #ffe9a8; box-shadow: 0 4px 20px #ffc86420; }
+.sh-nav { max-width: 1440px; margin: auto; padding: 16px 28px; display: flex; align-items: center; gap: 22px; }
+.sh-logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.sh-logo-icon { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; font-size: 30px; background: linear-gradient(135deg, #ffc93c, #ffe9a8); box-shadow: 0 4px 0 #e6a800; }
+.sh-brand strong { display: block; font-size: 21px; font-weight: 800; white-space: nowrap; }
+.sh-brand strong span { color: #af7300; }
+.sh-brand small { display: block; font-size: 10px; letter-spacing: 1.8px; margin-top: 3px; text-transform: uppercase; }
+.sh-navigation { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 14px; min-width: 0; }
+.sh-links { display: flex; align-items: center; gap: 3px; list-style: none; margin: 0; padding: 0; }
+.sh-links > li { position: relative; }
+.sh-links > li > a, .sh-products-toggle { display: flex; align-items: center; gap: 7px; padding: 11px 12px; border: 0; border-radius: 24px; background: transparent; color: #5c4033; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.sh-links a:hover, .sh-products-toggle:hover { background: #fff1c8; }
+.sh-links [aria-current], .sh-products-toggle[data-active] { background: linear-gradient(135deg, #ffc93c, #ffe9a8); }
+.sh-products-toggle .fa-chevron-down { font-size: 9px; transition: transform .2s; }
+.sh-products-toggle[aria-expanded=true] .fa-chevron-down { transform: rotate(180deg); }
+.sh-dropdown { position: absolute; top: calc(100% + 8px); left: 0; min-width: 225px; list-style: none; background: #fffdf7; border: 1px solid #eedcac; border-radius: 20px; padding: 10px; margin: 0; box-shadow: 0 15px 35px #5c403320; }
+.sh-dropdown[hidden] { display: none; }
+.sh-dropdown a { display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 12px; font-size: 14px; font-weight: 700; }
+.sh-dropdown i { width: 18px; text-align: center; color: #a46a00; }
+.sh-search { display: flex; align-items: center; background: #fff8e1; border-radius: 24px; padding: 4px 6px 4px 14px; width: 170px; }
+.sh-search input { min-width: 0; width: 100%; border: 0; background: transparent; color: #5c4033; font-size: 12px; }
+.sh-search button { border: 0; background: transparent; color: #5c4033; width: 34px; height: 34px; flex-shrink: 0; }
+.sh-actions { display: flex; gap: 8px; }
+.sh-actions a, .sh-menu-toggle { width: 40px; height: 40px; border-radius: 50%; background: #fff4d4; display: grid; place-items: center; position: relative; border: 0; color: #5c4033; }
+.sh-actions a:hover, .sh-actions [aria-current] { background: #ffe099; }
+.sh-badge { position: absolute; right: -4px; top: -5px; border: 2px solid #fffdf7; border-radius: 20px; min-width: 19px; padding: 1px 4px; font-size: 10px; font-weight: 800; background: #c64775; color: white; }
+.sh-menu-toggle { display: none; }
+site-footer { position: relative; z-index: 1; margin-top: 64px; }
+.sf-footer { margin: 0; padding: 0; background: #fff5df; border-top: 1px solid #efdbb2; }
+.sf-inner { max-width: 1300px; padding: 0 30px; margin: auto; }
+.sf-intro { padding: 38px 0 32px; display: flex; align-items: center; justify-content: space-between; gap: 28px; border-bottom: 1px solid #e9d7b5; }
+.sf-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 2px; color: #8e6545; }
+.sf-intro h2 { margin: 10px 0; font-size: clamp(22px, 2.6vw, 32px); font-weight: 800; line-height: 1.35; }
+.sf-intro h2 span { color: #a26338; }
+.sf-intro p, .sf-grid p { font-size: 13px; line-height: 1.8; color: #795d4c; }
+.sf-explore { display: inline-flex; align-items: center; gap: 24px; padding: 15px 22px; border-radius: 28px; background: #ffcf55; box-shadow: 0 4px 0 #e2af32; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.sf-explore:hover { background: #ffda79; }
+.sf-grid { display: grid; grid-template-columns: 1.2fr 1fr 1.15fr 1fr 1.3fr; gap: 28px; padding: 38px 0; }
+.sf-brand > a { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; }
+.sf-brand > a span { font-size: 30px; }
+.sf-brand p { margin: 14px 0; }
+.sf-signature { color: #946b45; font-size: 11px; letter-spacing: 1px; }
+.sf-grid h3 { font-size: 13px; margin: 9px 0 18px; font-weight: 800; }
+.sf-grid ul { list-style: none; padding: 0; margin: 0; }
+.sf-grid li { font-size: 12px; color: #795d4c; margin-bottom: 13px; line-height: 1.55; }
+.sf-grid a:hover { color: #a15e16; text-decoration: underline; text-underline-offset: 4px; }
+.sf-contact > a { display: flex; gap: 9px; align-items: center; font-size: 12px; margin-top: 12px; overflow-wrap: anywhere; }
+.sf-contact .sf-hours { font-size: 11px; margin-top: 14px; }
+.sf-bottom { border-top: 1px solid #e9d7b5; padding: 20px 0; display: flex; justify-content: space-between; gap: 16px; font-size: 11px; color: #795d4c; }
+.sf-bottom i { color: #be5273; margin-left: 4px; }
+body.shared-auth-layout { display: block; padding: 0; }
+.shared-auth-layout .auth-wrapper { margin: 48px auto; width: calc(100% - 36px); }
+.shared-auth-layout::before, .shared-auth-layout::after { pointer-events: none; }
+.shared-product-status { max-width: 1240px; margin: 20px auto; padding: 18px 24px; background: #fff5df; border-radius: 16px; font-size: 14px; }
+.shared-product-status a { color: #8b5515; font-weight: 700; }
+#productGrid .product-card[hidden] { display: none; }
+#products, .mode-panel { scroll-margin-top: 110px; }
+@media (max-width: 1250px) {
+  .sh-nav { gap: 14px; padding-inline: 20px; }
+  .sh-search { width: 135px; }
+  .sh-brand strong { font-size: 17px; }
+  .sh-links > li > a, .sh-products-toggle { padding-inline: 8px; font-size: 12px; }
+  .sh-logo-icon { width: 42px; height: 42px; font-size: 26px; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@media (max-width: 1200px) {
+  .sh-nav { flex-wrap: wrap; gap: 12px; }
+  .sh-logo { flex: 1; }
+  .sh-brand strong { font-size: 20px; }
+  .sh-menu-toggle { display: grid; order: 3; }
+  .sh-actions { order: 2; }
+  .sh-navigation { display: none; order: 4; flex-basis: 100%; max-height: calc(100dvh - 110px); overflow-y: auto; }
+  .sh-open .sh-navigation { display: flex; flex-direction: column; align-items: stretch; padding: 12px 0; }
+  .sh-links { align-items: stretch; flex-direction: column; gap: 6px; }
+  .sh-links > li > a, .sh-products-toggle { width: 100%; padding: 14px; font-size: 14px; }
+  .sh-dropdown { position: static; margin: 6px 0 6px 18px; box-shadow: none; background: #fff8e1; }
+  .sh-search { width: 100%; }
+  .sh-search input { font-size: 14px; }
+  .sf-grid { grid-template-columns: repeat(3, 1fr); }
+  .sf-brand { grid-column: span 2; }
+}
+@media (max-width: 600px) {
+  .sh-nav { padding: 12px 14px; gap: 8px; }
+  .sh-brand strong { font-size: 15px; }
+  .sh-brand small { font-size: 8px; letter-spacing: .6px; }
+  .sh-logo { gap: 7px; }
+  .sh-logo-icon { width: 36px; height: 36px; font-size: 23px; }
+  .sh-actions { gap: 5px; }
+  .sh-actions a, .sh-menu-toggle { width: 34px; height: 34px; font-size: 13px; }
+  .sh-actions a:first-child { display: none; }
+  .sf-inner { padding: 0 22px; }
+  .sf-intro { align-items: flex-start; flex-direction: column; padding: 30px 0; gap: 20px; }
+  .sf-grid { grid-template-columns: 1fr 1fr; gap: 24px 18px; padding: 28px 0; }
+  .sf-brand, .sf-contact { grid-column: 1 / -1; }
+  .sf-grid h3 { margin-top: 0; }
+  .sf-bottom { flex-wrap: wrap; line-height: 1.6; }
+}
