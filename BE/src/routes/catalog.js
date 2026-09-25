@@ -21,30 +21,6 @@ function found(res, data) {
 }
 
 router.get('/categories', (req, res) => list(res, 'SELECT id, slug, name, icon, sort_order FROM categories ORDER BY sort_order, id'));
-router.get('/products', async (req, res) => {
-  const category = textQuery(req.query, 'category', 80);
-  const q = textQuery(req.query, 'q', 200);
-  const conditions = ["p.status = 'active'"];
-  const values = [];
-  if (category) { conditions.push('c.slug = ?'); values.push(category); }
-  if (q) { conditions.push("p.name LIKE ? ESCAPE '!'"); values.push(searchPattern(q)); }
-  await paged(res, req.query,
-    `SELECT p.id, p.slug, p.name, p.description, c.slug AS category_slug, c.name AS category_name,
-      (SELECT MIN(v.price) FROM product_variants v WHERE v.product_id=p.id AND v.is_active=1) AS price_from,
-      (SELECT i.image_url FROM product_images i WHERE i.product_id=p.id ORDER BY i.sort_order,i.id LIMIT 1) AS image_url`,
-    'FROM products p JOIN categories c ON c.id=p.category_id', conditions.join(' AND '), values, 'p.created_at DESC,p.id DESC');
-});
-router.get('/products/:id', async (req, res) => {
-  const id = resourceId(req.params.id);
-  const [rows] = await pool.execute(`SELECT p.id,p.slug,p.name,p.description,p.material,p.care_instructions,
-    c.slug AS category_slug,c.name AS category_name FROM products p JOIN categories c ON c.id=p.category_id
-    WHERE p.id=? AND p.status='active'`, [id]);
-  if (!rows.length) return found(res, null);
-  const [variants] = await pool.execute('SELECT id,sku,size_label,color_label,price,compare_at_price,stock_quantity FROM product_variants WHERE product_id=? AND is_active=1 ORDER BY id', [id]);
-  const [images] = await pool.execute('SELECT id,image_url,alt_text,sort_order FROM product_images WHERE product_id=? ORDER BY sort_order,id', [id]);
-  found(res, { ...rows[0], variants, images });
-});
-
 router.get('/food-categories', (req, res) => list(res, 'SELECT id,slug,name,icon FROM food_categories ORDER BY id'));
 function foodFilter(query) {
   const category = textQuery(query, 'category', 60);

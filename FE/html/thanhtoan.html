@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh toán | hongquy sờtore</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="../css/ThanhToan.css">
+</head>
+<body>
+  <div class="top-bar"><i class="fas fa-shield-alt"></i> Thanh toán an toàn 100% <i class="fas fa-truck"></i> Miễn phí ship đơn từ 500K</div>
+  <header class="site-header"><a class="logo" href="Home.html">🧸 hongquy <span>sờtore</span></a><div class="secure-badge"><i class="fas fa-lock"></i> Bảo mật SSL 256-bit</div></header>
+  <nav class="steps"><span class="step done">1. Giỏ hàng</span><span class="step active">2. Thanh toán</span><span class="step">3. Hoàn tất</span></nav>
+
+  <main class="checkout-layout">
+    <section class="main-column">
+      <div class="card">
+        <h2><i class="fas fa-map-marker-alt"></i> Địa chỉ nhận hàng</h2>
+        <div class="address-modes">
+          <label><input type="radio" name="addressMode" id="profileAddressMode" value="profile" disabled> Dùng địa chỉ trong hồ sơ</label>
+          <label><input type="radio" name="addressMode" id="newAddressMode" value="new" checked> Nhập địa chỉ mới</label>
+        </div>
+        <p id="addressStatus" class="muted" role="status">Đang kiểm tra địa chỉ hồ sơ...</p>
+        <div id="addressList" class="address-list" hidden></div>
+        <form id="newAddressForm">
+          <div class="form-grid">
+            <label>Họ và tên<input id="recipientName" autocomplete="shipping name" maxlength="120" required></label>
+            <label>Số điện thoại<input id="recipientPhone" type="tel" autocomplete="shipping tel" maxlength="24" required></label>
+            <label class="full">Địa chỉ nhận hàng<input id="recipientAddress" autocomplete="shipping street-address" maxlength="500" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" required></label>
+          </div>
+          <div class="actions"><button type="submit" class="btn btn-primary" id="saveAddress">Xác nhận địa chỉ</button></div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-credit-card"></i> Phương thức thanh toán</h2>
+        <div class="payment-list">
+          <div class="payment payment-store selected" data-method="store_pay">
+            <span class="radio"></span>
+            <i class="fas fa-coins store-pay-icon" aria-hidden="true"></i>
+            <div class="payment-copy">
+              <span class="store-pay-label">Ví của bạn <span aria-hidden="true">✿</span></span>
+              <strong>hongquy sòtore pay</strong>
+              <span id="storePayBalance" class="store-pay-balance" aria-live="polite">Đang tải số dư...</span>
+              <span class="store-pay-hint">Thanh toán nhanh bằng số dư tài khoản</span>
+            </div>
+          </div>
+
+          <!-- Other payment methods
+          <div class="payment" data-method="cod"><span class="radio"></span><i class="fas fa-money-bill-wave"></i><div class="payment-copy"><strong>Thanh toán khi nhận hàng (COD)</strong><span class="muted">Kiểm tra hàng trước khi thanh toán</span></div></div>
+          <div class="payment" data-method="bank"><span class="radio"></span><i class="fas fa-university"></i><div class="payment-copy"><strong>Chuyển khoản ngân hàng</strong><span class="muted">Quét QR lời chúc</span></div></div>
+          <div class="payment" data-method="wallet"><span class="radio"></span><i class="fas fa-wallet"></i><div class="payment-copy"><strong>Ví điện tử (Momo, ZaloPay)</strong><span class="muted">Quét QR lời chúc</span></div></div>
+         -->
+        
+        </div>
+        <div class="qr" id="qrSection"><strong id="qrMethodName">QR lời chúc</strong><img id="qrImage" alt="QR lời chúc thanh toán"><p class="muted">Số tiền đơn hàng: <strong id="qrAmount">0đ</strong></p><p class="muted">Quét QR để thanh toán đơn hàng</p><button class="btn btn-outline" id="copyContent">Sao chép nội dung</button></div>
+      </div>
+    </section>
+
+    <aside class="order-column"><div class="summary">
+      <h2><i class="fas fa-receipt"></i> Đơn hàng của bạn</h2>
+      <div id="productList" class="product-list"></div>
+      <form class="coupon" id="couponForm"><input id="couponInput" aria-label="Mã giảm giá" placeholder="Nhập mã giảm giá..." autocomplete="off"><button type="submit" class="btn" id="applyCoupon"><i class="fas fa-tag" aria-hidden="true"></i> Áp dụng</button></form>
+      <div id="appliedCoupons" class="applied-coupons" aria-live="polite"></div>
+      <p class="coupon-hint">Có thể áp dụng nhiều mã khác nhau. Mức giảm tối đa bằng tiền sản phẩm.</p>
+      <div class="shipping-progress"><p><i class="fas fa-shipping-fast" aria-hidden="true"></i> <span id="shippingMessage"></span></p><div class="shipping-track" role="progressbar" aria-label="Tiến độ miễn phí vận chuyển" aria-valuemin="0" aria-valuemax="500000" id="shippingProgress"><div id="shippingProgressFill"></div></div><div class="shipping-progress-text" id="shippingProgressText"></div></div>
+      <div class="summary-row"><span>Tạm tính (<span id="itemCount">0</span> sản phẩm)</span><span id="subtotal">0đ</span></div>
+      <div class="summary-row" id="discountRow" hidden><span>Giảm giá</span><span id="discountValue">-0đ</span></div>
+      <div class="summary-row"><span>Phí vận chuyển</span><span id="shippingFee">Miễn phí</span></div>
+      <div class="summary-row total"><span>Tổng cộng</span><span id="totalPrice">0đ</span></div>
+      <button class="btn btn-primary" id="checkoutBtn" style="width:100%"><i class="fas fa-check-circle"></i> Đặt hàng ngay</button>
+      <div class="summary-benefits"><p><i class="fas fa-shield-alt" aria-hidden="true"></i> Bảo hành chất lượng 12 tháng</p><p><i class="fas fa-history" aria-hidden="true"></i> Đổi trả miễn phí trong 7 ngày</p><p><i class="fas fa-lock" aria-hidden="true"></i> Thanh toán bảo mật 100%</p></div>
+    </div></aside>
+  </main>
+
+  <dialog id="insufficientBalanceModal" class="balance-modal" aria-labelledby="balanceModalTitle" aria-describedby="balanceModalMessage">
+    <div class="balance-modal-card">
+      <span class="balance-decor blossom-one" aria-hidden="true">🌸</span><span class="balance-decor blossom-two" aria-hidden="true">🌸</span><span class="balance-decor blossom-three" aria-hidden="true">🌸</span><span class="balance-decor blossom-four" aria-hidden="true">🌸</span>
+      <span class="balance-decor mai-one" aria-hidden="true">🌼</span><span class="balance-decor mai-two" aria-hidden="true">🌼</span><span class="balance-decor bear-one" aria-hidden="true">🧸</span><span class="balance-decor bear-two" aria-hidden="true">🧸</span>
+      <button type="button" class="balance-modal-close" id="closeBalanceModal" aria-label="Đóng thông báo">×</button>
+      <div class="balance-modal-mascot" aria-hidden="true">🧸<span>💛</span></div>
+      <span class="balance-modal-kicker">hongquy sòtore pay</span>
+      <h2 id="balanceModalTitle">Ví cần thêm chút yêu thương!</h2>
+      <p id="balanceModalMessage">Hiện số dư trong tài khoản của bạn không đủ để thanh toán đơn hàng này. Bạn có thể kiếm thêm tiền bằng cách ôn tập tiếng Hàn. Kiếm thật nhiều và quy lại với đơn hàng này nhéee !!!</p>
+      <div class="balance-modal-actions"><a href="Korean.html" target="_blank" rel="noopener" class="balance-study"><i class="fas fa-book-open" aria-hidden="true"></i> Ôn tập tiếng Hàn</a><button type="button" id="returnToCheckout">Quay lại thanh toán</button></div>
+    </div>
+  </dialog>
+  <div class="modal" id="successModal"><div class="modal-box"><div style="font-size:3rem">🎉</div><h2>Đặt hàng thành công!</h2><p>Cảm ơn bạn đã tin tưởng hongquy sờtore. Đơn hàng đang được xử lý.</p><div class="actions"><a class="btn btn-outline" href="Home.html">Về trang chủ</a><a class="btn btn-primary" href="profile.html">Xem đơn hàng</a></div></div></div>
+  <footer class="footer">© 2026 hongquy sờtore. Made with <i class="fas fa-heart"></i> in Vietnam</footer>
+  <div id="toast" class="modal-box" style="position:fixed;right:20px;bottom:20px;display:none;padding:12px 18px;z-index:20">Thông báo</div>
+  <script src="../js/ThanhToan.js"></script>
+</body>
+</html>

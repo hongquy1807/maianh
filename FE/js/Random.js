@@ -88,6 +88,10 @@
             const resultEmoji = document.getElementById('resultEmoji');
             const resultName = document.getElementById('resultName');
             const resultCat = document.getElementById('resultCat');
+            const resultModal = document.getElementById('resultModal');
+            const modalResultEmoji = document.getElementById('modalResultEmoji');
+            const modalResultName = document.getElementById('modalResultName');
+            const modalResultCat = document.getElementById('modalResultCat');
             const historyList = document.getElementById('historyList');
             const menuGrid = document.getElementById('menuGrid');
             const toast = document.getElementById('toast');
@@ -222,8 +226,6 @@
 
                     // Thêm vào lịch sử
                     addHistory(selectedItem, cat);
-
-                    showToast(`🎉 Bạn nên ăn: ${selectedItem}`, true);
                 }, 5100);
             }
 
@@ -241,7 +243,30 @@
                 setTimeout(() => {
                     resultEmoji.style.animation = 'resultPop 0.5s ease';
                 }, 10);
+
+                modalResultEmoji.textContent = meta.emoji;
+                modalResultName.textContent = item;
+                modalResultCat.innerHTML = `<i class="fas ${meta.icon}"></i> ${meta.name}`;
+                resultModal.classList.add('show');
+                resultModal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
             }
+
+            function closeResultModal() {
+                resultModal.classList.remove('show');
+                resultModal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
+            }
+
+            resultModal.querySelectorAll('[data-close-result]').forEach(element => {
+                element.addEventListener('click', closeResultModal);
+            });
+
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && resultModal.classList.contains('show')) {
+                    closeResultModal();
+                }
+            });
 
             function addHistory(item, cat) {
                 history.unshift({ item, cat, time: new Date() });

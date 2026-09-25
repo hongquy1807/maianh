@@ -1363,3 +1363,10 @@ html body .cart-inline-2.cart-inline-2 { text-align: right; }
 html body .cart-inline-3.cart-inline-3 { width: 70%; }
 
 html body .cart-inline-4.cart-inline-4 { display: none; }
+
+.cart-image-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 6px; font-size: 12px; text-align: center; color: #8c6d5c; background: #fff8e1; }
+.suggestion-link { text-decoration:none; color:var(--text-dark); }
+.suggestion-category { font-size:.8rem; color:var(--text-medium); margin:4px 0 10px; }
+.suggestion-status { grid-column:1/-1; text-align:center; padding:24px; color:var(--text-medium); }
+.suggestion-no-image { display:grid; place-items:center; height:100%; font-size:14px; color:var(--text-medium); }
+#suggestedGrid .btn-add-sm:disabled { opacity:.6; cursor:wait; }

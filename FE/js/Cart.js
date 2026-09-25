@@ -47,25 +47,59 @@
                 }
             ];
 
-            // Danh sách mã giảm giá
-            const coupons = {
-                'TEDDY20': { type: 'percent', value: 20, min: 0, label: 'Giảm 20%' },
-                'SHIP50': { type: 'fixed', value: 50000, min: 200000, label: 'Giảm 50.000đ' },
-                'WELCOME': { type: 'percent', value: 10, min: 0, label: 'Giảm 10%' },
-                'FREESHIP': { type: 'freeship', value: 0, min: 0, label: 'Miễn phí ship' }
-            };
-
-            let appliedCoupons = [];
             let shippingFee = 30000;
             const FREESHIP_THRESHOLD = 500000;
+            let apiCartEnabled = false;
+
+            async function cartApiRequest(path = '', options = {}) {
+                const response = await fetch(`/api/cart${path}`, {
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', ...(options.body ? { 'X-Requested-With': 'maianh-web' } : {}) },
+                    ...options
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw Object.assign(new Error(data.error || 'Không thể cập nhật giỏ hàng.'), {status:response.status});
+                if(options.method && options.method!=='GET')window.dispatchEvent(new Event('cart-updated'));
+                return data.data || [];
+            }
+
+            function setCartRows(rows) {
+                cart = rows.map(row => ({
+                        id: String(row.variant_id),
+                        variantId: String(row.variant_id),
+                        name: row.name,
+                        price: Number(row.price),
+                        oldPrice: row.old_price ? Number(row.old_price) : null,
+                        size: row.size || 'Mặc định',
+                        color: row.color || 'Mặc định',
+                        quantity: Number(row.quantity),
+                        stock: Number(row.stock),
+                        imageUrl: row.image_url
+                    }));
+            }
+
+            async function loadApiCart() {
+                try {
+                    const user = await window.MaianhAuth?.getSession();
+                    if (!user) return;
+                    const rows = await cartApiRequest();
+                    setCartRows(rows);
+                    apiCartEnabled = true;
+                } catch {
+                    apiCartEnabled = false;
+                }
+            }
+
+            function syncApiItem(item) {
+                if (!apiCartEnabled || !item?.variantId) return;
+                cartApiRequest(`/${encodeURIComponent(item.variantId)}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ quantity: item.quantity })
+                }).catch(() => showToast('Không thể đồng bộ giỏ hàng.', false));
+            }
 
             // Sản phẩm gợi ý
-            const suggestedProducts = [
-                { id: 's1', name: 'Gấu Cún Con', emoji: '🧸🐶', price: 450000, oldPrice: 520000, rating: 5, badge: 'HOT' },
-                { id: 's2', name: 'Gấu Mây Bồng Bềnh', emoji: '🧸☁️', price: 520000, oldPrice: null, rating: 5, badge: 'LIMITED' },
-                { id: 's3', name: 'Gấu Trúc Panda', emoji: '🧸🐼', price: 480000, oldPrice: 550000, rating: 4.5, badge: null },
-                { id: 's4', name: 'Gấu Nơ Hồng', emoji: '🧸🎀', price: 410000, oldPrice: null, rating: 5, badge: 'MỚI' }
-            ];
+            let suggestedProducts = [];
 
             // DOM
             const cartItemsList = document.getElementById('cartItemsList');
@@ -82,6 +116,10 @@
             let toastTimeout;
 
             // ============ HELPERS ============
+            function escapeHtml(value) {
+                return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            }
+
             function formatPrice(price) {
                 return price.toLocaleString('vi-VN') + 'đ';
             }
@@ -121,12 +159,14 @@
                 cartItemsList.innerHTML = cart.map(item => `
                     <div class="cart-item" data-id="${item.id}">
                         <div class="item-product">
-                            <div class="item-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
+                            <div class="item-img">${item.imageUrl
+                                ? `<img class="product-photo" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" loading="lazy" width="80" height="80">`
+                                : '<span class="cart-image-placeholder">Chưa có ảnh</span>'}</div>
                             <div class="item-info">
-                                <h3>${item.name}</h3>
+                                <h3>${escapeHtml(item.name)}</h3>
                                 <div class="item-variant">
-                                    <span>${item.size}</span>
-                                    <span>${item.color}</span>
+                                    <span>${escapeHtml(item.size)}</span>
+                                    <span>${escapeHtml(item.color)}</span>
                                 </div>
                                 <div class="item-stock">
                                     <i class="fas fa-circle"></i> Còn ${item.stock} sản phẩm
@@ -186,6 +226,7 @@
                                 return;
                             }
                         }
+                        syncApiItem(item);
                         renderCart();
                     });
                 });
@@ -210,6 +251,10 @@
             function removeItem(id) {
                 const item = cart.find(i => i.id === id);
                 cart = cart.filter(i => i.id !== id);
+                if (apiCartEnabled && item?.variantId) {
+                    cartApiRequest(`/${encodeURIComponent(item.variantId)}`, { method: 'DELETE' })
+                        .catch(() => showToast('Không thể cập nhật giỏ hàng.', false));
+                }
                 renderCart();
                 if (item) showToast(`Đã xoá "${item.name}" khỏi giỏ hàng`, true);
             }
@@ -219,27 +264,13 @@
                 const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
                 const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
-                // Coupons
-                let discount = 0;
-                let freeShipCoupon = false;
-                appliedCoupons.forEach(code => {
-                    const c = coupons[code];
-                    if (c.type === 'percent') {
-                        discount += Math.round(subtotal * c.value / 100);
-                    } else if (c.type === 'fixed') {
-                        discount += c.value;
-                    } else if (c.type === 'freeship') {
-                        freeShipCoupon = true;
-                    }
-                });
-
                 // Ship
                 let ship = shippingFee;
-                if (subtotal >= FREESHIP_THRESHOLD || freeShipCoupon) {
+                if (subtotal >= FREESHIP_THRESHOLD) {
                     ship = 0;
                 }
 
-                const total = Math.max(0, subtotal - discount + ship);
+                const total = Math.max(0, subtotal + ship);
 
                 // Update UI
                 document.getElementById('itemCountText').textContent = totalItems;
@@ -249,21 +280,13 @@
                 headerCartCount.textContent = totalItems;
                 cartSummaryText.textContent = `Bạn có ${totalItems} sản phẩm trong giỏ hàng`;
 
-                // Discount row
-                if (discount > 0) {
-                    document.getElementById('discountRow').style.display = 'flex';
-                    document.getElementById('discountText').textContent = '-' + formatPrice(discount);
-                } else {
-                    document.getElementById('discountRow').style.display = 'none';
-                }
-
                 // Freeship progress
                 const freeshipBox = document.getElementById('freeshipBox');
                 const freeshipFill = document.getElementById('freeshipFill');
                 const freeshipText = document.getElementById('freeshipText');
                 const freeshipNote = document.getElementById('freeshipNote');
 
-                if (subtotal >= FREESHIP_THRESHOLD || freeShipCoupon) {
+                if (subtotal >= FREESHIP_THRESHOLD) {
                     freeshipBox.style.background = 'linear-gradient(135deg, var(--yellow-main), var(--yellow-soft))';
                     freeshipText.innerHTML = '<i class="fas fa-check-circle"></i> Chúc mừng! Bạn được miễn phí vận chuyển 🎉';
                     freeshipFill.style.width = '100%';
@@ -290,70 +313,7 @@
             }
 
             // ============ COUPONS ============
-            function renderAppliedCoupons() {
-                const container = document.getElementById('appliedCoupons');
-                if (appliedCoupons.length === 0) {
-                    container.innerHTML = '';
-                    return;
-                }
-                container.innerHTML = appliedCoupons.map(code => `
-                    <div class="coupon-chip">
-                        <i class="fas fa-tag"></i>
-                        <span class="coupon-name">${code}</span>
-                        <span class="coupon-value">${coupons[code].label}</span>
-                        <button class="coupon-remove" data-code="${code}">
-                            <i class="fas fa-times-circle"></i>
-                        </button>
-                    </div>
-                `).join('');
 
-                container.querySelectorAll('.coupon-remove').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const code = this.dataset.code;
-                        appliedCoupons = appliedCoupons.filter(c => c !== code);
-                        renderAppliedCoupons();
-                        updateSummary();
-                        showToast(`Đã xoá mã ${code}`, true);
-                    });
-                });
-            }
-
-            document.getElementById('applyCouponBtn').addEventListener('click', function() {
-                const input = document.getElementById('couponInput');
-                const code = input.value.trim().toUpperCase();
-
-                if (!code) {
-                    showToast('Vui lòng nhập mã giảm giá!', false);
-                    input.focus();
-                    return;
-                }
-
-                if (appliedCoupons.includes(code)) {
-                    showToast('Mã này đã được áp dụng rồi!', false);
-                    return;
-                }
-
-                if (!coupons[code]) {
-                    showToast('Mã giảm giá không hợp lệ!', false);
-                    return;
-                }
-
-                const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-                if (coupons[code].min && subtotal < coupons[code].min) {
-                    showToast(`Đơn hàng tối thiểu ${formatPrice(coupons[code].min)} để dùng mã này!`, false);
-                    return;
-                }
-
-                appliedCoupons.push(code);
-                input.value = '';
-                renderAppliedCoupons();
-                updateSummary();
-                showToast(`🎉 Đã áp dụng mã ${code} - ${coupons[code].label}!`, true);
-            });
-
-            document.getElementById('couponInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') document.getElementById('applyCouponBtn').click();
-            });
 
             // ============ CLEAR CART ============
             document.getElementById('clearCartBtn').addEventListener('click', function() {
@@ -363,8 +323,7 @@
                     'Bạn có chắc muốn xoá tất cả sản phẩm khỏi giỏ hàng không? Hành động này không thể hoàn tác.',
                     () => {
                         cart = [];
-                        appliedCoupons = [];
-                        renderAppliedCoupons();
+                        if (apiCartEnabled) cartApiRequest('', { method: 'DELETE' }).catch(() => showToast('Không thể xoá giỏ hàng.', false));
                         renderCart();
                         showToast('Đã xoá toàn bộ giỏ hàng', true);
                     }
@@ -402,14 +361,6 @@
                 if (e.key === 'Escape' && confirmModal.classList.contains('show')) hideConfirm();
             });
 
-            // ============ PAYMENT METHODS ============
-            document.querySelectorAll('.payment-option').forEach(opt => {
-                opt.addEventListener('click', function() {
-                    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
             // ============ CHECKOUT ============
             document.getElementById('checkoutBtn').addEventListener('click', function() {
                 if (cart.length === 0) {
@@ -417,87 +368,45 @@
                     return;
                 }
 
-                const total = document.getElementById('totalText').textContent;
-                const method = document.querySelector('.payment-option.active .payment-name').textContent;
-
-                // Đổi step
-                document.querySelectorAll('.step').forEach((s, i) => {
-                    if (i === 0) { s.classList.remove('active'); s.classList.add('completed'); }
-                    if (i === 1) { s.classList.add('active'); }
-                });
-                document.getElementById('stepsLineFill').style.width = '100%';
-
-                showToast(`Đặt hàng thành công! Tổng: ${total}`, true);
-
-                // Xoá giỏ sau 2s
-                setTimeout(() => {
-                    cart = [];
-                    appliedCoupons = [];
-                    renderAppliedCoupons();
-                    renderCart();
-                    // Reset step
-                    document.querySelectorAll('.step').forEach((s, i) => {
-                        s.classList.remove('active', 'completed');
-                        if (i === 0) s.classList.add('active');
-                    });
-                    document.getElementById('stepsLineFill').style.width = '50%';
-                }, 2500);
+                sessionStorage.setItem('maianh_checkout_cart', JSON.stringify({
+                    items: cart,
+                    coupons: [],
+                    total: document.getElementById('totalText').textContent
+                }));
+                window.location.assign('thanhtoan.html');
             });
 
             // ============ SUGGESTED PRODUCTS ============
-            function renderSuggested() {
-                suggestedGrid.innerHTML = suggestedProducts.map(p => `
-                    <div class="product-card">
-                        ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
-                        <span class="product-edge-icon" aria-hidden="true">${p.emoji}</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
-                        <div class="product-name">${p.name}</div>
-                        <div class="product-rating">
-                            ${'<i class="fas fa-star"></i>'.repeat(Math.floor(p.rating))}
-                            ${p.rating % 1 ? '<i class="fas fa-star-half-alt"></i>' : ''}
-                        </div>
-                        <div class="product-price">
-                            ${formatPrice(p.price)}
-                            ${p.oldPrice ? `<small>${formatPrice(p.oldPrice)}</small>` : ''}
-                        </div>
-                        <button class="btn-add-sm" data-id="${p.id}">
-                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
-                        </button>
-                    </div>
-                `).join('');
-
-                suggestedGrid.querySelectorAll('.btn-add-sm').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        const product = suggestedProducts.find(p => p.id === id);
-                        if (!product) return;
-
-                        // Kiểm tra đã có trong giỏ chưa
-                        const existing = cart.find(i => i.name === product.name);
-                        if (existing) {
-                            existing.quantity++;
-                        } else {
-                            cart.push({
-                                id: 'new_' + Date.now(),
-                                name: product.name,
-                                emoji: product.emoji,
-                                price: product.price,
-                                oldPrice: product.oldPrice,
-                                size: '45cm',
-                                color: 'Mặc định',
-                                quantity: 1,
-                                stock: 15
-                            });
-                        }
-                        renderCart();
-                        showToast(`Đã thêm "${product.name}" vào giỏ!`, true);
-                    });
-                });
+            async function renderSuggested() {
+                suggestedGrid.innerHTML='<p>Đang tải sản phẩm gợi ý...</p>';
+                try {
+                    suggestedProducts=await cartApiRequest('/suggestions');
+                    suggestedGrid.innerHTML=suggestedProducts.map(p=>`<div class="product-card">
+                        <span class="product-edge-icon" aria-hidden="true">🧸</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span>
+                        <a class="product-img" href="ChiTiet.html?id=${encodeURIComponent(p.id)}" aria-label="Xem ${escapeHtml(p.name)}">${p.image_url?`<img class="product-photo" src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy">`:'<span class="suggestion-no-image">Chưa có ảnh</span>'}</a>
+                        <a class="product-name suggestion-link" href="ChiTiet.html?id=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a>
+                        <p class="suggestion-category">${escapeHtml(p.category_name)}</p>
+                        <div class="product-price">${formatPrice(Number(p.price))} ${Number(p.old_price)>Number(p.price)?`<small>${formatPrice(Number(p.old_price))}</small>`:''}</div>
+                        <button class="btn-add-sm" data-variant-id="${escapeHtml(p.variant_id)}"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+                    </div>`).join('')||'<p class="suggestion-status">Chưa có thêm sản phẩm gợi ý. <a href="Home.html">Khám phá cửa hàng</a></p>';
+                } catch(error) {suggestedGrid.innerHTML=error.status===401?'<p class="suggestion-status"><a href="DangNhap.html">Đăng nhập</a> để xem sản phẩm gợi ý.</p>':'<p class="suggestion-status">Không tải được sản phẩm gợi ý. <button type="button" id="retrySuggestions">Thử lại</button></p>';document.getElementById('retrySuggestions')?.addEventListener('click',renderSuggested);}
             }
+            let addingSuggestion=false;
+            suggestedGrid.addEventListener('click',async event=>{
+                const button=event.target.closest('[data-variant-id]');if(!button||addingSuggestion)return;
+                addingSuggestion=true;button.disabled=true;
+                try {
+                    const rows=await cartApiRequest('',{method:'POST',body:JSON.stringify({variant_id:button.dataset.variantId,quantity:1})});
+                    setCartRows(rows);apiCartEnabled=true;renderCart();showToast('Đã thêm sản phẩm vào giỏ!',true);await renderSuggested();
+                }catch(error){if(error.status===401)location.href='DangNhap.html';else showToast(error.message,false);button.disabled=false;}
+                finally{addingSuggestion=false;}
+            });
 
             // ============ INIT ============
-            renderCart();
-            renderSuggested();
-            renderAppliedCoupons();
+            loadApiCart().finally(() => {
+                renderCart();
+                renderSuggested();
+            });
 
             // Welcome toast
             window.addEventListener('load', () => {

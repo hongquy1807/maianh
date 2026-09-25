@@ -792,3 +792,11 @@
         }
 
         /* Overlay khi mở menu mobile */
+
+.checkout-btn { text-decoration: none; }
+.btn-add:disabled { opacity: .6; cursor: not-allowed; }
+
+#products { scroll-margin-top: 110px; }
+#productPagination { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:18px; margin:28px 0; }
+#productPagination a { padding:12px 20px; border-radius:24px; background:#ffe49b; color:#654635; font-weight:700; text-decoration:none; }
+#productPagination a:hover { background:#ffd363; }

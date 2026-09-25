@@ -29,3 +29,70 @@
   .product-blossom.side { font-size: 15px; }
   .main-image { padding: 18px; }
 }
+
+/* Static product card ornaments: cherry blossoms, teddy and five-petal yellow mai. */
+:is(#productGrid, .product-detail-page) .product-edge-icon,
+:is(#productGrid, .product-detail-page) .product-blossom,
+:is(#productGrid, .product-detail-page) .product-mai {
+  pointer-events: none;
+  user-select: none;
+  animation: none;
+  transition: none;
+}
+:is(#productGrid, .product-detail-page) .product-edge-icon { left: 1px; top: 36%; font-size: 22px; transform: rotate(-14deg); }
+:is(#productGrid, .product-detail-page) .product-blossom.top { top: 7px; left: calc(50% - 10px); font-size: 20px; }
+:is(#productGrid, .product-detail-page) .product-blossom.side { right: 1px; top: 57%; font-size: 19px; }
+:is(#productGrid, .product-detail-page) .product-blossom.bottom { bottom: 2px; left: 24%; font-size: 16px; }
+:is(#productGrid, .product-detail-page) .product-mai {
+  position: absolute;
+  z-index: 2;
+  left: 2px;
+  top: calc(36% + 24px);
+  width: 23px;
+  height: 23px;
+  background:
+    radial-gradient(circle at 50% 51%, #d78717 0 12%, transparent 15%),
+    radial-gradient(ellipse at 50% 22%, #ffdb48 0 23%, transparent 26%),
+    radial-gradient(ellipse at 77% 43%, #ffd02e 0 23%, transparent 26%),
+    radial-gradient(ellipse at 67% 76%, #ffdf55 0 23%, transparent 26%),
+    radial-gradient(ellipse at 32% 76%, #ffd02e 0 23%, transparent 26%),
+    radial-gradient(ellipse at 22% 43%, #ffdf55 0 23%, transparent 26%);
+  transform: rotate(-12deg);
+  filter: drop-shadow(0 2px 2px #e5b34c33);
+}
+:is(#productGrid, .product-detail-page) .product-card:nth-child(even) .product-blossom.top { transform: rotate(-18deg); }
+:is(#productGrid, .product-detail-page) .product-card:nth-child(3n) .product-mai { transform: rotate(18deg); }
+@media (max-width: 600px) {
+  :is(#productGrid, .product-detail-page) .product-edge-icon { font-size: 17px; left: 0; }
+  :is(#productGrid, .product-detail-page) .product-blossom.top { font-size: 17px; left: calc(50% - 8px); }
+  :is(#productGrid, .product-detail-page) .product-blossom.side { font-size: 14px; right: 0; }
+  :is(#productGrid, .product-detail-page) .product-blossom.bottom { font-size: 13px; }
+  :is(#productGrid, .product-detail-page) .product-mai { width: 17px; height: 17px; left: 0; top: calc(36% + 19px); }
+}
+
+/* Detail gallery ornaments sit inside the frame, clear of the photograph. */
+.product-detail-page .main-image { padding: 32px; isolation: isolate; }
+.product-detail-page .main-image .detail-ornament,
+.product-detail-page .main-image .detail-mai {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  user-select: none;
+  animation: none;
+  transition: none;
+  line-height: 1;
+  filter: drop-shadow(0 2px 2px #dca7b333);
+}
+.product-detail-page .detail-sakura-top { top: 6px; left: calc(50% - 13px); font-size: 26px; transform: rotate(15deg); }
+.product-detail-page .detail-bear { top: 38%; left: 3px; font-size: 28px; transform: rotate(-14deg); }
+.product-detail-page .main-image .detail-mai { top: calc(38% + 32px); left: 4px; width: 25px; height: 25px; }
+.product-detail-page .detail-sakura-side { top: 65%; right: 3px; font-size: 26px; transform: rotate(22deg); }
+.product-detail-page .detail-sakura-bottom { bottom: 5px; left: 28%; font-size: 24px; transform: rotate(-12deg); }
+@media (max-width: 600px) {
+  .product-detail-page .main-image { padding: 24px; }
+  .product-detail-page .detail-sakura-top { font-size: 20px; top: 3px; left: calc(50% - 10px); }
+  .product-detail-page .detail-bear { font-size: 21px; left: 1px; }
+  .product-detail-page .main-image .detail-mai { width: 20px; height: 20px; left: 1px; top: calc(38% + 25px); }
+  .product-detail-page .detail-sakura-side { font-size: 20px; right: 1px; }
+  .product-detail-page .detail-sakura-bottom { font-size: 19px; bottom: 3px; }
+}

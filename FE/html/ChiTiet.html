@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gấu Nâu Mật Ong | Teddy Yêu Thương</title>
+    <title>Gấu Nâu Mật Ong | hongquy sờtore</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/ChiTiet.css">
@@ -14,7 +14,7 @@
     <script src="../js/page-links.js" defer></script>
     <link rel="stylesheet" href="../css/product-media.css">
 </head>
-<body>
+<body class="product-detail-page">
 
     <!-- TOP BAR -->
     <div class="top-bar">
@@ -43,6 +43,11 @@
         <!-- Gallery -->
         <div class="gallery">
             <div class="main-image">
+                <span class="detail-ornament detail-sakura-top" aria-hidden="true">🌸</span>
+                <span class="detail-ornament detail-bear" aria-hidden="true">🧸</span>
+                <span class="product-mai detail-mai" aria-hidden="true"></span>
+                <span class="detail-ornament detail-sakura-side" aria-hidden="true">🌸</span>
+                <span class="detail-ornament detail-sakura-bottom" aria-hidden="true">🌸</span>
                 <div class="discount-tag"><i class="fas fa-fire"></i> -17%</div>
                 <div class="main-emoji" id="mainEmoji"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" fetchpriority="high" width="736" height="980"></div>
             </div>
@@ -60,7 +65,7 @@
                 <i class="fas fa-fire"></i> Bán chạy nhất
             </div>
 
-            <h1 class="product-title">Gấu Nâu Mật Ong</h1>
+            <h1 class="product-title" id="productTitle">Gấu Nâu Mật Ong</h1>
 
             <div class="product-meta">
                 <div class="rating-box">
@@ -85,12 +90,12 @@
             </div>
 
             <div class="price-box">
-                <div class="current-price">350.000đ</div>
-                <div class="old-price">420.000đ</div>
-                <div class="save-tag">Tiết kiệm 70.000đ</div>
+                <div class="current-price" id="currentPrice">350.000đ</div>
+                <div class="old-price" id="oldPrice">420.000đ</div>
+                <div class="save-tag" id="saveTag">Tiết kiệm 70.000đ</div>
             </div>
 
-            <p class="product-desc">
+            <p class="product-desc" id="productDescription">
                 Chú gấu nâu mật ong với bộ lông nhung siêu mềm mịn, màu nâu vàng ấm áp như mật ong nguyên chất. 
                 Đôi mắt tròn đen láy, chiếc mũi nhỏ xinh và nụ cười thân thiện sẽ khiến bạn muốn ôm mãi không thôi. 
                 Đây là món quà hoàn hảo cho mọi lứa tuổi, đặc biệt là các bạn nhỏ và những ai yêu thích sự đáng yêu.
@@ -176,9 +181,9 @@
 
         <!-- Tab Mô tả -->
         <div class="tab-panel active" id="tab-desc">
-            <h3><i class="fas fa-heart"></i> Về chú gấu Nâu Mật Ong</h3>
-            <p>
-                Gấu Nâu Mật Ong là một trong những sản phẩm bán chạy nhất tại Teddy Yêu Thương. 
+            <h3><i class="fas fa-heart"></i> <span id="descriptionTitle">Về sản phẩm</span></h3>
+            <p id="descriptionContent">
+                Gấu Nâu Mật Ong là một trong những sản phẩm bán chạy nhất tại hongquy sờtore. 
                 Với bộ lông nhung cao cấp được nhập khẩu từ Hàn Quốc, chú gấu mang đến cảm giác 
                 vô cùng mềm mại và ấm áp khi chạm vào. Màu nâu vàng óng ánh như mật ong nguyên chất 
                 tạo nên vẻ ngoài ấm áp, thân thiện và dễ gần.
@@ -200,10 +205,10 @@
         <div class="tab-panel" id="tab-specs">
             <h3><i class="fas fa-list-check"></i> Thông số sản phẩm</h3>
             <ul class="spec-list">
-                <li><i class="fas fa-ruler"></i> <strong>Kích thước:</strong> <span>45cm</span></li>
+                <li><i class="fas fa-ruler"></i> <strong>Kích thước:</strong> <span id="specSize">45cm</span></li>
                 <li><i class="fas fa-weight-hanging"></i> <strong>Trọng lượng:</strong> <span>450g</span></li>
-                <li><i class="fas fa-palette"></i> <strong>Màu sắc:</strong> <span>Nâu mật ong</span></li>
-                <li><i class="fas fa-tshirt"></i> <strong>Chất liệu:</strong> <span>Nhung Hàn Quốc</span></li>
+                <li><i class="fas fa-palette"></i> <strong>Màu sắc:</strong> <span id="specColor">Nâu mật ong</span></li>
+                <li><i class="fas fa-tshirt"></i> <strong>Chất liệu:</strong> <span id="specMaterial">Nhung Hàn Quốc</span></li>
                 <li><i class="fas fa-cloud"></i> <strong>Ruột:</strong> <span>Bông gòn 3 lớp</span></li>
                 <li><i class="fas fa-baby"></i> <strong>Độ tuổi:</strong> <span>Từ 3 tuổi</span></li>
                 <li><i class="fas fa-hand-sparkles"></i> <strong>Vệ sinh:</strong> <span>Giặt tay/máy nhẹ</span></li>
@@ -312,35 +317,7 @@
             </div>
         </div>
 
-        <div class="related-grid" id="relatedGrid">
-            <div class="product-card" data-id="r1" data-name="Gấu Hồng Kẹo Ngọt" data-price="390000">
-                <span class="product-edge-icon" aria-hidden="true">🧸🌸</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
-                <div class="product-name">Gấu Hồng Kẹo Ngọt</div>
-                <div class="product-price">390.000đ <small>450.000đ</small></div>
-                <button class="btn-add-sm" data-id="r1"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
-            </div>
-
-            <div class="product-card" data-id="r2" data-name="Gấu Vàng Nắng Mai" data-price="420000">
-                <span class="product-edge-icon" aria-hidden="true">🧸☀️</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
-                <div class="product-name">Gấu Vàng Nắng Mai</div>
-                <div class="product-price">420.000đ</div>
-                <button class="btn-add-sm" data-id="r2"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
-            </div>
-
-            <div class="product-card" data-id="r3" data-name="Gấu Kem Dâu" data-price="370000">
-                <span class="product-edge-icon" aria-hidden="true">🧸🍓</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
-                <div class="product-name">Gấu Bông Kem Dâu</div>
-                <div class="product-price">370.000đ</div>
-                <button class="btn-add-sm" data-id="r3"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
-            </div>
-
-            <div class="product-card" data-id="r4" data-name="Gấu Nơ Hồng" data-price="410000">
-                <span class="product-edge-icon" aria-hidden="true">🧸🎀</span><span class="product-blossom top" aria-hidden="true">🌸</span><span class="product-blossom side" aria-hidden="true">🌸</span><span class="product-blossom bottom" aria-hidden="true">🌸</span><div class="product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
-                <div class="product-name">Gấu Nơ Hồng</div>
-                <div class="product-price">410.000đ</div>
-                <button class="btn-add-sm" data-id="r4"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
-            </div>
-        </div>
+        <div class="related-grid" id="relatedGrid" aria-live="polite"></div>
     </section>
 
     <!-- FOOTER -->
@@ -352,6 +329,7 @@
         <span id="toastMsg">Đã thêm vào giỏ hàng!</span>
     </div>
 
+    <script src="../js/product-api.js"></script>
     <script src="../js/ChiTiet.js"></script>
 </body>
 </html>

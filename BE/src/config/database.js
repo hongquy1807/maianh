@@ -1,4 +1,8 @@
 import mysql from 'mysql2/promise';
+import { loadEnvFile } from 'node:process';
+import { fileURLToPath } from 'node:url';
+
+loadEnvFile(fileURLToPath(new URL('../../.env', import.meta.url)));
 
 function integerEnv(name, fallback, max) {
   const value = Number(process.env[name] ?? fallback);

@@ -111,272 +111,6 @@
             // ============================================================
             // MODE 1: FLASHCARD
             // ============================================================
-            let fcFiltered = [...vocabulary];
-            let fcIndex = 0;
-            let fcFlipped = false;
-            let fcKnown = 0;
-            let fcUnknown = 0;
-
-            const flashcardEl = document.getElementById('flashcard');
-
-            function renderFlashcard() {
-                const word = fcFiltered[fcIndex];
-                if (!word) return;
-
-                document.getElementById('fcKorean').textContent = word.kr;
-                document.getElementById('fcRomanization').textContent = word.roman;
-                document.getElementById('fcVietnamese').textContent = word.vi;
-                document.getElementById('fcExampleKr').textContent = word.exKr;
-                document.getElementById('fcExampleVi').textContent = word.exVi;
-                document.getElementById('fcCategory').innerHTML = `<i class="fas fa-tag"></i> ${word.catName}`;
-                document.getElementById('fcType').textContent = word.type;
-                document.getElementById('fcRoman').textContent = word.roman;
-
-                document.getElementById('fcCurrent').textContent = fcIndex + 1;
-                document.getElementById('fcTotal').textContent = fcFiltered.length;
-
-                const progress = ((fcIndex + 1) / fcFiltered.length) * 100;
-                document.getElementById('fcProgressBar').style.width = progress + '%';
-
-                // Reset flip
-                fcFlipped = false;
-                flashcardEl.classList.remove('flipped');
-
-                // Buttons
-                document.getElementById('fcPrev').disabled = fcIndex === 0;
-                document.getElementById('fcNext').disabled = fcIndex === fcFiltered.length - 1;
-            }
-
-            function flipCard() {
-                fcFlipped = !fcFlipped;
-                flashcardEl.classList.toggle('flipped', fcFlipped);
-            }
-
-            function nextCard() {
-                if (fcIndex < fcFiltered.length - 1) {
-                    fcIndex++;
-                    renderFlashcard();
-                } else {
-                    showToast('🎉 Bạn đã hoàn thành bộ thẻ này!', true);
-                }
-            }
-
-            function prevCard() {
-                if (fcIndex > 0) {
-                    fcIndex--;
-                    renderFlashcard();
-                }
-            }
-
-            function markKnown() {
-                fcKnown++;
-                document.getElementById('statKnown').textContent = fcKnown;
-                showToast('✅ Đã đánh dấu đã biết!', true);
-                nextCard();
-            }
-
-            function markUnknown() {
-                fcUnknown++;
-                document.getElementById('statUnknown').textContent = fcUnknown;
-                showToast('📝 Đã đánh dấu chưa biết!', false);
-                nextCard();
-            }
-
-            flashcardEl.addEventListener('click', flipCard);
-            document.getElementById('fcFlip').addEventListener('click', (e) => { e.stopPropagation(); flipCard(); });
-            document.getElementById('fcNext').addEventListener('click', nextCard);
-            document.getElementById('fcPrev').addEventListener('click', prevCard);
-            document.getElementById('fcKnown').addEventListener('click', markKnown);
-            document.getElementById('fcUnknown').addEventListener('click', markUnknown);
-
-            // Keyboard shortcuts cho flashcard
-            document.addEventListener('keydown', (e) => {
-                const panel = document.getElementById('panel-flashcard');
-                if (!panel.classList.contains('active')) return;
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-                if (e.code === 'Space') { e.preventDefault(); flipCard(); }
-                else if (e.code === 'ArrowRight') nextCard();
-                else if (e.code === 'ArrowLeft') prevCard();
-                else if (e.key === 'k' || e.key === 'K') markKnown();
-                else if (e.key === 'j' || e.key === 'J') markUnknown();
-            });
-
-            // Filter flashcard
-            document.querySelectorAll('#panel-flashcard .filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('#panel-flashcard .filter-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const cat = this.dataset.cat;
-                    fcFiltered = cat === 'all' ? [...vocabulary] : vocabulary.filter(v => v.cat === cat);
-                    fcFiltered = shuffleArray(fcFiltered);
-                    fcIndex = 0;
-                    renderFlashcard();
-                    showToast(`Đã lọc: ${this.textContent} (${fcFiltered.length} thẻ)`, true);
-                });
-            });
-
-            // Init flashcard
-            fcFiltered = shuffleArray(fcFiltered);
-            renderFlashcard();
-
-            // ============================================================
-            // MODE 2: TYPING
-            // ============================================================
-            let typingFiltered = [...vocabulary];
-            let typingIndex = 0;
-            let typingCorrectCount = 0;
-            let typingWrongCount = 0;
-            let typingHintShown = false;
-
-            function normalize(str) {
-                return str.toLowerCase()
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                    .replace(/[.,!?;:]/g, '')
-                    .replace(/\s+/g, ' ')
-                    .trim();
-            }
-
-            function renderTyping() {
-                const word = typingFiltered[typingIndex];
-                if (!word) return;
-
-                document.getElementById('typingKorean').textContent = word.kr;
-                document.getElementById('typingRoman').textContent = word.roman;
-                document.getElementById('typingCurrent').textContent = typingIndex + 1;
-                document.getElementById('typingTotal').textContent = typingFiltered.length;
-
-                const progress = ((typingIndex + 1) / typingFiltered.length) * 100;
-                document.getElementById('typingProgressBar').style.width = progress + '%';
-
-                // Reset input
-                const input = document.getElementById('typingInput');
-                input.value = '';
-                input.className = 'typing-input';
-                input.focus();
-
-                document.getElementById('typingFeedback').classList.remove('show');
-                typingHintShown = false;
-            }
-
-            function checkTyping() {
-                const word = typingFiltered[typingIndex];
-                const input = document.getElementById('typingInput');
-                const answer = normalize(input.value);
-
-                if (!answer) {
-                    showToast('Vui lòng nhập câu trả lời!', false);
-                    return;
-                }
-
-                const correct = normalize(word.vi);
-
-                if (answer === correct) {
-                    input.classList.add('correct');
-                    typingCorrectCount++;
-                    document.getElementById('typingCorrect').textContent = typingCorrectCount;
-                    showFeedback(true, word);
-                    showToast('✅ Chính xác!', true);
-                    setTimeout(() => nextTyping(), 1500);
-                } else {
-                    input.classList.add('incorrect');
-                    typingWrongCount++;
-                    document.getElementById('typingWrong').textContent = typingWrongCount;
-                    showFeedback(false, word);
-                    showToast('❌ Chưa đúng, thử lại nhé!', false);
-                    setTimeout(() => {
-                        input.classList.remove('incorrect');
-                    }, 800);
-                }
-
-                updateTypingStats();
-            }
-
-            function showFeedback(isCorrect, word) {
-                const fb = document.getElementById('typingFeedback');
-                fb.classList.remove('correct', 'incorrect');
-                fb.classList.add('show', isCorrect ? 'correct' : 'incorrect');
-                document.getElementById('fbIcon').textContent = isCorrect ? '✅' : '❌';
-                document.getElementById('fbText').textContent = isCorrect
-                    ? 'Chính xác! Tuyệt vời!'
-                    : `Chưa đúng. Đáp án là:`;
-                document.getElementById('fbAnswer').textContent = `${word.kr} = ${word.vi}`;
-            }
-
-            function nextTyping() {
-                if (typingIndex < typingFiltered.length - 1) {
-                    typingIndex++;
-                    renderTyping();
-                } else {
-                    showToast('🎉 Bạn đã hoàn thành! Xem kết quả bên phải!', true);
-                }
-            }
-
-            function skipTyping() {
-                const word = typingFiltered[typingIndex];
-                showFeedback(false, word);
-                typingWrongCount++;
-                document.getElementById('typingWrong').textContent = typingWrongCount;
-                updateTypingStats();
-                setTimeout(() => nextTyping(), 1500);
-            }
-
-            function showHint() {
-                const word = typingFiltered[typingIndex];
-                if (!typingHintShown) {
-                    showToast(`💡 Gợi ý: Bắt đầu bằng "${word.vi.substring(0, 3)}..."`, true);
-                    typingHintShown = true;
-                } else {
-                    showToast(`💡 Đáp án: ${word.vi}`, true);
-                }
-            }
-
-            function updateTypingStats() {
-                const total = typingCorrectCount + typingWrongCount;
-                document.getElementById('typingDone').textContent = total;
-                const acc = total === 0 ? 0 : Math.round((typingCorrectCount / total) * 100);
-                document.getElementById('typingAccuracy').textContent = acc + '%';
-            }
-
-            document.getElementById('typingCheck').addEventListener('click', checkTyping);
-            document.getElementById('typingHint').addEventListener('click', showHint);
-            document.getElementById('typingSkip').addEventListener('click', skipTyping);
-
-            document.getElementById('typingInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') checkTyping();
-            });
-
-            document.addEventListener('keydown', (e) => {
-                const panel = document.getElementById('panel-typing');
-                if (!panel.classList.contains('active')) return;
-                if (e.ctrlKey && e.key === 'h') { e.preventDefault(); showHint(); }
-            });
-
-            // Filter typing
-            document.querySelectorAll('#panel-typing .filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('#panel-typing .filter-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const cat = this.dataset.cat;
-                    typingFiltered = cat === 'all' ? [...vocabulary] : vocabulary.filter(v => v.cat === cat);
-                    typingFiltered = shuffleArray(typingFiltered);
-                    typingIndex = 0;
-                    typingCorrectCount = 0;
-                    typingWrongCount = 0;
-                    document.getElementById('typingCorrect').textContent = '0';
-                    document.getElementById('typingWrong').textContent = '0';
-                    document.getElementById('typingDone').textContent = '0';
-                    document.getElementById('typingAccuracy').textContent = '0%';
-                    renderTyping();
-                    showToast(`Đã lọc: ${this.textContent} (${typingFiltered.length} từ)`, true);
-                });
-            });
-
-            renderTyping();
-
-            // ============================================================
-            // MODE 3: CHATBOT
-            // ============================================================
             let chatLang = 'vi';
             let chatMsgCount = 0;
             let chatStartTime = Date.now();
@@ -624,7 +358,7 @@
 
             function initChat() {
                 addMessage('bot',
-                    `안녕하세요! Xin chào bạn! 👋<br>Mình là chatbot Hàn Ngữ Teddy. Bạn có thể:<br>
+                    `안녕하세요! Xin chào bạn! 👋<br>Mình là chatbot Hàn Ngữ hongquy sờtore. Bạn có thể:<br>
                     • Gõ <strong>tiếng Việt</strong> để dịch sang tiếng Hàn<br>
                     • Gõ <strong>tiếng Hàn</strong> để dịch ngược lại<br>
                     Hãy thử ngay nhé!`,
@@ -646,8 +380,69 @@
             // ============ WELCOME ============
             window.addEventListener('load', () => {
                 setTimeout(() => {
-                    showToast('Chào mừng bạn đến với Hàn Ngữ Teddy! 🇰🇷', true);
+                    showToast('Chào mừng bạn đến với Hàn Ngữ hongquy sờtore! 🇰🇷', true);
                 }, 600);
             });
 
+
+            // Server-managed TOPIK learning and wallet rewards.
+            const el=id=>document.getElementById(id);
+            const sessions={flashcard:null,typing:null};let learningBusy=false,pendingFlash=null,pendingTyping=null;
+            async function learn(path,body){
+                const r=await fetch('/api/korea'+path,{method:body?'POST':'GET',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Requested-With':'maianh-web'},...(body?{body:JSON.stringify(body)}:{})});
+                const result=await r.json();if(!r.ok){if(r.status===401)throw new Error('Vui lòng đăng nhập để học và nhận thưởng.');throw new Error(result.error||'Không thể tải bài học.');}return result.data;
+            }
+            const prize=document.createElement('dialog');prize.className='korea-prize';prize.setAttribute('aria-labelledby','koreaPrizeTitle');prize.innerHTML='<div aria-hidden="true">🌸 🧸 🌼</div><h2 id="koreaPrizeTitle">Bạn giỏi quá! 🎉</h2><p>Đã hoàn thành tất cả thẻ trong lượt học.</p><strong>+50.000đ</strong><p>Phần thưởng đã được cộng vào tài khoản. Tiếp tục phát huy nhé!</p><button type="button">Tuyệt vời!</button>';document.body.append(prize);prize.querySelector('button').onclick=()=>prize.close();
+            const wallet=document.createElement('p');wallet.className='learning-wallet';wallet.textContent='Chọn TOPIK để bắt đầu. Mỗi lượt tối đa 50 thẻ ngẫu nhiên. Lật hết thẻ: +50.000đ. Gõ đúng: +10.000đ, sai: −10.000đ; cần số dư từ 10.000đ.';document.querySelector('.mode-tabs').after(wallet);
+            function balance(s){wallet.textContent='Số dư: '+Number(s.cash).toLocaleString('vi-VN')+'đ · Lật hết thẻ +50.000đ · Gõ đúng +10.000đ / sai −10.000đ';}
+            function paintFlash(s){
+                balance(s);pendingFlash=null;el('flashcard').classList.remove('flipped');
+                el('fcCurrent').textContent=s.completed?s.total:s.position+1;el('fcTotal').textContent=s.total;el('statTotal').textContent=s.total;el('statKnown').textContent=s.position;el('statUnknown').textContent=s.total-s.position;el('statStreak').textContent='50K';el('fcProgressBar').style.width=(s.position/s.total*100)+'%';
+                const w=s.word||{};for(const [id,key] of [['fcKorean','korean'],['fcRomanization','romanization'],['fcVietnamese','vietnamese'],['fcExampleKr','example_ko'],['fcExampleVi','example_vi'],['fcCategory','category_name'],['fcType','word_type'],['fcRoman','romanization']])el(id).textContent=w[key]||'';
+                if(s.completed)el('fcKorean').textContent='Hoàn thành!';
+                el('fcNext').disabled=true;el('fcFlip').disabled=s.completed;
+            }
+            function paintTyping(s){el('typingSkip').disabled=s.completed;balance(s);pendingTyping=null;el('typingCurrent').textContent=s.completed?s.total:s.position+1;el('typingTotal').textContent=s.total;el('typingKorean').textContent=s.word?.vietnamese||'Hoàn thành lượt luyện gõ!';el('typingRoman').textContent='';el('typingInput').value='';el('typingInput').disabled=s.completed;el('typingCheck').disabled=s.completed;el('typingCheck').textContent='Kiểm tra';el('typingFeedback').classList.remove('show');el('typingCorrect').textContent=s.correct;el('typingWrong').textContent=s.wrong;el('typingDone').textContent=s.correct+s.wrong;el('typingAccuracy').textContent=(s.correct+s.wrong)?Math.round(s.correct/(s.correct+s.wrong)*100)+'%':'0%';el('typingProgressBar').style.width=s.position/s.total*100+'%';}
+            async function startLearning(mode,id,button){
+                if(learningBusy)return;learningBusy=true;
+                try{const s=await learn('/sessions',{mode,category_id:id});sessions[mode]=s;document.querySelectorAll('#panel-'+mode+' [data-topik]').forEach(b=>b.classList.toggle('active',b===button));mode==='flashcard'?paintFlash(s):paintTyping(s);}
+                catch(e){showToast(e.message,false);}finally{learningBusy=false;}
+            }
+            async function flipLearning(){
+                const s=sessions.flashcard;if(!s||s.completed||learningBusy)return;
+                if(pendingFlash){el('flashcard').classList.toggle('flipped');return;}
+                learningBusy=true;
+                try{pendingFlash=await learn('/sessions/'+s.id+'/answer',{index:s.position});el('flashcard').classList.add('flipped');balance(pendingFlash);el('fcNext').disabled=false;el('statKnown').textContent=pendingFlash.position;el('statUnknown').textContent=pendingFlash.total-pendingFlash.position;el('fcProgressBar').style.width=pendingFlash.position/pendingFlash.total*100+'%';if(pendingFlash.completed&&!pendingFlash.replayed){prize.showModal();window.dispatchEvent(new Event('notifications-updated'));}}
+                catch(e){showToast(e.message,false);}finally{learningBusy=false;}
+            }
+            el('flashcard').onclick=flipLearning;el('flashcard').tabIndex=0;el('flashcard').setAttribute('role','button');el('flashcard').setAttribute('aria-label','Lật thẻ');el('flashcard').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flipLearning();}};
+            el('fcFlip').onclick=flipLearning;el('fcNext').onclick=()=>{if(pendingFlash&&!learningBusy){sessions.flashcard=pendingFlash;paintFlash(pendingFlash);}};
+            ['fcPrev','fcKnown','fcUnknown','typingHint'].forEach(id=>el(id).hidden=true);
+            el('typingSkip').hidden=false;el('typingSkip').disabled=true;el('typingSkip').textContent='Đổi câu';el('typingSkip').title='Bỏ qua câu hiện tại, không cộng hoặc trừ tiền';
+            el('typingSkip').onclick=async()=>{
+                if(learningBusy)return;
+                if(pendingTyping){sessions.typing=pendingTyping;paintTyping(pendingTyping);return;}
+                const s=sessions.typing;if(!s||s.completed)return;
+                learningBusy=true;el('typingSkip').disabled=true;el('typingCheck').disabled=true;
+                try{const next=await learn('/sessions/'+s.id+'/skip',{index:s.position});sessions.typing=next;paintTyping(next);showToast('Đã đổi câu, số dư không thay đổi.',true);}
+                catch(e){showToast(e.message,false);}finally{learningBusy=false;el('typingSkip').disabled=Boolean(sessions.typing?.completed);el('typingCheck').disabled=Boolean(sessions.typing?.completed);}
+            };
+            el('typingCheck').onclick=async()=>{
+                if(learningBusy)return;if(pendingTyping){sessions.typing=pendingTyping;paintTyping(pendingTyping);return;}
+                const s=sessions.typing,answer=el('typingInput').value.trim();if(!s||s.completed)return;if(!answer)return showToast('Hãy nhập đáp án tiếng Hàn.',false);
+                learningBusy=true;el('typingCheck').disabled=true;
+                try{pendingTyping=await learn('/sessions/'+s.id+'/answer',{index:s.position,answer});balance(pendingTyping);const r=pendingTyping.result;el('typingFeedback').className='typing-feedback show '+(r.correct?'correct':'wrong');el('fbIcon').textContent=r.correct?'✅':'❌';el('fbText').textContent=r.correct?'Chính xác! +10.000đ':'Chưa đúng! −10.000đ';el('fbAnswer').textContent='Đáp án: '+r.answer;el('typingInput').disabled=true;el('typingCheck').textContent='Tiếp tục';el('typingCorrect').textContent=pendingTyping.correct;el('typingWrong').textContent=pendingTyping.wrong;}
+                catch(e){showToast(e.message,false);}finally{learningBusy=false;el('typingCheck').disabled=false;}
+            };
+            el('typingInput').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();el('typingCheck').click();}};
+            document.querySelector('.typing-prompt-label').textContent='Nhìn tiếng Việt → Gõ tiếng Hàn';el('typingInput').placeholder='Nhập tiếng Hàn...';el('typingInput').maxLength=255;
+            el('fcKorean').textContent='Chọn TOPIK';el('fcRomanization').textContent='';el('typingKorean').textContent='Chọn TOPIK để bắt đầu';el('typingRoman').textContent='';el('typingCheck').disabled=true;el('fcFlip').disabled=true;el('fcNext').disabled=true;
+            ['fcCurrent','fcTotal','statKnown','statUnknown','statTotal','typingCurrent','typingTotal'].forEach(id=>el(id).textContent='0');el('statStreak').textContent='50K';
+            learn('/topics').then(topics=>{
+                for(const mode of ['flashcard','typing']){
+                    const bar=document.querySelector('#panel-'+mode+' .filter-bar');bar.replaceChildren();const label=document.createElement('span');label.textContent='Chủ đề TOPIK:';bar.append(label);
+                    for(const topic of topics){const button=document.createElement('button');button.className='filter-btn';button.dataset.topik=topic.id;button.textContent=topic.code.toUpperCase()+' · '+(mode==='flashcard'?Math.min(50,Number(topic.word_count)):topic.word_count)+' từ';button.disabled=!Number(topic.word_count);button.onclick=()=>startLearning(mode,topic.id,button);bar.append(button);}
+                    if(!topics.length)bar.append('Chưa có dữ liệu TOPIK.');
+                }
+            }).catch(e=>showToast(e.message,false));
         })();

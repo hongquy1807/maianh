@@ -1,0 +1,96 @@
+import test,{after} from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID,randomBytes} from 'node:crypto';
+import {unlink,readFile} from 'node:fs/promises';
+import app from '../src/app.js';
+import {pool} from '../src/config/database.js';
+import {hashToken} from '../src/lib/passwords.js';
+after(()=>pool.end());
+test('news publish, public reading, uploads and attachment ownership',async()=>{
+ const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+ const base=`http://127.0.0.1:${server.address().port}`,tag=randomUUID(),users=[],paths=[];let categoryId;
+ const token=randomBytes(32).toString('hex'),otherToken=randomBytes(32).toString('hex');
+ const headers={'Content-Type':'application/json','X-Requested-With':'maianh-web',Cookie:'maianh_session='+token};
+ const request=(path='',method='GET',body,h=headers)=>fetch(base+'/api/tintuc'+path,{method,headers:h,...(body===undefined?{}:{body:JSON.stringify(body)})});
+ try{
+  for(const [i,t] of [token,otherToken].entries()){
+   const [u]=await pool.execute('INSERT INTO users(email,password_hash,full_name) VALUES(?,?,?)',[tag+i+'@example.invalid','disabled','News user '+i]);users.push(u.insertId);
+   await pool.execute('INSERT INTO auth_sessions(user_id,token_hash,expires_at) VALUES(?,?,UTC_TIMESTAMP()+INTERVAL 1 HOUR)',[u.insertId,hashToken(t)]);
+  }
+  const [c]=await pool.execute('INSERT INTO post_categories(slug,name) VALUES(?,?)',['news-'+tag,'Test category']);categoryId=c.insertId;
+  assert.equal((await request('/categories','GET',undefined,{})).status,200);
+  const body={title:'Test <script> title',content:'Public content',category_id:categoryId,attachment_ids:[]};
+  assert.equal((await request('','POST',body,{})).status,401);
+  assert.equal((await request('','POST',body,{'Content-Type':'application/json',Cookie:headers.Cookie})).status,403);
+  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
+  const upload=(name,bytes,h=headers)=>fetch(base+'/api/tintuc/uploads',{method:'POST',headers:{...h,'Content-Type':'application/octet-stream','X-File-Name':encodeURIComponent(name)},body:bytes});
+  assert.equal((await upload('bad.html',Buffer.from('<script>'))).status,400);
+  assert.equal((await upload('bad.png',Buffer.from('not an image'))).status,400);
+  assert.equal((await upload('../bad.png',png)).status,400);
+  const ids=[];
+  for(const [name,bytes,kind] of [['image.png',png,'image'],['document.pdf',Buffer.from('%PDF-1.4\n%%EOF'),'document'],['clip.mp4',Buffer.from([0,0,0,20,102,116,121,112,105,115,111,109,0,0,0,0,105,115,111,109]),'video']]){
+   const r=await upload(name,bytes);assert.equal(r.status,201,await r.clone().text());const f=(await r.json()).data;ids.push(f.id);paths.push(f.file_url);
+   assert.equal(f.kind,kind);assert.ok(f.file_url.startsWith('/uploads/tintuc/'));
+   assert.deepEqual(await readFile(new URL('../'+f.file_url.slice(1),import.meta.url)),bytes);
+   const served=await fetch(base+f.file_url);assert.equal(served.status,200);assert.equal(served.headers.get('x-content-type-options'),'nosniff');
+   if(kind==='document')assert.equal(served.headers.get('content-disposition'),'attachment');
+  }
+  const otherHeaders={...headers,Cookie:'maianh_session='+otherToken};
+  assert.equal((await request('','POST',{...body,attachment_ids:ids},otherHeaders)).status,400);
+  assert.equal((await request('/uploads/'+ids[0],'DELETE',undefined,otherHeaders)).status,404);
+  const created=await request('','POST',{...body,attachment_ids:ids});assert.equal(created.status,201,await created.clone().text());const post=(await created.json()).data;
+  const detailResponse=await request('/'+post.id,'GET',undefined,{});assert.equal(detailResponse.status,200);const detail=(await detailResponse.json()).data;
+  assert.equal(detail.title,body.title);assert.equal(String(detail.author_id),String(users[0]));assert.equal(detail.attachments.length,3);
+  assert.equal((await request('','POST',{...body,attachment_ids:ids})).status,400);
+  assert.equal((await request('/uploads/'+ids[0],'DELETE')).status,404);
+  const feed=(await (await request('?category=news-'+tag,'GET',undefined,{})).json()).data;assert.equal(feed.length,1);assert.equal(String(feed[0].id),String(post.id));
+  assert.equal((await request('/'+post.id+'/like','POST',undefined,{})).status,401);
+  assert.equal((await request('/'+post.id+'/comments','POST',{content:'Hi'},{})).status,401);
+  for(let i=0;i<2;i++)assert.equal((await request('/'+post.id+'/like','POST')).status,200);
+  const liked=(await (await request('/'+post.id)).json()).data;
+  assert.equal(Number(liked.like_count),1);assert.equal(liked.is_liked,true);
+  assert.equal((await (await request('/'+post.id,'GET',undefined,otherHeaders)).json()).data.is_liked,false);
+  const unliked=(await (await request('/'+post.id+'/like','DELETE')).json()).data;assert.equal(unliked.like_count,0);
+  assert.equal((await request('/'+post.id+'/comments','POST',{content:'  '})).status,400);
+  assert.equal((await request('/'+post.id+'/comments','POST',{content:'x'.repeat(2001)})).status,400);
+  assert.equal((await request('/'+post.id+'/comments','POST',{content:'Hello <script>test</script>'},otherHeaders)).status,201);
+  const comments=(await (await request('/'+post.id+'/comments','GET',undefined,{})).json());
+  assert.equal(comments.pagination.total,1);assert.equal(comments.data[0].author_name,'News user 1');assert.equal(comments.data[0].content,'Hello <script>test</script>');
+  const commentPath='/'+post.id+'/comments/'+comments.data[0].id;
+  assert.equal(comments.data[0].can_edit,false);
+  assert.equal((await (await request('/'+post.id+'/comments','GET',undefined,otherHeaders)).json()).data[0].can_edit,true);
+  assert.equal((await request(commentPath,'PATCH',{content:'edit'},{})).status,401);
+  assert.equal((await request(commentPath,'PATCH',{content:'edit'})).status,403);
+  assert.equal((await request(commentPath,'DELETE')).status,403);
+  assert.equal((await request(commentPath,'PATCH',{content:' '},otherHeaders)).status,400);
+  assert.equal((await request(commentPath,'PATCH',{content:'Edited by author'},otherHeaders)).status,200);
+  assert.equal((await (await request('/'+post.id+'/comments')).json()).data[0].content,'Edited by author');
+  const extra=await request('/'+post.id+'/comments','POST',{content:'Remove me'},otherHeaders);
+  const extraId=(await extra.json()).data.id;
+  assert.equal((await request('/'+post.id+'/comments/'+extraId,'DELETE',undefined,otherHeaders)).status,200);
+  assert.equal((await request('/'+post.id+'/comments/'+extraId,'DELETE',undefined,otherHeaders)).status,404);
+  await pool.execute("UPDATE comments SET status='hidden' WHERE post_id=?",[post.id]);
+  assert.equal((await (await request('/'+post.id+'/comments','GET',undefined,{})).json()).data.length,0);
+  const editBody={...body,title:'Updated title',content:'Updated content',attachment_ids:ids};
+  assert.equal((await request('/'+post.id,'PUT',editBody,{})).status,401);
+  assert.equal((await request('/'+post.id,'PUT',editBody,otherHeaders)).status,403);
+  assert.equal((await request('/'+post.id,'DELETE',undefined,otherHeaders)).status,403);
+  assert.equal((await request('/'+post.id,'PUT',editBody)).status,200);
+  const edited=(await (await request('/'+post.id)).json()).data;
+  assert.equal(edited.title,'Updated title');assert.equal(edited.content,'Updated content');assert.equal(edited.attachments.length,3);assert.equal(edited.can_edit,true);
+  assert.equal((await (await request('/'+post.id,'GET',undefined,otherHeaders)).json()).data.can_edit,false);
+  await pool.execute("UPDATE posts SET status='draft' WHERE id=?",[post.id]);assert.equal((await request('/'+post.id,'GET',undefined,{})).status,404);
+  assert.equal((await request('/'+post.id+'/like','POST')).status,404);
+  assert.equal((await request('/'+post.id+'/comments','GET',undefined,{})).status,404);
+  assert.equal((await request('/'+post.id+'/comments','POST',{content:'Hidden'})).status,404);
+  assert.equal((await request('/'+post.id,'DELETE')).status,200);
+  assert.equal((await request('/'+post.id,'GET',undefined,{})).status,404);
+  assert.equal((await request('/'+post.id,'DELETE')).status,404);
+  const temporary=await upload('temporary.png',png);const temp=(await temporary.json()).data;paths.push(temp.file_url);assert.equal((await request('/uploads/'+temp.id,'DELETE')).status,200);
+ }finally{
+  for(const id of users)await pool.execute('DELETE FROM users WHERE id=?',[id]);
+  if(categoryId)await pool.execute('DELETE FROM post_categories WHERE id=?',[categoryId]);
+  for(const path of paths)await unlink(new URL('../'+path.slice(1),import.meta.url)).catch(()=>{});
+  server.closeAllConnections();await new Promise(r=>server.close(r));
+ }
+});

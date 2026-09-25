@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập / Đăng Ký | Teddy Yêu Thương</title>
+    <title>Đăng Nhập / Đăng Ký | hongquy sờtore</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/DangNhap.css">
@@ -33,7 +33,7 @@
                 <div class="auth-logo">
                     <div class="auth-logo-icon">🧸</div>
                     <div class="auth-logo-text">
-                        <h1>Teddy <span>Yêu Thương</span></h1>
+                        <h1>hongquy <span>sờtore</span></h1>
                         <p>Soft • Cute • Lovely</p>
                     </div>
                 </div>
@@ -205,7 +205,7 @@
                     <input type="checkbox" id="agreeTerms" required>
                     <span class="checkbox-custom"></span>
                     <span class="terms-text">
-                        Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a> của Teddy Yêu Thương
+                        Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a> của hongquy sờtore
                     </span>
                 </label>
                 <div class="error-message dangnhap-inline-1" id="err-agreeTerms"><i class="fas fa-exclamation-circle"></i> <span></span></div>
@@ -220,13 +220,22 @@
                 </p>
             </form>
             <form class="auth-form" id="form-forgot">
-                <p class="recovery-description">Nhập email đã đăng ký để nhận liên kết đặt lại mật khẩu. Liên kết có hiệu lực trong 15 phút.</p>
+                <p class="recovery-description">Nhập email đã đăng ký để nhận mã OTP đặt lại mật khẩu. Mã có hiệu lực trong 10 phút.</p>
                 <div class="form-group">
                     <label class="form-label" for="forgotEmail">Email đăng ký</label>
                     <input class="form-input" id="forgotEmail" type="email" autocomplete="email" required maxlength="254">
                 </div>
-                <button type="submit" class="btn-submit"><span class="spinner"></span><span class="btn-text">Gửi liên kết khôi phục</span></button>
+                <button type="submit" class="btn-submit"><span class="spinner"></span><span class="btn-text">Gửi mã OTP</span></button>
                 <p class="switch-link"><a href="#" data-switch="login">Quay lại đăng nhập</a></p>
+            </form>
+            <form class="auth-form" id="form-otp">
+                <p class="recovery-description" id="otpDescription"></p>
+                <div class="form-group">
+                    <label class="form-label" for="otpCode">Mã xác thực gồm 6 chữ số</label>
+                    <input class="form-input" id="otpCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+                </div>
+                <button type="submit" class="btn-submit"><span class="spinner"></span><span class="btn-text">Xác thực OTP</span></button>
+                <p class="switch-link"><a href="#" id="requestNewOtp">Nhập lại thông tin / yêu cầu mã mới</a></p>
             </form>
             <form class="auth-form" id="form-reset">
                 <p class="recovery-description">Đặt mật khẩu mới cho tài khoản của bạn.</p>
@@ -239,7 +248,7 @@
                     <input class="form-input" id="resetConfirm" type="password" autocomplete="new-password" required minlength="8" maxlength="128">
                 </div>
                 <button type="submit" class="btn-submit"><span class="spinner"></span><span class="btn-text">Lưu mật khẩu mới</span></button>
-                <p class="switch-link"><a href="#" data-switch="forgot">Yêu cầu liên kết mới</a></p>
+                <p class="switch-link"><a href="#" data-switch="forgot">Yêu cầu mã OTP mới</a></p>
             </form>
         </div>
     </div>
@@ -252,6 +261,6 @@
         <span id="toastMsg">Thông báo!</span>
     </div>
 
-    <script src="../js/DangNhap.js"></script>
+    <script src="../js/DangNhap.js?v=20260926-otp"></script>
 </body>
 </html>

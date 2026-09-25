@@ -1104,3 +1104,7 @@ html body .chitiet-inline-9.chitiet-inline-9 { width: 1%; }
 html body .chitiet-inline-10.chitiet-inline-10 { width: 1%; }
 
 html body .chitiet-inline-11.chitiet-inline-11 { margin-top: 30px; }
+.related-link { text-decoration:none; color:var(--text-dark); }
+.related-category { font-size:.8rem; color:var(--text-medium); margin:5px 0 10px; }
+.related-no-image { display:grid; place-items:center; height:100%; font-size:14px; color:var(--text-medium); }
+#relatedGrid .btn-add-sm:disabled { opacity:.6; cursor:wait; }

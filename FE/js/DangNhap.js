@@ -1,6 +1,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   const status = $('authStatus');
+  let challengeId = null, otpPurpose = 'register';
   let resetToken = new URLSearchParams(location.hash.slice(1)).get('reset');
   if (resetToken) history.replaceState(null, '', location.pathname + location.search);
   function message(text, error = false) {
@@ -37,9 +38,11 @@
     });
   };
   bind('login', async () => {
-    await MaianhAuth.request('/login', { email: $('loginEmail').value.trim(), password: $('loginPassword').value, remember: $('rememberMe').checked });
-    message('Đăng nhập thành công. Đang về trang chủ…');
-    location.assign('Home.html');
+    const result = await MaianhAuth.request('/login', { email: $('loginEmail').value.trim(), password: $('loginPassword').value, remember: $('rememberMe').checked });
+    const role = result?.user?.role;
+    const redirectUrl = role === 'admin' ? '/admin/admin.html' : '/html/Home.html';
+    message(role === 'admin' ? 'Đăng nhập thành công. Đang vào trang quản trị…' : 'Đăng nhập thành công. Đang về trang chủ…');
+    location.assign(redirectUrl);
   });
   bind('register', async () => {
     if ($('regPassword').value !== $('regConfirmPassword').value) throw new Error('Mật khẩu xác nhận không khớp.');
@@ -48,11 +51,23 @@
       password: $('regPassword').value, agree_terms: $('agreeTerms').checked
     });
     $('loginEmail').value = $('regEmail').value.trim();
-    $('form-register').reset(); switchForm('login'); message(result.message); $('loginPassword').focus();
+    showOtp(result, 'register', $('regEmail').value.trim());
   });
   bind('forgot', async () => {
     const result = await MaianhAuth.request('/forgot-password', { email: $('forgotEmail').value.trim() });
-    message(result.message);
+    showOtp(result, 'reset', $('forgotEmail').value.trim());
+  });
+  function showOtp(result, purpose, email) {
+    challengeId = result.challenge_id; otpPurpose = purpose;
+    $('otpCode').value = ''; $('otpDescription').textContent = `Nhập OTP được gửi tới ${email}. Mã có hiệu lực 10 phút. Kiểm tra cả thư mục Spam nhé.`;
+    switchForm('otp'); message(result.message); $('otpCode').focus();
+  }
+  $('requestNewOtp').onclick = event => {event.preventDefault(); switchForm(otpPurpose === 'register' ? 'register' : 'forgot');};
+  bind('otp', async () => {
+    const result = await MaianhAuth.request('/verify-otp', {challenge_id: challengeId, code: $('otpCode').value.trim()});
+    challengeId = null; $('otpCode').value = '';
+    if (result.purpose === 'reset') {resetToken = result.token; switchForm('reset'); $('resetPassword').focus();}
+    else {$('form-register').reset(); switchForm('login'); message('Đăng ký thành công! Bạn có thể đăng nhập.'); $('loginPassword').focus();}
   });
   bind('reset', async () => {
     if ($('resetPassword').value !== $('resetConfirm').value) throw new Error('Mật khẩu xác nhận không khớp.');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ Hàng | Teddy Yêu Thương</title>
+    <title>Giỏ Hàng | hongquy sờtore</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/Cart.css">
@@ -20,7 +20,7 @@
     <div class="top-bar">
         <i class="fas fa-truck"></i> Miễn phí vận chuyển cho đơn từ 500K
         <i class="fas fa-heart"></i>
-        Nhập mã <strong>TEDDY20</strong> giảm thêm 20%
+        Nhập mã <strong>iuhongquy20</strong> giảm thêm 20%
         <i class="fas fa-gift"></i>
     </div>
 
@@ -106,16 +106,6 @@
             <div class="summary-card">
                 <div class="summary-title"><i class="fas fa-receipt"></i> Tóm tắt đơn hàng</div>
 
-                <!-- Coupon -->
-                <div class="coupon-form">
-                    <input type="text" class="coupon-input" id="couponInput" placeholder="Nhập mã giảm giá...">
-                    <button class="btn-coupon" id="applyCouponBtn">
-                        <i class="fas fa-tag"></i> Áp dụng
-                    </button>
-                </div>
-
-                <div class="applied-coupons" id="appliedCoupons"></div>
-
                 <!-- Free ship progress -->
                 <div class="freeship-box" id="freeshipBox">
                     <div class="freeship-text">
@@ -134,10 +124,6 @@
                     <span id="subtotalText">1.480.000đ</span>
                 </div>
 
-                <div class="summary-row discount cart-inline-4" id="discountRow">
-                    <span><i class="fas fa-tag"></i> Giảm giá</span>
-                    <span id="discountText">-0đ</span>
-                </div>
 
                 <div class="summary-row">
                     <span>Phí vận chuyển</span>
@@ -147,25 +133,6 @@
                 <div class="summary-row total">
                     <span>Tổng cộng</span>
                     <span id="totalText">1.480.000đ</span>
-                </div>
-
-                <!-- Payment methods -->
-                <div class="payment-methods" id="paymentMethods">
-                    <label class="payment-option active" data-method="cod">
-                        <span class="payment-radio"></span>
-                        <i class="fas fa-money-bill-wave payment-icon"></i>
-                        <span class="payment-name">Thanh toán khi nhận hàng (COD)</span>
-                    </label>
-                    <label class="payment-option" data-method="bank">
-                        <span class="payment-radio"></span>
-                        <i class="fas fa-university payment-icon"></i>
-                        <span class="payment-name">Chuyển khoản ngân hàng</span>
-                    </label>
-                    <label class="payment-option" data-method="wallet">
-                        <span class="payment-radio"></span>
-                        <i class="fas fa-wallet payment-icon"></i>
-                        <span class="payment-name">Ví điện tử (Momo, ZaloPay)</span>
-                    </label>
                 </div>
 
                 <button class="btn-checkout" id="checkoutBtn">

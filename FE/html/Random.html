@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vòng Xoay Đặc Sản Đà Nẵng | Teddy Yêu Thương</title>
+    <title>Vòng Xoay Đặc Sản Đà Nẵng | hongquy sờtore</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/Random.css">
@@ -43,7 +43,7 @@
             <p class="wheel-subtitle">Nhấn nút bên dưới để bắt đầu quay</p>
 
             <div class="wheel-wrap">
-                <div class="wheel-pointer" id="wheelPointer">▼</div>
+                <div class="wheel-pointer" id="wheelPointer"></div>
                 <div class="wheel" id="wheel">
                     <div class="wheel-center">🍜</div>
                 </div>
@@ -105,7 +105,7 @@
                     Nhấn "Quay ngay" để chọn món!
                 </div>
                 <div class="random-inline-1" id="resultContent">
-                    <div class="result-label">🎉 Bạn nên ăn</div>
+                    <div class="result-label">🎉 Bạn nên thử</div>
                     <div class="result-emoji" id="resultEmoji">🍜</div>
                     <div class="result-name" id="resultName">Mì Quảng</div>
                     <div class="result-cat" id="resultCat"><i class="fas fa-utensils"></i> Món ăn chính</div>
@@ -229,6 +229,28 @@
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMsg">Thông báo!</span>
+    </div>
+
+    <!-- RESULT MODAL -->
+    <div class="result-modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="modalResultName" aria-hidden="true">
+        <div class="result-modal-backdrop" data-close-result></div>
+        <div class="result-modal-box">
+            <div class="result-decor decor-sakura decor-sakura-one">🌸</div>
+            <div class="result-decor decor-sakura decor-sakura-two">🌸</div>
+            <div class="result-decor decor-mai decor-mai-one">🌼</div>
+            <div class="result-decor decor-mai decor-mai-two">🌼</div>
+            <div class="result-decor decor-bear">🧸</div>
+            <div class="result-decor decor-food decor-food-one">🍜</div>
+            <div class="result-decor decor-food decor-food-two">🍡</div>
+            <button class="result-modal-close" type="button" aria-label="Đóng kết quả" data-close-result>&times;</button>
+            <div class="result-modal-kicker">🎉 Vòng xoay đã chọn</div>
+            <div class="result-modal-emoji" id="modalResultEmoji">🍜</div>
+            <p class="result-modal-question">Hôm nay nên thử món nào?</p>
+            <h2 class="result-modal-name" id="modalResultName">Mì Quảng</h2>
+            <div class="result-modal-cat" id="modalResultCat"><i class="fas fa-utensils"></i> Món ăn chính</div>
+            <p class="result-modal-note">Ăn ngon nhé, chúc bạn có một bữa thật vui! 💛</p>
+            <button class="result-modal-action" type="button" data-close-result><i class="fas fa-utensils"></i> Để mình thử món này</button>
+        </div>
     </div>
 
     <script src="../js/Random.js"></script>

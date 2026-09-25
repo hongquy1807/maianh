@@ -114,3 +114,36 @@ erDiagram
 Sơ đồ lược bớt các bảng phụ cho dễ đọc; SQL là định nghĩa đầy đủ. Quan hệ đơn có ít nhất một dòng phải được backend bảo đảm trong transaction.
 
 Tham chiếu MySQL: [CHECK constraints](https://dev.mysql.com/doc/refman/8.0/en/create-table-check-constraints.html), [foreign keys](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html), [Unicode](https://dev.mysql.com/doc/refman/8.0/en/charset-unicode-utf8mb4.html).
+
+
+### Tin tức và file đính kèm
+
+Chạy `DB/tintuc_attachments.sql` sau khi import database để thêm bảng `post_attachments` và các chủ đề mặc định. Migration không xóa bài viết hiện có.
+
+- `GET /api/tintuc/categories`: chủ đề và số bài công khai.
+- `GET /api/tintuc?category=chat&page=1&limit=10&sort=new`: bài viết công khai; sort hỗ trợ `new`, `old`, `pinned`.
+- `GET /api/tintuc/:id`: chi tiết bài viết công khai và file đính kèm.
+- `POST /api/tintuc/uploads`: đăng nhập, body là file nhị phân, Content-Type `application/octet-stream`, `X-File-Name` là tên file encodeURIComponent; trả về ID file.
+- `DELETE /api/tintuc/uploads/:id`: bỏ file của chính mình chưa gắn vào bài.
+- `POST /api/tintuc`: JSON `{title, content, category_id, attachment_ids: []}`; đăng nhập và `X-Requested-With: maianh-web` cho mọi thao tác ghi.
+
+File lưu trong `BE/uploads/tintuc`, database lưu URL `/uploads/tintuc/...`. Tối đa 10 file/bài, 25 MB/file. Hỗ trợ JPG/PNG/WebP, MP4/WebM, PDF/DOCX/XLSX/PPTX. File tải lên nhưng chưa đăng được giữ để thử lại hoặc bỏ trong form; chưa có tác vụ tự động dọn file bỏ dở.
+
+
+### Quà tặng số dư từ admin
+Chạy `DB/admin_customer_gifts.sql` để tạo lịch sử tặng tiền và khóa chống cộng trùng. API trong `BE/src/routes/admin/user.js`: GET `/api/admin/customers`, GET/PATCH `/api/admin/customers/:id`, POST `/api/admin/customers/:id/gifts` với `{amount: "50000", key: "UUID"}`. Số tiền là VND nguyên dương; số dư tối đa theo cột DECIMAL(15,2). Cộng tiền, lịch sử và thông báo thực hiện cùng transaction.
+
+
+### Học TOPIK có thưởng
+Chạy `DB/korea_sessions.sql` sau khi import database. API tại `/api/korea`: GET `/topics`, POST `/sessions` với `{mode: "flashcard" hoặc "typing", category_id}`, POST `/sessions/:id/answer` với `{index, answer}` (`answer` chỉ dùng cho gõ). Phiên học chứa toàn bộ từ đang bật trong nhóm topik1…topik6, thứ tự ngẫu nhiên và tiếp tục phiên chưa hoàn thành. Mỗi phiên lật đủ thẻ cộng 50.000đ đúng một lần; phiên mới sau hoàn thành có thể tiếp tục nhận thưởng. Gõ đúng cộng 10.000đ, sai trừ 10.000đ; cần đủ 10.000đ trước khi trả lời. So khớp NFC, bỏ khoảng trắng đầu/cuối và gộp khoảng trắng liên tiếp, giữ khoảng cách giữa các từ. Chấm và cập nhật ví cùng transaction; gửi lại cùng index chỉ trả kết quả đã lưu.
+
+Cập nhật TOPIK: lật thẻ chọn ngẫu nhiên tối đa 50 từ không trùng (nếu nhóm ít hơn 50 thì dùng toàn bộ); phiên lật cũ hơn 50 từ được đóng không thưởng khi chọn lại TOPIK và tạo bộ mới. POST `/api/korea/sessions/:id/skip` với `{index}` dành cho luyện gõ: bỏ qua câu, không tính đúng/sai và không cộng/trừ tiền.
+
+
+### Email OTP (đăng ký và quên mật khẩu)
+Chạy `DB/auth_otp.sql` trước khi dùng API. SMTP được cấu hình riêng trong `BE/.env`; không đưa mật khẩu SMTP vào SQL hoặc frontend.
+- `POST /api/auth/register`: gửi thông tin đăng ký như trước, trả HTTP 202 và `challenge_id`. Chưa tạo tài khoản.
+- `POST /api/auth/forgot-password`: gửi `{email}`, trả `challenge_id` và thông báo chung.
+- `POST /api/auth/verify-otp`: gửi `{challenge_id, code}` (code là chuỗi 6 số). Đăng ký: tạo tài khoản customer; quên mật khẩu: trả token đặt lại mật khẩu.
+- `POST /api/auth/reset-password`: gửi `{token,password}`. Đổi mật khẩu và thu hồi các phiên đăng nhập.
+OTP có hiệu lực 10 phút, tối đa 5 lần sai, chỉ lưu mã băm. Form Đăng nhập đã tích hợp bước OTP; có thể quay lại để yêu cầu mã mới. Sau xác thực, các OTP cùng email và mục đích bị vô hiệu hóa. Yêu cầu mã bị giới hạn 5 lần/15 phút/IP mỗi luồng.

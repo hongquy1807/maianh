@@ -1,3 +1,4 @@
+import { startOrderLifecycle } from './services/order-lifecycle.js';
 import app from './app.js';
 import { checkDatabase, pool } from './config/database.js';
 
@@ -17,11 +18,13 @@ try {
   process.exit(1);
 }
 
+const stopOrderLifecycle=startOrderLifecycle();
 const server = app.listen(port, host, () => {
   console.log(`Server running at http://${host}:${port}`);
 });
 
 server.on('error', async (error) => {
+  stopOrderLifecycle();
   console.error(`Cannot start server: ${error.message}`);
   process.exitCode = 1;
   await pool.end();
@@ -31,6 +34,7 @@ let stopping = false;
 function shutdown() {
   if (stopping) return;
   stopping = true;
+  stopOrderLifecycle();
   const timeout = setTimeout(() => process.exit(1), 10000);
   timeout.unref();
   server.close(async () => { await pool.end(); clearTimeout(timeout); });

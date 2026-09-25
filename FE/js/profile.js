@@ -1,423 +1,161 @@
-(async function() {
-            let currentUser;
-            try { currentUser = await MaianhAuth.getSession(); }
-            catch { document.querySelector('.hero-name-row h1').textContent = 'Không tải được tài khoản. Vui lòng thử lại.'; return; }
-            if (!currentUser) { location.replace('DangNhap.html'); return; }
-            document.querySelector('.hero-name-row h1').textContent = currentUser.full_name;
-            const contacts = document.querySelectorAll('.hero-info > p > span');
-            contacts[0].textContent = currentUser.email;
-            contacts[1].textContent = currentUser.phone || 'Chưa có số điện thoại';
-            contacts[2].textContent = '';
-            for (const [field,value] of Object.entries({name:currentUser.full_name,email:currentUser.email,phone:currentUser.phone,birthday:'Chưa cập nhật',gender:'Chưa cập nhật',address:'Chưa cập nhật'})) {
-                document.querySelector(`[data-field="${field}"]`).textContent = value || 'Chưa cập nhật';
-            }
-            // ============ DỮ LIỆU MẪU ============
-            const orders = [
-                {
-                    id: 'ORD-2025-001',
-                    date: '15/01/2025',
-                    status: 'pending',
-                    statusText: 'Chờ xác nhận',
-                    statusIcon: 'fa-clock',
-                    products: [
-                        { name: 'Gấu Nâu Mật Ong', emoji: '🧸', size: '45cm', qty: 1, price: 350000 },
-                        { name: 'Gấu Hồng Kẹo Ngọt', emoji: '🧸🌸', size: '60cm', qty: 1, price: 390000 }
-                    ],
-                    total: 740000,
-                    payment: 'COD',
-                    timeline: [
-                        { text: 'Đơn hàng đã đặt', time: '15/01/2025 09:30', state: 'done' },
-                        { text: 'Đang chờ xác nhận', time: 'Đang xử lý', state: 'current' },
-                        { text: 'Xác nhận đơn hàng', time: '', state: '' },
-                        { text: 'Đang giao hàng', time: '', state: '' },
-                        { text: 'Giao hàng thành công', time: '', state: '' }
-                    ]
-                },
-                {
-                    id: 'ORD-2025-002',
-                    date: '10/01/2025',
-                    status: 'confirmed',
-                    statusText: 'Đã xác nhận',
-                    statusIcon: 'fa-check',
-                    products: [
-                        { name: 'Gấu Vàng Nắng Mai', emoji: '🧸☀️', size: '50cm', qty: 1, price: 420000 }
-                    ],
-                    total: 420000,
-                    payment: 'Chuyển khoản',
-                    timeline: [
-                        { text: 'Đơn hàng đã đặt', time: '10/01/2025 14:20', state: 'done' },
-                        { text: 'Đã xác nhận đơn hàng', time: '10/01/2025 15:00', state: 'done' },
-                        { text: 'Đang chuẩn bị hàng', time: 'Đang xử lý', state: 'current' },
-                        { text: 'Đang giao hàng', time: '', state: '' },
-                        { text: 'Giao hàng thành công', time: '', state: '' }
-                    ]
-                },
-                {
-                    id: 'ORD-2025-003',
-                    date: '05/01/2025',
-                    status: 'shipping',
-                    statusText: 'Đang giao',
-                    statusIcon: 'fa-truck',
-                    products: [
-                        { name: 'Gấu Kem Dâu', emoji: '🧸🍓', size: '35cm', qty: 2, price: 370000 },
-                        { name: 'Gấu Cún Con', emoji: '🧸🐶', size: '65cm', qty: 1, price: 450000 }
-                    ],
-                    total: 1190000,
-                    payment: 'Ví Momo',
-                    timeline: [
-                        { text: 'Đơn hàng đã đặt', time: '05/01/2025 10:15', state: 'done' },
-                        { text: 'Đã xác nhận đơn hàng', time: '05/01/2025 11:00', state: 'done' },
-                        { text: 'Đang chuẩn bị hàng', time: '05/01/2025 16:00', state: 'done' },
-                        { text: 'Đang giao hàng', time: '06/01/2025 08:30', state: 'current' },
-                        { text: 'Giao hàng thành công', time: 'Dự kiến 07/01/2025', state: '' }
-                    ]
-                },
-                {
-                    id: 'ORD-2024-156',
-                    date: '20/12/2024',
-                    status: 'delivered',
-                    statusText: 'Đã giao',
-                    statusIcon: 'fa-box-open',
-                    products: [
-                        { name: 'Gấu Mây Bồng Bềnh', emoji: '🧸☁️', size: '70cm', qty: 1, price: 520000 }
-                    ],
-                    total: 520000,
-                    payment: 'COD',
-                    timeline: [
-                        { text: 'Đơn hàng đã đặt', time: '20/12/2024 09:00', state: 'done' },
-                        { text: 'Đã xác nhận đơn hàng', time: '20/12/2024 10:00', state: 'done' },
-                        { text: 'Đang chuẩn bị hàng', time: '20/12/2024 15:00', state: 'done' },
-                        { text: 'Đang giao hàng', time: '21/12/2024 08:00', state: 'done' },
-                        { text: 'Giao hàng thành công', time: '22/12/2024 14:30', state: 'done' }
-                    ]
-                }
-            ];
+﻿(async () => {
+  const $ = s => document.querySelector(s);
+  const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const money = v => Number(v || 0).toLocaleString('vi-VN')+'đ';
+  let data, orders=[];
+  function notice(message) { $('#toastMsg').textContent=message; $('#toast').classList.add('show'); setTimeout(()=>$('#toast').classList.remove('show'),3500); }
+  async function api(path='',method='GET',body) {
+    const r=await fetch('/api/profile'+path,{method,credentials:'same-origin',headers:{'Content-Type':'application/json','X-Requested-With':'maianh-web'},...(body?{body:JSON.stringify(body)}:{})});
+    const result=await r.json();
+    if(r.status===401) location.replace('DangNhap.html');
+    if(!r.ok) throw new Error(result.error || 'Không thể tải hồ sơ.');
+    return result.data;
+  }
+  const addressText=a=>[a.address_line,a.ward,a.district,a.province].filter(Boolean).join(', ');
+  document.querySelectorAll('.sidebar-nav-item').forEach(button=>button.onclick=()=>{
+    document.querySelectorAll('.sidebar-nav-item,.tab-panel').forEach(el=>el.classList.remove('active'));
+    button.classList.add('active'); $('#tab-'+button.dataset.tab).classList.add('active');
+  });
+  function count(tab,n) { const el=$(`[data-tab="${tab}"] .nav-count`); if(el) el.textContent=n; }
+  function render() {
+    const u=data.user, address=data.addresses.find(a=>a.is_default) || data.addresses[0];
+    $('.hero-name-row h1').textContent=u.full_name;
+    const contacts=document.querySelectorAll('.hero-info > p > span');
+    [u.email,u.phone || 'Chưa có số điện thoại','Tham gia từ '+String(u.created_at).slice(0,10)].forEach((v,i)=>contacts[i].textContent=v);
+    $('.hero-rank').textContent='Thành viên';
+    $('.membership-card').hidden=true;
+    let balance=$('#heroBalance');
+    if(!balance) {balance=document.createElement('div');balance.id='heroBalance';$('.hero-stats-row').before(balance);}
+    balance.innerHTML=`<span class="balance-icon"><i class="fas fa-wallet" aria-hidden="true"></i></span><div class="balance-copy"><span class="balance-label">Số dư tài khoản</span><strong>${money(u.cash)}</strong></div>`;
+    document.querySelectorAll('.hero-stat strong').forEach((el,i)=>el.textContent=Number([data.stats.orders,data.stats.points,data.stats.wishlist][i]).toLocaleString('vi-VN'));
+    $('.info-grid').innerHTML=Object.entries({'Họ và tên':u.full_name,'Email':u.email,'Số điện thoại':u.phone || 'Chưa cập nhật','Ngày tham gia':String(u.created_at).slice(0,10),'Địa chỉ hồ sơ':u.address || 'Chưa cập nhật'}).map(([label,value])=>`<div class="info-field"><label>${label}</label><div class="info-value">${esc(value)}</div></div>`).join('');
+    const avatar=$('.hero-avatar');
+    avatar.replaceChildren();
+    if(u.avatar_url) { const img=document.createElement('img'); img.src=u.avatar_url; img.alt=u.full_name; img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%'; avatar.append(img); } else avatar.textContent='👤';
+    const avatarButton=document.createElement('button'); avatarButton.type='button';avatarButton.className='avatar-upload-button';avatarButton.title='Đổi ảnh đại diện';avatarButton.setAttribute('aria-label','Đổi ảnh đại diện');avatarButton.innerHTML='<i class="fas fa-camera" aria-hidden="true"></i>';avatarButton.onclick=()=>avatarInput.click();avatar.append(avatarButton);
+    $('#addressList').innerHTML=data.addresses.map(a=>`<div class="address-card ${a.is_default?'default':''}"><h4>${esc(a.recipient_name)} ${a.is_default?'· Mặc định':''}</h4><p>${esc(a.phone)}</p><p>${esc(addressText(a))}</p><div class="address-actions"><button class="btn-address" data-edit-address="${a.id}">Sửa</button>${a.is_default?'':`<button class="btn-address" data-default-address="${a.id}">Đặt mặc định</button>`}<button class="btn-address danger" data-delete-address="${a.id}">Xóa</button></div></div>`).join('')+'<button class="add-address-btn" id="addAddressBtn">+ Thêm địa chỉ mới</button>';
+    $('#addAddressBtn').onclick=()=>editAddress();
+    count('addresses',data.addresses.length); count('orders',data.stats.orders); count('wishlist',data.stats.wishlist);
+  }
+  const avatarInput=document.createElement('input');avatarInput.type='file';avatarInput.accept='image/jpeg,image/png,image/webp';avatarInput.hidden=true;document.body.append(avatarInput);
+  avatarInput.onchange=async()=>{
+    const file=avatarInput.files[0];avatarInput.value='';if(!file)return;
+    if(!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size>5*1024*1024 || !file.size)return notice('Chọn ảnh JPG, PNG hoặc WebP tối đa 5 MB.');
+    avatarInput.disabled=true;$('.avatar-upload-button').disabled=true;
+    try {const r=await fetch('/api/profile/avatar',{method:'POST',credentials:'same-origin',headers:{'Content-Type':file.type,'X-Requested-With':'maianh-web'},body:file});const result=await r.json();if(!r.ok)throw new Error(result.error || 'Upload ảnh thất bại.');data=result.data;render();notice('Đã cập nhật ảnh đại diện.');}catch(e){notice(e.message);}finally{avatarInput.disabled=false;$('.avatar-upload-button').disabled=false;}
+  };
+  const dialog=document.createElement('section'); dialog.className='profile-editor profile-inline-editor'; dialog.hidden=true;
+  function closeEditor(){dialog.hidden=true;$('.info-grid').hidden=false;}
 
-            const addresses = [
-                {
-                    id: 1,
-                    name: 'Mai Anh',
-                    phone: '0912 345 678',
-                    address: '123 Đường Yêu Thương, Phường Bến Nghé, Quận 1, TP.HCM',
-                    default: true
-                },
-                {
-                    id: 2,
-                    name: 'Mai Anh (Văn phòng)',
-                    phone: '0912 345 678',
-                    address: '456 Đường Nguyễn Huệ, Phường Bến Thành, Quận 1, TP.HCM',
-                    default: false
-                }
-            ];
-
-            const notifications = [
-                { icon: 'fa-truck', title: 'Đơn hàng ORD-2025-003 đang giao', desc: 'Đơn hàng của bạn đang trên đường đến. Dự kiến giao 07/01/2025.', time: '2 giờ trước', unread: true },
-                { icon: 'fa-gift', title: 'Bạn có 1 mã giảm giá mới!', desc: 'Mã TEDDY20 giảm 20% cho đơn hàng tiếp theo. Hạn dùng đến 31/01/2025.', time: '1 ngày trước', unread: true },
-                { icon: 'fa-crown', title: 'Chúc mừng! Bạn đã lên hạng Vàng', desc: 'Bạn cần thêm 520 điểm để lên hạng Kim Cương. Cố lên nhé!', time: '3 ngày trước', unread: false },
-                { icon: 'fa-heart', title: 'Gấu yêu thích của bạn đang giảm giá', desc: 'Gấu Nâu Mật Ong giảm 17% chỉ còn 350.000đ. Nhanh tay đặt hàng!', time: '5 ngày trước', unread: false }
-            ];
-
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            let toastTimeout;
-
-            function showToast(message, isSuccess = true) {
-                toastMsg.textContent = message;
-                const icon = toast.querySelector('i');
-                if (isSuccess) {
-                    icon.className = 'fas fa-check-circle';
-                    icon.style.color = '#f48fb1';
-                } else {
-                    icon.className = 'fas fa-exclamation-circle';
-                    icon.style.color = '#e6a800';
-                }
-                toast.classList.add('show');
-                clearTimeout(toastTimeout);
-                toastTimeout = setTimeout(() => toast.classList.remove('show'), 2400);
-            }
-
-            function formatPrice(price) {
-                return price.toLocaleString('vi-VN') + 'đ';
-            }
-
-            // ============ SIDEBAR NAVIGATION ============
-            document.querySelectorAll('.sidebar-nav-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const tab = this.dataset.tab;
-
-                    document.querySelectorAll('.sidebar-nav-item').forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-
-                    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-                    document.getElementById('tab-' + tab).classList.add('active');
-
-                    // Scroll to top of main
-                    window.scrollTo({ top: 250, behavior: 'smooth' });
-                });
-            });
-
-            // ============ RENDER ORDERS ============
-            function renderOrders(filter = 'all') {
-                const container = document.getElementById('ordersList');
-                const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter);
-
-                if (filtered.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-orders">
-                            <div class="icon">📦</div>
-                            <h3>Chưa có đơn hàng nào</h3>
-                            <p>Bạn chưa có đơn hàng trong trạng thái này.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = filtered.map(order => `
-                    <div class="order-card" data-order-id="${order.id}">
-                        <div class="order-header">
-                            <div class="order-code">
-                                <strong>#${order.id}</strong>
-                                <span><i class="fas fa-calendar"></i> ${order.date}</span>
-                                <span><i class="fas fa-credit-card"></i> ${order.payment}</span>
-                            </div>
-                            <span class="order-status ${order.status}">
-                                <i class="fas ${order.statusIcon}"></i> ${order.statusText}
-                            </span>
-                        </div>
-
-                        <div class="order-products">
-                            ${order.products.map(p => `
-                                <div class="order-product">
-                                    <div class="order-product-img"><img class="product-photo" src="/uploads/products/7e4cb1d424ce6a785ae006361dd1b130.jpg" alt="Gấu bông minh họa" loading="lazy" width="736" height="980"></div>
-                                    <div class="order-product-info">
-                                        <h4>${p.name}</h4>
-                                        <p>Size ${p.size} • SL: ${p.qty}</p>
-                                    </div>
-                                    <div class="order-product-price">${formatPrice(p.price * p.qty)}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-
-                        <div class="order-footer">
-                            <div class="order-total">
-                                <span>Tổng cộng:</span>
-                                <strong>${formatPrice(order.total)}</strong>
-                            </div>
-                            <div class="order-actions">
-                                <button class="btn-order outline toggle-timeline" data-id="${order.id}">
-                                    <i class="fas fa-stream"></i> Theo dõi
-                                </button>
-                                ${order.status === 'pending' ? `
-                                    <button class="btn-order danger cancel-order" data-id="${order.id}">
-                                        <i class="fas fa-times"></i> Huỷ đơn
-                                    </button>
-                                ` : ''}
-                                ${order.status === 'delivered' ? `
-                                    <button class="btn-order primary rebuy-order" data-id="${order.id}">
-                                        <i class="fas fa-redo"></i> Mua lại
-                                    </button>
-                                ` : ''}
-                                ${order.status === 'shipping' ? `
-                                    <button class="btn-order primary track-order" data-id="${order.id}">
-                                        <i class="fas fa-map-marked-alt"></i> Xem vị trí
-                                    </button>
-                                ` : ''}
-                            </div>
-                        </div>
-
-                        <div class="order-timeline" id="timeline-${order.id}">
-                            <div class="timeline-title"><i class="fas fa-route"></i> Trạng thái đơn hàng</div>
-                            <div class="timeline">
-                                ${order.timeline.map(t => `
-                                    <div class="timeline-item ${t.state}">
-                                        <div class="timeline-dot"></div>
-                                        <div class="timeline-content">
-                                            <h5>${t.text}</h5>
-                                            <p>${t.time}</p>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                bindOrderEvents();
-            }
-
-            function bindOrderEvents() {
-                // Toggle timeline
-                document.querySelectorAll('.toggle-timeline').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        const timeline = document.getElementById('timeline-' + id);
-                        if (timeline) {
-                            timeline.classList.toggle('show');
-                            this.innerHTML = timeline.classList.contains('show')
-                                ? '<i class="fas fa-chevron-up"></i> Ẩn'
-                                : '<i class="fas fa-stream"></i> Theo dõi';
-                        }
-                    });
-                });
-
-                // Cancel order
-                document.querySelectorAll('.cancel-order').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        showToast(`Đã gửi yêu cầu huỷ đơn #${id}. Chúng tôi sẽ liên hệ bạn sớm!`, true);
-                    });
-                });
-
-                // Rebuy
-                document.querySelectorAll('.rebuy-order').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        showToast('Đã thêm sản phẩm vào giỏ hàng! 🛒', true);
-                    });
-                });
-
-                // Track
-                document.querySelectorAll('.track-order').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        showToast('Đơn hàng đang trên đường giao, vui lòng chờ nhé! 🚚', true);
-                    });
-                });
-            }
-
-            // Order tabs
-            document.querySelectorAll('.order-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    renderOrders(this.dataset.status);
-                });
-            });
-
-            // ============ RENDER ADDRESSES ============
-            function renderAddresses() {
-                const container = document.getElementById('addressList');
-                container.innerHTML = addresses.map(addr => `
-                    <div class="address-card ${addr.default ? 'default' : ''}">
-                        ${addr.default ? '<span class="default-badge">MẶC ĐỊNH</span>' : ''}
-                        <div class="address-name"><i class="fas fa-user"></i> ${addr.name}</div>
-                        <div class="address-phone">${addr.phone}</div>
-                        <div class="address-detail">${addr.address}</div>
-                        <div class="address-actions">
-                            <button class="btn-address edit-address" data-id="${addr.id}">
-                                <i class="fas fa-edit"></i> Sửa
-                            </button>
-                            ${!addr.default ? `
-                                <button class="btn-address set-default" data-id="${addr.id}">
-                                    <i class="fas fa-check"></i> Mặc định
-                                </button>
-                                <button class="btn-address danger delete-address" data-id="${addr.id}">
-                                    <i class="fas fa-trash"></i> Xoá
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join('') + `
-                    <button class="add-address-btn" id="addAddressBtn">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>Thêm địa chỉ mới</span>
-                    </button>
-                `;
-
-                bindAddressEvents();
-            }
-
-            function bindAddressEvents() {
-                document.querySelectorAll('.set-default').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = parseInt(this.dataset.id);
-                        addresses.forEach(a => a.default = a.id === id);
-                        renderAddresses();
-                        showToast('Đã đặt làm địa chỉ mặc định!', true);
-                    });
-                });
-
-                document.querySelectorAll('.delete-address').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = parseInt(this.dataset.id);
-                        const idx = addresses.findIndex(a => a.id === id);
-                        if (idx !== -1) {
-                            addresses.splice(idx, 1);
-                            renderAddresses();
-                            showToast('Đã xoá địa chỉ!', true);
-                        }
-                    });
-                });
-
-                document.querySelectorAll('.edit-address').forEach(btn => {
-                    btn.addEventListener('click', () => showToast('Chức năng đang phát triển', false));
-                });
-
-                const addBtn = document.getElementById('addAddressBtn');
-                if (addBtn) {
-                    addBtn.addEventListener('click', () => showToast('Chức năng thêm địa chỉ đang phát triển', false));
-                }
-            }
-
-            // ============ RENDER NOTIFICATIONS ============
-            function renderNotifications() {
-                const container = document.getElementById('notificationsList');
-                container.innerHTML = notifications.map((n, idx) => `
-                    <div class="setting-row" style="cursor: pointer;" data-notif="${idx}">
-                        <div class="setting-info">
-                            <div class="setting-icon" style="${n.unread ? 'background: linear-gradient(135deg, var(--yellow-main), var(--pink-soft));' : ''}">
-                                <i class="fas ${n.icon}"></i>
-                            </div>
-                            <div class="setting-text">
-                                <h4>
-                                    ${n.unread ? '<span style="display: inline-block; width: 8px; height: 8px; background: var(--pink-deep); border-radius: 50%; margin-right: 6px;"></span>' : ''}
-                                    ${n.title}
-                                </h4>
-                                <p>${n.desc}</p>
-                                <p style="color: var(--yellow-deep); margin-top: 4px; font-size: 0.72rem;">
-                                    <i class="fas fa-clock"></i> ${n.time}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // ============ EDIT PROFILE ============
-            document.getElementById('editProfileBtn').addEventListener('click', () => {
-                document.querySelector('.sidebar-nav-item[data-tab="info"]').click();
-                showToast('Chỉnh sửa thông tin tại đây nhé!', true);
-            });
-
-            document.getElementById('editInfoBtn').addEventListener('click', () => {
-                showToast('Chế độ chỉnh sửa đang phát triển', false);
-            });
-
-            // Editable fields
-            document.querySelectorAll('.info-value.editable').forEach(field => {
-                field.addEventListener('click', function() {
-                    const fieldName = this.dataset.field;
-                    showToast(`Chỉnh sửa "${fieldName}" đang phát triển`, false);
-                });
-            });
-
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
-                const button = document.getElementById('logoutBtn');
-                button.disabled = true;
-                try { await MaianhAuth.request('/logout', {}); location.replace('DangNhap.html'); }
-                catch (error) { showToast(error.message, false); button.disabled = false; }
-            });
-
-            // ============ INIT ============
-            renderOrders('all');
-            renderAddresses();
-            renderNotifications();
-
-            // Welcome
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    showToast(`Chào mừng ${currentUser.full_name} quay trở lại!`, true);
-                }, 500);
-            });
-
-            window.dispatchEvent(new Event('hashchange'));
-        })();
+  function editor(title,fields,save,tab='info') {
+    $(`[data-tab="${tab}"]`).click();
+    $('#tab-'+tab+' .content-card').append(dialog);
+    $('.info-grid').hidden=tab==='info';
+    dialog.innerHTML=`<form><h2>${title}</h2>${fields}<p role="alert"></p><div class="address-actions"><button type="button" class="btn-address">Hủy</button><button type="submit" class="btn-address">Lưu thay đổi</button></div></form>`;
+    const form=dialog.querySelector('form'); let saving=false;
+    form.querySelector('[type="button"]').onclick=()=>closeEditor();
+    dialog.oncancel=e=>{if(saving)e.preventDefault();};
+    form.onsubmit=async e=>{e.preventDefault();if(saving)return;const values=Object.fromEntries(new FormData(form)); saving=true; [...form.elements].forEach(el=>el.disabled=true);try {data=await save(values);render();closeEditor();notice('Đã lưu thông tin.');}catch(e){form.querySelector('[role="alert"]').textContent=e.message;}finally{saving=false;[...form.elements].forEach(el=>el.disabled=false);}};
+    dialog.hidden=false;dialog.scrollIntoView({behavior:'smooth',block:'center'});dialog.querySelector('input')?.focus();
+  }
+  const input=(key,label,value='',max=120,type='text',required=true)=>`<label>${label}<input name="${key}" type="${type}" maxlength="${max}" value="${esc(value)}" ${required?'required':''}></label>`;
+  function editProfile(){editor('Chỉnh sửa hồ sơ',input('full_name','Họ và tên',data.user.full_name)+input('email','Email',data.user.email,255,'email')+input('phone','Số điện thoại',data.user.phone,24,'tel',false)+input('address','Địa chỉ hồ sơ',data.user.address,500,'text',false),v=>api('','PATCH',v));}
+  $('#editProfileBtn').onclick=editProfile; $('#editInfoBtn').onclick=editProfile;
+  function editAddress(a={}) {editor(a.id?'Sửa địa chỉ':'Thêm địa chỉ',input('recipient_name','Người nhận',a.recipient_name || data.user.full_name)+input('phone','Số điện thoại',a.phone || data.user.phone,24,'tel')+input('address_line','Số nhà, đường',a.address_line,255)+input('ward','Phường / xã',a.ward)+input('district','Quận / huyện',a.district,120,'text',false)+input('province','Tỉnh / thành phố',a.province)+`<label><input type="checkbox" name="is_default" ${a.is_default?'checked':''}> Địa chỉ mặc định</label>`,v=>api('/addresses'+(a.id?'/'+a.id:''),a.id?'PUT':'POST',{...v,is_default:v.is_default?1:0}),'addresses');}
+  $('#addressList').onclick=async e=>{
+    const button=e.target.closest('button'); if(!button)return;
+    const id=button.dataset.editAddress || button.dataset.defaultAddress || button.dataset.deleteAddress;
+    const a=data.addresses.find(a=>String(a.id)===id); if(!a)return;
+    if(button.dataset.editAddress)return editAddress(a);
+    if(button.dataset.deleteAddress && !confirm('Xóa địa chỉ này?'))return;
+    button.disabled=true;
+    try {data=button.dataset.deleteAddress?await api('/addresses/'+id,'DELETE'):await api('/addresses/'+id,'PUT',{...a,is_default:1});render();notice('Đã cập nhật địa chỉ.');}catch(e){notice(e.message);button.disabled=false;}
+  };
+  const statuses={pending:'Chờ xác nhận',confirmed:'Đã xác nhận',shipping:'Đang giao',delivered:'Đã giao',cancelled:'Đã hủy'};
+  let orderFilter='all';
+  function renderOrders() {
+    $('#ordersList').innerHTML=orders.filter(o=>orderFilter==='all'||o.status===orderFilter).map(o=>`<div class="order-card"><div class="order-header"><strong>#${esc(o.order_number)}</strong><span>${esc(statuses[o.status]||o.status)}</span></div><div class="order-footer"><span>${esc(o.created_at)}</span><strong>${money(o.total_amount)}</strong></div><div class="profile-order-actions"><button class="btn-address" data-view-order="${esc(o.id)}">Xem đơn hàng</button>${o.status==='pending'?`<button class="btn-address danger" data-cancel-order="${esc(o.id)}">Hủy đơn hàng</button>`:''}</div></div>`).join('') || '<p>Chưa có đơn hàng.</p>';
+    document.querySelectorAll('.order-tab').forEach(b=>b.querySelector('.tab-count').textContent=orders.filter(o=>b.dataset.status==='all'||o.status===b.dataset.status).length);
+  }
+  document.querySelectorAll('.order-tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.order-tab').forEach(el=>el.classList.remove('active'));b.classList.add('active');orderFilter=b.dataset.status;renderOrders();});
+  const orderModal=document.createElement('dialog');orderModal.className='profile-order-modal';orderModal.setAttribute('aria-labelledby','orderModalTitle');
+  orderModal.innerHTML='<div class="order-modal-heading"><h2 id="orderModalTitle">Chi tiết đơn hàng</h2><button type="button" aria-label="Đóng chi tiết đơn hàng">×</button></div><div class="order-modal-body"></div>';
+  document.body.append(orderModal);orderModal.querySelector('button').onclick=()=>orderModal.close();
+  orderModal.onclick=e=>{if(e.target===orderModal){const r=orderModal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)orderModal.close();}};
+  let detailRequest=0;
+  async function viewOrder(id) {
+    const request=++detailRequest,body=orderModal.querySelector('.order-modal-body');body.innerHTML='<p role="status">Đang tải đơn hàng…</p>';if(!orderModal.open)orderModal.showModal();
+    try {
+      const o=await api('/orders/'+encodeURIComponent(id));if(request!==detailRequest)return;
+      const methods={cod:'Thanh toán khi nhận hàng',bank_transfer:'Chuyển khoản ngân hàng',momo:'Ví điện tử',card:'Thẻ',store_pay:'hongquy sòtore pay'};
+      const paymentStates={pending:'Chờ thanh toán',paid:'Đã thanh toán',failed:'Thất bại',cancelled:'Đã hủy'};
+      body.innerHTML=`<div class="order-detail-meta"><strong>#${esc(o.order_number)}</strong><span>${esc(statuses[o.status]||o.status)}</span><small>${esc(o.created_at)}</small></div><section class="order-delivery"><h3>Địa chỉ nhận hàng</h3><strong>${esc(o.recipient_name)}</strong><p>Số điện thoại: ${esc(o.recipient_phone)}</p><p>${esc(o.shipping_address)}</p></section><div class="order-detail-products">${o.items.map(i=>`<article class="order-detail-product">${i.image_url?`<img src="${esc(i.image_url)}" alt="${esc(i.product_name)}">`:'<span class="order-photo-placeholder" aria-hidden="true">🧸</span>'}<div><h3>${esc(i.product_name)}</h3><p>${esc([i.size_label,i.color_label].filter(Boolean).join(' · '))}</p><p>${money(i.unit_price)} × ${Number(i.quantity)}</p></div><strong>${money(i.line_total)}</strong></article>`).join('')}</div><div class="order-detail-totals"><p><span>Tạm tính</span><strong>${money(o.subtotal)}</strong></p><p><span>Phí vận chuyển</span><strong>${money(o.shipping_fee)}</strong></p><p><span>Giảm giá</span><strong>−${money(o.discount_amount)}</strong></p><p class="order-grand-total"><span>Tổng tiền</span><strong>${money(o.total_amount)}</strong></p></div><section class="order-payment-info"><h3>Thanh toán</h3>${o.payments.map(p=>`<p>${esc(methods[p.method]||p.method)} · ${esc(paymentStates[p.status]||p.status)}: <strong>${money(p.amount)}</strong></p>`).join('')||'<p>Chưa có thông tin thanh toán.</p>'}${o.refunds.map(r=>`<p>${r.status==='completed'?'Đã hoàn tiền':r.status==='rejected'?'Hoàn tiền bị từ chối':'Đang xử lý hoàn tiền'}: <strong>${money(r.amount)}</strong></p>`).join('')}</section>`;
+    }catch(e){if(request===detailRequest)body.innerHTML=`<p role="alert">${esc(e.message)}</p>`;}
+  }
+  $('#ordersList').onclick=async e=>{
+    const button=e.target.closest('[data-view-order],[data-cancel-order]');if(!button)return;
+    if(button.dataset.viewOrder)return viewOrder(button.dataset.viewOrder);
+    if(!confirm('Bạn muốn hủy đơn hàng này? Tiền đã trả bằng số dư sẽ được hoàn vào tài khoản.'))return;
+    button.disabled=true;
+    try {
+      await api('/orders/'+encodeURIComponent(button.dataset.cancelOrder)+'/cancel','POST',{});
+      orders=await api('/orders');renderOrders();data=await api();render();notice('Đã hủy đơn hàng.');
+      await loadNotifications();
+    }catch(error){notice(error.message);button.disabled=false;try{orders=await api('/orders');renderOrders();}catch{}}
+  };
+  $('#logoutBtn').onclick=async()=>{try{await MaianhAuth.request('/logout',{});location.replace('DangNhap.html');}catch(e){notice(e.message);}};
+  try {data=await api();render();}catch(e){$('.hero-name-row h1').textContent='Không thể tải hồ sơ';notice(e.message);return;}
+  async function loadWishlist() {
+    const response=await fetch('/api/home/wishlist',{credentials:'same-origin'});
+    const result=await response.json();if(!response.ok)throw new Error(result.error || 'Không tải được yêu thích.');
+    const rows=result.data;
+    data.stats.wishlist=rows.length;count('wishlist',rows.length);document.querySelectorAll('.hero-stat strong')[2].textContent=rows.length;
+    $('#wishlistContent').innerHTML=rows.map(p=>`<article class="profile-favorite">
+      <button type="button" class="favorite-remove" data-remove-favorite="${esc(p.id)}" aria-label="Bỏ yêu thích ${esc(p.name)}" title="Bỏ yêu thích"><i class="fas fa-heart" aria-hidden="true"></i></button>
+      <div class="favorite-photo">${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`:'<span class="favorite-no-photo"><i class="far fa-image" aria-hidden="true"></i>Chưa có ảnh</span>'}</div>
+      <div class="favorite-copy"><span class="favorite-category">${esc(p.category_name)}</span><h4>${esc(p.name)}</h4><strong class="favorite-price">${p.price===null?'Chưa có giá':money(p.price)}</strong></div>
+      ${Number(p.is_active)?`<a class="favorite-view" href="ChiTiet.html?id=${encodeURIComponent(p.id)}">Xem sản phẩm <i class="fas fa-arrow-right" aria-hidden="true"></i></a>`:'<span class="favorite-unavailable">Tạm ngừng bán</span>'}
+    </article>`).join('')||'<div class="favorite-empty"><span aria-hidden="true">💝</span><h4>Chưa có sản phẩm yêu thích</h4><p>Lưu những món đồ bạn thích để dễ tìm lại nhé.</p><a class="favorite-view" href="Home.html">Khám phá sản phẩm</a></div>';
+  }
+  $('#wishlistContent').onclick=async e=>{
+    const button=e.target.closest('[data-remove-favorite]');if(!button)return;button.disabled=true;
+    try {const r=await fetch('/api/home/wishlist/'+encodeURIComponent(button.dataset.removeFavorite),{method:'DELETE',credentials:'same-origin',headers:{'X-Requested-With':'maianh-web'}});if(!r.ok)throw new Error('Không thể bỏ yêu thích.');await loadWishlist();notice('Đã bỏ yêu thích.');}catch(error){notice(error.message);button.disabled=false;}
+  };
+  let notificationPage=1, onlyUnread=false;
+  async function notificationsRequest(path='',method='GET') {
+    const r=await fetch('/api/notifications'+path,{method,credentials:'same-origin',headers:{'X-Requested-With':'maianh-web'}});
+    const result=await r.json();if(!r.ok)throw new Error(result.error||'Không tải được thông báo.');return result;
+  }
+  function notificationLink(path) {
+    if(typeof path!=='string'||!path.startsWith('/')||path.startsWith('//')||path.includes('\\'))return '';
+    try {const url=new URL(path,location.origin);return url.origin===location.origin && url.pathname.startsWith('/html/')?url.pathname+url.search+url.hash:'';}catch{return '';}
+  }
+  async function loadNotifications() {
+    const result=await notificationsRequest(`?page=${notificationPage}&limit=20&unread=${onlyUnread?1:0}`);
+    count('notifications',result.unread_count);
+    $('#notificationsList').innerHTML=`<div class="notification-tools"><label><input type="checkbox" id="unreadFilter" ${onlyUnread?'checked':''}> Chỉ chưa đọc</label><button class="btn-address" data-read-all ${!result.unread_count?'disabled':''}>Đọc tất cả</button></div>`+result.data.map(n=>{
+      const link=notificationLink(n.target_path);
+      return `<article class="notification-card ${n.read_at?'':'unread'}"><div><h4>${esc(n.title)}</h4><p>${esc(n.message)}</p><small>${esc(n.created_at)}</small></div><div class="notification-actions">${n.read_at?'<span>Đã đọc</span>':`<button class="btn-address" data-read-notification="${esc(n.id)}">Đánh dấu đã đọc</button>`}${link?`<a href="${esc(link)}" data-open-notification="${esc(n.id)}">Xem chi tiết</a>`:''}</div></article>`;
+    }).join('')+(!result.data.length?'<p>Chưa có thông báo.</p>':'')+`<div class="notification-tools"><button class="btn-address" data-notification-page="${notificationPage-1}" ${notificationPage<=1?'disabled':''}>Trước</button><span>Trang ${notificationPage} / ${Math.max(1,result.pagination.totalPages)}</span><button class="btn-address" data-notification-page="${notificationPage+1}" ${notificationPage>=result.pagination.totalPages?'disabled':''}>Sau</button></div>`;
+    $('#unreadFilter').onchange=async e=>{onlyUnread=e.target.checked;notificationPage=1;try{await loadNotifications();}catch(error){notice(error.message);}};
+    window.dispatchEvent(new Event('notifications-updated'));
+  }
+  $('#notificationsList').onclick=async e=>{
+    const action=e.target.closest('[data-read-all],[data-read-notification],[data-open-notification],[data-notification-page]');if(!action)return;
+    e.preventDefault();action.disabled=true;
+    try {
+      if(action.dataset.notificationPage){notificationPage=Number(action.dataset.notificationPage);await loadNotifications();return;}
+      const id=action.dataset.readNotification||action.dataset.openNotification;
+      await notificationsRequest(id?'/'+encodeURIComponent(id)+'/read':'/read-all','PATCH');
+      if(action.dataset.openNotification){location.href=action.href;return;}
+      notificationPage=1;await loadNotifications();
+    }catch(error){notice(error.message);action.disabled=false;}
+  };
+  await Promise.allSettled([
+    api('/orders').then(rows=>{orders=rows;renderOrders();document.querySelectorAll('.order-tab').forEach(b=>b.querySelector('.tab-count').textContent=rows.filter(o=>b.dataset.status==='all'||o.status===b.dataset.status).length);}).catch(e=>notice(e.message)),
+    loadWishlist().catch(e=>notice(e.message)),
+    loadNotifications().catch(e=>notice(e.message)),
+    api('/preferences').then(p=>{const panel=$('#tab-settings .content-card');panel.innerHTML='<div class="content-title">Cài đặt tài khoản</div>'+[['receive_newsletter','Nhận email bản tin'],['receive_sms','Nhận tin nhắn SMS']].map(([key,label])=>`<label class="setting-row">${label}<input type="checkbox" name="${key}" ${p[key]?'checked':''}></label>`).join('');panel.onchange=async e=>{const inputs=[...panel.querySelectorAll('input')];inputs.forEach(i=>i.disabled=true);try{await api('/preferences','PATCH',Object.fromEntries(inputs.map(i=>[i.name,i.checked?1:0])));notice('Đã lưu cài đặt.');}catch(error){e.target.checked=!e.target.checked;notice(error.message);}finally{inputs.forEach(i=>i.disabled=false);}};}).catch(e=>notice(e.message))
+  ]);
+  window.dispatchEvent(new Event('hashchange'));
+})();

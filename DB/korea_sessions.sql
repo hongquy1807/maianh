@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS korea_sessions (
+ id CHAR(36) NOT NULL PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ category_id BIGINT UNSIGNED NOT NULL,
+ mode ENUM('flashcard','typing') NOT NULL,
+ words JSON NOT NULL,
+ results JSON NOT NULL,
+ position INT UNSIGNED NOT NULL DEFAULT 0,
+ completed TINYINT NOT NULL DEFAULT 0,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ KEY idx_korea_user(user_id,mode,category_id,completed),
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(category_id) REFERENCES vocabulary_categories(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

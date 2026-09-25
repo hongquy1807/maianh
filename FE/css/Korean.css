@@ -1553,3 +1553,5 @@ html body .korean-inline-7.korean-inline-7 { font-size: 0.8rem; color: var(--tex
 html body .korean-inline-8.korean-inline-8 { color: var(--yellow-deep); }
 
 html body .korean-inline-9.korean-inline-9 { color: var(--pink-deep); }
+
+.korea-prize{position:fixed;inset:0;margin:auto;width:min(500px,calc(100vw - 32px));max-height:85dvh;overflow:auto;padding:36px;text-align:center;border:2px solid #ffdb8a;border-radius:30px;background:linear-gradient(130deg,#fff6cf,#ffe0ea);color:#654635;box-shadow:0 20px 80px #50342255;z-index:100000}.korea-prize::backdrop{background:#50342280;backdrop-filter:blur(4px)}.korea-prize>div{font-size:42px}.korea-prize strong{display:block;font-size:40px;color:#be7a00;margin:18px}.korea-prize p{line-height:1.6;margin:12px 0}.korea-prize button{padding:12px 26px;border:0;border-radius:24px;background:#ffd252;color:#654635;font:inherit;font-weight:700;cursor:pointer}.learning-wallet{text-align:center;margin:20px;padding:16px;border-radius:18px;background:#fff0c7;color:#79542c}#typingKorean{font-size:clamp(26px,4vw,48px)}#fcPrev[hidden],#fcKnown[hidden],#fcUnknown[hidden],#typingHint[hidden],#typingSkip[hidden]{display:none}

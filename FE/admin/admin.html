@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | hongquy sờtore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="./admin.css">
+</head>
+<body>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <a href="index.html" class="sidebar-logo">
+            <div class="sidebar-logo-icon">🧸</div>
+            <div class="sidebar-logo-text">
+                <h1>hongquy sờtore <span>Admin</span></h1>
+                <p>Control Panel</p>
+            </div>
+        </a>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Tổng quan</div>
+            <button class="nav-item active" data-tab="dashboard">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </button>
+
+            <div class="nav-section-title" style="margin-top: 15px;">Quản lý</div>
+            <button class="nav-item" data-tab="orders">
+                <i class="fas fa-shopping-bag"></i> Đơn hàng
+                <span class="nav-badge">12</span>
+            </button>
+            <button class="nav-item" data-tab="products">
+                <i class="fas fa-box"></i> Sản phẩm
+                <span class="nav-badge">48</span>
+            </button>
+            <button class="nav-item" data-tab="customers">
+                <i class="fas fa-users"></i> Khách hàng
+                <span class="nav-badge">156</span>
+            </button>
+            <button class="nav-item" data-tab="reviews">
+                <i class="fas fa-star"></i> Đánh giá
+                <span class="nav-badge">8</span>
+            </button>
+
+            <div class="nav-section-title" style="margin-top: 15px;">Nội dung</div>
+            <button class="nav-item" data-tab="posts">
+                <i class="fas fa-newspaper"></i> Bài viết
+            </button>
+            <button class="nav-item" data-tab="vocabulary">
+                <i class="fas fa-language"></i> Từ vựng Hàn
+            </button>
+            <button class="nav-item" data-tab="categories">
+                <i class="fas fa-tags"></i> Danh mục
+            </button>
+
+            <div class="nav-section-title" style="margin-top: 15px;">Hệ thống</div>
+            <button class="nav-item" data-tab="settings">
+                <i class="fas fa-cog"></i> Cài đặt
+            </button>
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="admin-card">
+                <div class="admin-avatar">👨</div>
+                <div class="admin-info">
+                    <strong>Minh Quân</strong>
+                    <span><i class="fas fa-circle"></i> Super Admin</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Chào buổi sáng, <span>Admin!</span></h1>
+            </div>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm nhanh...">
+            </div>
+            <div class="topbar-right">
+                <button class="topbar-icon-btn" title="Tin nhắn">
+                    <i class="fas fa-comment-dots"></i>
+                    <span class="badge">3</span>
+                </button>
+                <button class="topbar-icon-btn" title="Thông báo">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- ========== DASHBOARD TAB ========== -->
+            <div class="tab-panel active" id="tab-dashboard">
+                <!-- Stat cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                            
+                        </div>
+                        <div class="stat-card-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label"><i class="fas fa-calendar-day" style="color: var(--yellow-deep);"></i> Đơn hàng hôm nay</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon pink"><i class="fas fa-dollar-sign"></i></div>
+                            
+                        </div>
+                        <div class="stat-card-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label"><i class="fas fa-chart-line" style="color: var(--pink-deep);"></i> Doanh thu tháng</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon green"><i class="fas fa-users"></i></div>
+                            
+                        </div>
+                        <div class="stat-card-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label"><i class="fas fa-user-plus" style="color: var(--green);"></i> Khách hàng</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon purple"><i class="fas fa-star"></i></div>
+                            
+                        </div>
+                        <div class="stat-card-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label"><i class="fas fa-star" style="color: var(--purple);"></i> Đánh giá trung bình</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <!-- Bar chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title"><i class="fas fa-chart-bar"></i> Doanh thu đơn đã giao</div>
+                            <div class="chart-tabs">
+                                <button class="chart-tab" data-range="week">Tuần</button>
+                                <button class="chart-tab active" data-range="month">Tháng</button>
+                                <button class="chart-tab" data-range="year">Năm</button>
+                            </div>
+                        </div>
+                        <p class="dashboard-note">Doanh thu ghi nhận khi đơn đã giao, gồm phí vận chuyển và đã trừ giảm giá. Thời gian Việt Nam (UTC+7).</p><div class="bar-chart" id="barChart">
+                            <!-- JS render -->
+                        </div>
+                    </div>
+
+                    <!-- Donut chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title"><i class="fas fa-chart-pie"></i> Sản phẩm đã giao theo danh mục</div>
+                        </div>
+                        <div class="donut-wrap">
+                            <div class="donut" id="donutChart">
+                                <div class="donut-center">
+                                    <strong id="donutTotal">0</strong>
+                                    <span>Sản phẩm</span>
+                                </div>
+                            </div>
+                            <div class="donut-legend" id="donutLegend">
+                                <!-- JS render -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity + Top products -->
+                <div class="activity-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title"><i class="fas fa-clock"></i> Hoạt động gần đây</div>
+                            <button class="btn-outline" id="viewAllActivity">
+                                Xem tất cả <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div class="activity-list" id="activityList">
+                            <!-- JS render -->
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title"><i class="fas fa-fire"></i> Top sản phẩm</div>
+                        </div>
+                        <div id="topProducts">
+                            <!-- JS render -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== ORDERS TAB ========== -->
+            <div class="tab-panel" id="tab-orders">
+                <div class="table-card">
+                    <div class="section-header">
+                        <h2><i class="fas fa-shopping-bag"></i> Quản lý đơn hàng</h2>
+                        <button class="btn-primary" id="exportOrders">
+                            <i class="fas fa-download"></i> Xuất Excel
+                        </button>
+                    </div>
+
+                    <div class="table-filters">
+                        <button class="filter-chip active" data-filter="all">
+                            <i class="fas fa-th"></i> Tất cả <span class="count">12</span>
+                        </button>
+                        <button class="filter-chip" data-filter="pending">
+                            <i class="fas fa-clock"></i> Chờ xác nhận <span class="count">3</span>
+                        </button>
+                        <button class="filter-chip" data-filter="confirmed">
+                            <i class="fas fa-check"></i> Đã xác nhận <span class="count">2</span>
+                        </button>
+                        <button class="filter-chip" data-filter="shipping">
+                            <i class="fas fa-truck"></i> Đang giao <span class="count">4</span>
+                        </button>
+                        <button class="filter-chip" data-filter="delivered">
+                            <i class="fas fa-box-open"></i> Đã giao <span class="count">2</span>
+                        </button>
+                        <button class="filter-chip" data-filter="cancelled">
+                            <i class="fas fa-times"></i> Đã huỷ <span class="count">1</span>
+                        </button>
+                    </div>
+
+                    <div class="table-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchOrders" placeholder="Tìm theo mã đơn, tên khách hàng...">
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Trạng thái</th>
+                                    <th style="text-align: right;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <!-- JS render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== PRODUCTS TAB ========== -->
+            <div class="tab-panel" id="tab-products">
+                <div class="table-card">
+                    <div class="section-header">
+                        <h2><i class="fas fa-box"></i> Quản lý sản phẩm</h2>
+                        <div class="product-header-actions">
+                            <button class="btn-primary" id="addProductBtn">
+                                <i class="fas fa-plus"></i> Thêm sản phẩm
+                            </button>
+                            <button class="btn-primary" id="addProductCategoryBtn">
+                                <i class="fas fa-folder-plus"></i> Thêm danh mục
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="product-filters">
+                        <div class="table-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchProducts" placeholder="Tìm theo tên sản phẩm...">
+                        </div>
+                        <label for="productCategoryFilter">Danh mục</label>
+                        <select id="productCategoryFilter"><option value="">Tất cả danh mục</option></select>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Danh mục</th>
+                                    <th>Giá</th>
+                                    <th>Kho</th>
+                                    <th>Đã bán</th>
+                                    <th>Trạng thái</th>
+                                    <th style="text-align: right;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <!-- JS render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== CUSTOMERS TAB ========== -->
+            <div class="tab-panel" id="tab-customers">
+                <div class="table-card">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users"></i> Quản lý khách hàng</h2>
+                        <button class="btn-primary" id="exportCustomers">
+                            <i class="fas fa-download"></i> Xuất danh sách
+                        </button>
+                    </div>
+
+                    <div class="table-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchCustomers" placeholder="Tìm theo tên, email, SĐT...">
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Khách hàng</th>
+                                    <th>Liên hệ</th>
+                                    <th>Số dư</th>
+                                    <th>Đơn hàng</th>
+                                    <th>Tổng chi</th>
+                                    <th>Trạng thái</th>
+                                    <th style="text-align: right;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody">
+                                <!-- JS render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== REVIEWS TAB ========== -->
+            <div class="tab-panel" id="tab-reviews">
+                <div class="table-card">
+                    <div class="section-header">
+                        <h2><i class="fas fa-star"></i> Đánh giá sản phẩm</h2>
+                    </div>
+                    <div id="reviewsList">
+                        <!-- JS render -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== POSTS TAB ========== -->
+            <div class="tab-panel" id="tab-posts">
+                <div class="table-card">
+                    <div class="section-header">
+                        <h2><i class="fas fa-newspaper"></i> Quản lý bài viết</h2>
+                        <button class="btn-primary" id="addPostBtn">
+                            <i class="fas fa-plus"></i> Viết bài mới
+                        </button>
+                    </div>
+                    <div id="postsList">
+                        <!-- JS render -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== VOCABULARY TAB ========== -->
+            <div class="tab-panel" id="tab-vocabulary">
+                <div class="table-card">
+                    <div class="section-header">
+                        <h2><i class="fas fa-language"></i> Quản lý từ vựng tiếng Hàn</h2>
+                        <button class="btn-primary" id="addVocabBtn">
+                            <i class="fas fa-plus"></i> Thêm từ vựng
+                        </button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tiếng Hàn</th>
+                                    <th>Phiên âm</th>
+                                    <th>Tiếng Việt</th>
+                                    <th>Chủ đề</th>
+                                    <th style="text-align: right;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vocabTableBody">
+                                <!-- JS render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== CATEGORIES TAB ========== -->
+            <div class="tab-panel" id="tab-categories">
+                <div class="table-card">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tags"></i> Quản lý danh mục</h2>
+                        <button class="btn-primary" id="addCategoryBtn">
+                            <i class="fas fa-plus"></i> Thêm danh mục
+                        </button>
+                    </div>
+                    <div id="categoriesList">
+                        <!-- JS render -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SETTINGS TAB ========== -->
+            <div class="tab-panel" id="tab-settings">
+                <div class="settings-grid">
+                    <div class="setting-group">
+                        <h3><i class="fas fa-store"></i> Thông tin cửa hàng</h3>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Tên cửa hàng</h4>
+                                <p>hongquy sờtore</p>
+                            </div>
+                            <button class="icon-action"><i class="fas fa-edit"></i></button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Email liên hệ</h4>
+                                <p>hello@teddyyeuthuong.vn</p>
+                            </div>
+                            <button class="icon-action"><i class="fas fa-edit"></i></button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Hotline</h4>
+                                <p>1900 1234</p>
+                            </div>
+                            <button class="icon-action"><i class="fas fa-edit"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3><i class="fas fa-bell"></i> Thông báo</h3>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Thông báo đơn hàng mới</h4>
+                                <p>Nhận thông báo khi có đơn hàng mới</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-label"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Thông báo đánh giá</h4>
+                                <p>Nhận thông báo khi có đánh giá mới</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-label"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Thông báo hết hàng</h4>
+                                <p>Cảnh báo khi sản phẩm sắp hết</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-label"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3><i class="fas fa-shield-alt"></i> Bảo mật</h3>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Xác thực 2 lớp</h4>
+                                <p>Bảo vệ tài khoản admin</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox">
+                                <span class="toggle-label"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Đăng nhập cảnh báo</h4>
+                                <p>Nhận email khi có đăng nhập lạ</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-label"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3><i class="fas fa-palette"></i> Giao diện</h3>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Chế độ tối</h4>
+                                <p>Chuyển đổi giao diện tối/sáng</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox">
+                                <span class="toggle-label"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-text">
+                                <h4>Hiệu ứng động</h4>
+                                <p>Bật/tắt các hiệu ứng animation</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-label"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Thông báo!</span>
+    </div>
+
+        <script src="../js/auth-api.js" defer></script>
+        <script src="./admin.js" defer></script>
+        <script src="./products.js" defer></script>
+</body>
+</html>

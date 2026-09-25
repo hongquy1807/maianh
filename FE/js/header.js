@@ -1,10 +1,4 @@
 (() => {
-  const categories = [
-    ['Ăn vặt', 'cookie-bite', 'an-vat'], ['Gấu bông', 'paw', 'gau-bong'],
-    ['Quần áo', 'tshirt', 'quan-ao'], ['Giày dép', 'shoe-prints', 'giay-dep'],
-    ['Trang sức', 'gem', 'trang-suc'], ['Lưu niệm', 'gift', 'luu-niem'],
-    ['Decor phòng', 'couch', 'decor-phong']
-  ];
   const icon = name => `<i class="fas fa-${name}" aria-hidden="true"></i>`;
   class SiteHeader extends HTMLElement {
     connectedCallback() {
@@ -14,16 +8,16 @@
       const navLink = (href, label, glyph) => `<a href="${href}"${page === href.toLowerCase() ? ' aria-current="page"' : ''}>${icon(glyph)} ${label}</a>`;
       this.innerHTML = `<header class="sh-header">
         <nav class="sh-nav" aria-label="Điều hướng chính">
-          <a class="sh-logo" href="Home.html" aria-label="Teddy Yêu Thương — Trang chủ">
+          <a class="sh-logo" href="Home.html" aria-label="hongquy sờtore — Trang chủ">
             <span class="sh-logo-icon" aria-hidden="true">🧸</span>
-            <span class="sh-brand"><strong>Teddy <span>Yêu Thương</span></strong><small>Soft • Cute • Lovely</small></span>
+            <span class="sh-brand"><strong>hongquy <span>sờtore</span></strong><small>Soft • Cute • Lovely</small></span>
           </a>
           <button class="sh-menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="site-navigation">${icon('bars')}</button>
           <div class="sh-navigation" id="site-navigation">
             <ul class="sh-links">
               <li>${navLink('Home.html', 'Trang chủ', 'home')}</li>
               <li class="sh-products"><button type="button" class="sh-products-toggle" aria-expanded="false" aria-controls="site-categories"${page === 'chitiet.html' ? ' data-active="true"' : ''}>${icon('shopping-bag')} Sản phẩm ${icon('chevron-down')}</button>
-                <ul class="sh-dropdown" id="site-categories" hidden>${categories.map(([label, glyph, slug]) => `<li><a href="Home.html?category=${slug}#products">${icon(glyph)} ${label}</a></li>`).join('')}</ul>
+                <ul class="sh-dropdown" id="site-categories" hidden><li class="sh-category-status">Đang tải danh mục…</li></ul>
               </li>
               <li>${navLink('Korean.html', 'Ôn tập tiếng Hàn', 'language')}</li>
               <li>${navLink('TinTuc.html', 'Tin tức', 'newspaper')}</li>
@@ -35,15 +29,64 @@
             </form>
           </div>
           <div class="sh-actions">
+            <a href="profile.html#notifications" aria-label="Thông báo" title="Thông báo">${icon('bell')}<span class="sh-badge" id="headerNotificationCount" hidden>0</span></a>
             <a href="profile.html#wishlist" aria-label="Yêu thích" title="Yêu thích">${icon('heart')}</a>
             <a href="Cart.html" aria-label="Giỏ hàng" title="Giỏ hàng">${icon('shopping-cart')}<span class="sh-badge" id="headerCartCount">0</span></a>
             <a href="profile.html" aria-label="Tài khoản" title="Tài khoản"${page === 'profile.html' ? ' aria-current="page"' : ''}>${icon('user')}</a>
           </div>
         </nav>
       </header>`;
+      let cartRequestVersion=0;
+      const refreshCart=async()=>{
+        const version=++cartRequestVersion;
+        try {
+          const response=await fetch('/api/cart',{credentials:'same-origin',cache:'no-store'});
+          if(!response.ok && response.status!==401)return;
+          const rows=response.status===401?[]:(await response.json()).data;
+          if(version!==cartRequestVersion)return;
+          const count=rows.reduce((sum,row)=>sum+Number(row.quantity||0),0);
+          const badge=this.querySelector('#headerCartCount');
+          badge.textContent=count;
+          badge.parentElement.setAttribute('aria-label',`Giỏ hàng: ${count} sản phẩm`);
+        }catch{}
+      };
+      refreshCart();
+      window.addEventListener('cart-updated',refreshCart);
+      window.addEventListener('pageshow',refreshCart);
+      window.addEventListener('focus',refreshCart);
+      document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshCart();});
+      const updateNotifications = async () => {
+        try {const r=await fetch('/api/notifications/unread-count',{credentials:'same-origin'});if(!r.ok)return;const result=await r.json();const badge=this.querySelector('#headerNotificationCount');const n=result.data.unread_count;badge.textContent=n>99?'99+':n;badge.hidden=!n;}catch{}
+      };
+      updateNotifications();
+      window.addEventListener('notifications-updated',updateNotifications);
       const menu = this.querySelector('.sh-menu-toggle');
       const products = this.querySelector('.sh-products-toggle');
       const dropdown = this.querySelector('.sh-dropdown');
+      async function loadCategories() {
+        try {
+          const response=await fetch('/api/home/categories',{cache:'no-store'});
+          if(!response.ok)throw new Error();
+          const {data}=await response.json();dropdown.replaceChildren();
+          const selected=new URLSearchParams(location.search).get('category');
+          const addCategory=(name,slug,count)=>{
+            const li=document.createElement('li'),link=document.createElement('a');
+            link.href='Home.html'+(slug?'?category='+encodeURIComponent(slug):'')+'#products';
+            link.innerHTML=icon(slug?'tag':'th-large');
+            const label=document.createElement('span');label.textContent=name;link.append(label);
+            if(count!==undefined){const badge=document.createElement('small');badge.className='sh-category-count';badge.textContent=count;link.append(badge);}
+            if(page==='home.html' && (selected||'')===slug)link.setAttribute('aria-current','true');
+            link.addEventListener('click',closeMenu);li.append(link);dropdown.append(li);
+          };
+          addCategory('Tất cả sản phẩm','');
+          data.forEach(c=>addCategory(c.name,c.slug,c.product_count));
+          if(selected)products.dataset.active='true';
+        }catch{
+          dropdown.innerHTML='<li class="sh-category-status">Không tải được danh mục. <button type="button">Thử lại</button></li>';
+          dropdown.querySelector('button').onclick=loadCategories;
+        }
+      }
+      loadCategories();
       const closeProducts = () => { products.setAttribute('aria-expanded', 'false'); dropdown.hidden = true; };
       const closeMenu = () => { menu.setAttribute('aria-expanded', 'false'); menu.setAttribute('aria-label', 'Mở menu'); this.classList.remove('sh-open'); closeProducts(); };
       menu.addEventListener('click', () => {

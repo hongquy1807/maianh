@@ -106,3 +106,8 @@ body.shared-auth-layout { display: block; padding: 0; }
   .sf-grid h3 { margin-top: 0; }
   .sf-bottom { flex-wrap: wrap; line-height: 1.6; }
 }
+
+.sh-dropdown { max-height: min(65vh, 480px); overflow-y: auto; }
+.sh-dropdown a[aria-current="true"] { background: #ffe59a; color: #704317; }
+.sh-category-count { margin-left:auto; background:#fff1c3; border-radius:20px; padding:2px 7px; color:#93601f; }
+.sh-category-status { padding:12px; font-size:13px; }

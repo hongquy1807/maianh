@@ -69,3 +69,27 @@ test('frontend still loads and private database configuration is not served', as
   assert.equal((await fetch(`${base}/.env`)).status, 404);
   assert.equal((await fetch(`${base}/api/users`)).status, 404);
 });
+
+test('home category menu and filtered pagination use database categories', async () => {
+  const response=await fetch(`${base}/api/home/categories`);
+  assert.equal(response.status,200);
+  const {data}=await response.json();
+  assert.ok(Array.isArray(data));
+  for(const category of data) {
+    const query=new URLSearchParams({category:category.slug,limit:'1',page:'1'});
+    const r=await fetch(`${base}/api/home?${query}`);assert.equal(r.status,200);
+    const result=await r.json();
+    assert.ok(result.data.products.length<=1);
+    assert.ok(result.data.products.every(p=>p.category_slug===category.slug));
+    assert.equal(result.pagination.page,1);
+    if(result.pagination.totalPages>1){
+      query.set('page','2');const next=await (await fetch(`${base}/api/home?${query}`)).json();
+      assert.ok(next.data.products.every(p=>p.category_slug===category.slug));
+      assert.notEqual(next.data.products[0].id,result.data.products[0].id);
+    }
+  }
+  const missing=await (await fetch(`${base}/api/home?category=missing-category-test-999`)).json();
+  assert.equal(missing.data.products.length,0);
+  assert.equal(missing.pagination.total,0);
+  assert.equal((await fetch(`${base}/api/home?page=0`)).status,400);
+});
