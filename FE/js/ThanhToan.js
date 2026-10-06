@@ -157,7 +157,7 @@
       const result=await response.json();
       if(!response.ok){if(response.status===401){location.href='DangNhap.html';return;}throw Object.assign(new Error(result.error || 'Không thể tạo đơn hàng.'),{code:result.code});}
       completed=true;
-      $('successModal').querySelector('p').textContent = selectedPayment==='store_pay' ? 'Đã thanh toán bằng số dư. Đơn hàng '+result.data.order_number+' đã được tạo.' : 'Đã tạo đơn hàng '+result.data.order_number+'. Thanh toán sẽ được xác nhận khi nhận tiền.';
+      $('successModal').querySelector('p').textContent = result.data.status==='shipping' ? 'Đã thanh toán thành công. Đơn hàng '+result.data.order_number+' đang giao và sẽ hoàn tất sau 5 phút.' : 'Đã tạo đơn hàng '+result.data.order_number+'. Thanh toán sẽ được xác nhận khi nhận tiền.';
       if(result.data.cash!==undefined)$('storePayBalance').textContent='Số dư: '+money(result.data.cash);
       $('successModal').classList.add('show');
       sessionStorage.removeItem('maianh_checkout_cart');

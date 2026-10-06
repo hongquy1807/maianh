@@ -1,3 +1,6 @@
+import {queueOrderEmail} from '../services/order-mail.js';
+import {shipPaidOrder} from '../services/order-lifecycle.js';
+import {notifyStockOut} from '../services/stock-alerts.js';
 ﻿import { Router } from 'express';
 import { createHash } from 'node:crypto';
 import { pool } from '../config/database.js';
@@ -49,12 +52,14 @@ router.post('/',async(req,res)=>{
     }
     const orderNumber='HQ-'+b.key;
     const [order]=await conn.execute(`INSERT INTO orders(order_number,user_id,recipient_name,recipient_phone,shipping_address,subtotal,shipping_fee,discount_amount,customer_note) VALUES(?,?,?,?,?,?,?,?,?)`,[orderNumber,req.user.id,a.full_name.trim(),a.phone.trim(),a.address.trim(),subtotal,shipping,discount,JSON.stringify({coupons:b.coupons})]);
-    for(const i of items){const v=i.variant;await conn.execute('INSERT INTO order_items(order_id,variant_id,product_name,sku,size_label,color_label,unit_price,quantity) VALUES(?,?,?,?,?,?,?,?)',[order.insertId,i.id,v.name,v.sku,v.size_label,v.color_label,v.price,i.quantity]);await conn.execute('UPDATE product_variants SET stock_quantity=stock_quantity-? WHERE id=?',[i.quantity,i.id]);await conn.execute('DELETE FROM cart_items WHERE user_id=? AND variant_id=?',[req.user.id,i.id]);}
+    for(const i of items){const v=i.variant;await conn.execute('INSERT INTO order_items(order_id,variant_id,product_name,sku,size_label,color_label,unit_price,quantity) VALUES(?,?,?,?,?,?,?,?)',[order.insertId,i.id,v.name,v.sku,v.size_label,v.color_label,v.price,i.quantity]);await conn.execute('UPDATE product_variants SET stock_quantity=stock_quantity-? WHERE id=?',[i.quantity,i.id]);if(Number(v.stock_quantity)===i.quantity)await notifyStockOut(conn,v);await conn.execute('DELETE FROM cart_items WHERE user_id=? AND variant_id=?',[req.user.id,i.id]);}
     const paid=b.method==='store_pay'||total===0;
     await conn.execute('INSERT INTO payments(order_id,method,status,provider_reference,idempotency_key,amount,paid_at) VALUES(?,?,?,?,?,?,?)',[order.insertId,methods[b.method],paid?'paid':'pending',fingerprint,key,total,paid?new Date():null]);
+    if(paid)await shipPaidOrder(conn,order.insertId);
     await conn.execute('INSERT INTO notifications(user_id,kind,title,message,target_path) VALUES(?,?,?,?,?)',[req.user.id,'order','Đã tạo đơn hàng '+orderNumber,'Đơn hàng của bạn đã được ghi nhận. Tổng tiền: '+total.toLocaleString('vi-VN')+'đ.','/html/profile.html#orders']);
+    await queueOrderEmail(conn,order.insertId,req.user.email,{orderNumber,items,total,paid});
     await conn.commit();
-    res.status(201).json({data:{id:String(order.insertId),order_number:orderNumber,total_amount:total,cash:b.method==='store_pay'?Number(user.cash)-total:Number(user.cash)}});
+    res.status(201).json({data:{id:String(order.insertId),order_number:orderNumber,total_amount:total,status:paid?'shipping':'pending',cash:b.method==='store_pay'?Number(user.cash)-total:Number(user.cash)}});
   }catch(error){await conn.rollback();if(error.publicCode==='INSUFFICIENT_BALANCE')return res.status(409).json({code:error.publicCode,error:error.publicMessage});throw error;}finally{conn.release();}
 });
 export default router;

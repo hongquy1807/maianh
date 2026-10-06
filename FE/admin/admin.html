@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <link rel="stylesheet" href="./admin.css">
+<link rel="stylesheet" href="vocabulary.css">
+<link rel="stylesheet" href="posts.css">
 </head>
 <body>
 
@@ -42,10 +44,12 @@
                 <i class="fas fa-users"></i> Khách hàng
                 <span class="nav-badge">156</span>
             </button>
+            <!----
             <button class="nav-item" data-tab="reviews">
                 <i class="fas fa-star"></i> Đánh giá
                 <span class="nav-badge">8</span>
             </button>
+            -->
 
             <div class="nav-section-title" style="margin-top: 15px;">Nội dung</div>
             <button class="nav-item" data-tab="posts">
@@ -54,9 +58,7 @@
             <button class="nav-item" data-tab="vocabulary">
                 <i class="fas fa-language"></i> Từ vựng Hàn
             </button>
-            <button class="nav-item" data-tab="categories">
-                <i class="fas fa-tags"></i> Danh mục
-            </button>
+
 
             <div class="nav-section-title" style="margin-top: 15px;">Hệ thống</div>
             <button class="nav-item" data-tab="settings">
@@ -338,12 +340,7 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Khách hàng</th>
-                                    <th>Liên hệ</th>
-                                    <th>Số dư</th>
-                                    <th>Đơn hàng</th>
-                                    <th>Tổng chi</th>
-                                    <th>Trạng thái</th>
+                                    <th>ID</th><th>Họ tên</th><th>Email</th><th>Số điện thoại</th><th>Trạng thái</th><th>Ngày tạo</th>
                                     <th style="text-align: right;">Thao tác</th>
                                 </tr>
                             </thead>
@@ -391,37 +388,9 @@
                             <i class="fas fa-plus"></i> Thêm từ vựng
                         </button>
                     </div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tiếng Hàn</th>
-                                    <th>Phiên âm</th>
-                                    <th>Tiếng Việt</th>
-                                    <th>Chủ đề</th>
-                                    <th style="text-align: right;">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="vocabTableBody">
-                                <!-- JS render -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ========== CATEGORIES TAB ========== -->
-            <div class="tab-panel" id="tab-categories">
-                <div class="table-card">
-                    <div class="section-header">
-                        <h2><i class="fas fa-tags"></i> Quản lý danh mục</h2>
-                        <button class="btn-primary" id="addCategoryBtn">
-                            <i class="fas fa-plus"></i> Thêm danh mục
-                        </button>
-                    </div>
-                    <div id="categoriesList">
-                        <!-- JS render -->
-                    </div>
+                    <div class="vocab-tools"><input id="vocabSearch" type="search" placeholder="Tìm tiếng Hàn, nghĩa Việt, phiên âm hoặc mã…" aria-label="Tìm từ vựng"><span id="vocabStatus" role="status"></span></div>
+                    <div class="table-wrap vocab-scroll"><table><thead id="vocabHead"></thead><tbody id="vocabTableBody"></tbody></table></div>
+                    <div class="vocab-pages"><button id="vocabPrev" class="btn-primary">← Trước</button><span id="vocabPage"></span><button id="vocabNext" class="btn-primary">Sau →</button></div>
                 </div>
             </div>
 
@@ -548,5 +517,8 @@
         <script src="../js/auth-api.js" defer></script>
         <script src="./admin.js" defer></script>
         <script src="./products.js" defer></script>
+        <script src="./stock-notifications.js" defer></script>
+<script src="vocabulary.js" defer></script>
+<script src="posts.js" defer></script>
 </body>
 </html>

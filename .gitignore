@@ -4,3 +4,33 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .DS_Store
+BE/inference/.venv/
+BE/inference/.cache/
+BE/inference/__pycache__/
+BE/inference/runtime/
+
+BE/test/artifacts/
+
+# Local secrets, caches and generated files
+.env
+.env.*
+!.env.example
+.npm-cache/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.log
+# Training data and model weights (deploy separately)
+dataset/
+datasets/
+model/
+models/
+checkpoints/
+*.safetensors
+*.gguf
+*.pt
+*.pth
+*.zip
+# Private database export; keep local only
+/DB/maianh.sql

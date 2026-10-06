@@ -586,12 +586,12 @@
             flex-shrink: 0;
         }
 
-        .checkbox-wrap input:checked + .checkbox-custom {
+        :is(.checkbox-wrap,.terms-wrap) input:checked + .checkbox-custom {
             background: linear-gradient(135deg, var(--yellow-main), var(--pink-accent));
             border-color: var(--yellow-deep);
         }
 
-        .checkbox-wrap input:checked + .checkbox-custom::after {
+        :is(.checkbox-wrap,.terms-wrap) input:checked + .checkbox-custom::after {
             content: '\f00c';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
@@ -761,7 +761,9 @@
             user-select: none;
         }
 
-        .terms-wrap input { display: none; }
+        .terms-wrap { position: relative; }
+        .terms-wrap input { display:block; position:absolute; width:20px; height:20px; margin:0; opacity:0; cursor:pointer; }
+        .terms-wrap input:focus-visible + .checkbox-custom { outline:3px solid var(--yellow-deep); outline-offset:3px; }
 
         .terms-text {
             font-size: 0.8rem;
@@ -850,3 +852,7 @@ html body .dangnhap-inline-1.dangnhap-inline-1 { margin-top: -18px; margin-botto
 .auth-status:empty { display: none; }
 .auth-status.is-error { color: #ac2946; }
 .recovery-description { line-height: 1.7; font-size: .9rem; margin-bottom: 20px; }
+
+/* Welcome video replaces the four membership feature cards. */
+.auth-welcome-video { position:relative; width:100%; aspect-ratio:7/8; margin-top:30px; border:3px solid #fffdf3; border-radius:28px; overflow:hidden; background:#fff3ce; box-shadow:0 8px 0 #ffd97466,0 16px 34px #a76c1520; }
+.auth-welcome-video video { display:block; width:100%; height:100%; object-fit:cover; }

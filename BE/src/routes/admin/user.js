@@ -17,7 +17,15 @@ router.get('/customers/:id',async(req,res)=>{
  const [addresses]=await pool.execute('SELECT recipient_name,phone,address_line,ward,district,province,is_default FROM addresses WHERE user_id=? ORDER BY is_default DESC',[id]);
  const [orders]=await pool.execute('SELECT id,order_number,status,total_amount,created_at FROM orders WHERE user_id=? ORDER BY created_at DESC LIMIT 30',[id]);
  const [gifts]=await pool.execute('SELECT amount,created_at FROM customer_gifts WHERE user_id=? ORDER BY id DESC LIMIT 30',[id]);
- res.json({data:{...user,addresses,recent_orders:orders,gifts}});
+ const [owned_items]=await pool.execute(`SELECT oi.id,oi.product_name,oi.size_label,oi.color_label,
+ oi.quantity-COALESCE((SELECT SUM(quantity) FROM item_resales WHERE order_item_id=oi.id),0) AS quantity,
+ o.order_number,o.status FROM order_items oi JOIN orders o ON o.id=oi.order_id
+ WHERE o.user_id=? AND o.status NOT IN ('cancelled','returned')
+ AND EXISTS(SELECT 1 FROM payments p WHERE p.order_id=o.id AND p.status='paid' AND p.amount>=o.total_amount)
+ AND NOT EXISTS(SELECT 1 FROM refunds r WHERE r.order_id=o.id AND r.status IN ('requested','approved','completed'))
+ HAVING quantity>0 ORDER BY oi.id DESC`,[id]);
+ const [[paymentSummary]]=await pool.execute("SELECT COALESCE(SUM(p.amount),0) AS paid_total FROM payments p JOIN orders o ON o.id=p.order_id WHERE o.user_id=? AND p.status='paid'",[id]);
+ res.json({data:{...user,addresses,recent_orders:orders,gifts,owned_items,paid_total:paymentSummary.paid_total}});
 });
 router.patch('/customers/:id',async(req,res)=>{
  const id=resourceId(req.params.id),b=req.body||{},sets=[],values=[];

@@ -92,6 +92,73 @@
       body.innerHTML=`<div class="order-detail-meta"><strong>#${esc(o.order_number)}</strong><span>${esc(statuses[o.status]||o.status)}</span><small>${esc(o.created_at)}</small></div><section class="order-delivery"><h3>Địa chỉ nhận hàng</h3><strong>${esc(o.recipient_name)}</strong><p>Số điện thoại: ${esc(o.recipient_phone)}</p><p>${esc(o.shipping_address)}</p></section><div class="order-detail-products">${o.items.map(i=>`<article class="order-detail-product">${i.image_url?`<img src="${esc(i.image_url)}" alt="${esc(i.product_name)}">`:'<span class="order-photo-placeholder" aria-hidden="true">🧸</span>'}<div><h3>${esc(i.product_name)}</h3><p>${esc([i.size_label,i.color_label].filter(Boolean).join(' · '))}</p><p>${money(i.unit_price)} × ${Number(i.quantity)}</p></div><strong>${money(i.line_total)}</strong></article>`).join('')}</div><div class="order-detail-totals"><p><span>Tạm tính</span><strong>${money(o.subtotal)}</strong></p><p><span>Phí vận chuyển</span><strong>${money(o.shipping_fee)}</strong></p><p><span>Giảm giá</span><strong>−${money(o.discount_amount)}</strong></p><p class="order-grand-total"><span>Tổng tiền</span><strong>${money(o.total_amount)}</strong></p></div><section class="order-payment-info"><h3>Thanh toán</h3>${o.payments.map(p=>`<p>${esc(methods[p.method]||p.method)} · ${esc(paymentStates[p.status]||p.status)}: <strong>${money(p.amount)}</strong></p>`).join('')||'<p>Chưa có thông tin thanh toán.</p>'}${o.refunds.map(r=>`<p>${r.status==='completed'?'Đã hoàn tiền':r.status==='rejected'?'Hoàn tiền bị từ chối':'Đang xử lý hoàn tiền'}: <strong>${money(r.amount)}</strong></p>`).join('')}</section>`;
     }catch(e){if(request===detailRequest)body.innerHTML=`<p role="alert">${esc(e.message)}</p>`;}
   }
+  let ownedItems=[];
+  async function loadOwned(){
+    ownedItems=await api('/owned-items');count('owned',ownedItems.reduce((n,i)=>n+Number(i.quantity),0));
+    $('#ownedItems').innerHTML=ownedItems.map(i=>`<article class="owned-item">
+      <span class="owned-status">x${Number(i.quantity)}</span>
+      <span class="owned-flower" aria-hidden="true">🌸</span><span class="owned-edge" aria-hidden="true">🧸<span>✿</span></span>
+      <button class="owned-sell" data-sell="${i.id}" aria-label="Bán lại ${esc(i.product_name)}" title="Bán lại với 50% giá lúc mua" ${i.status==='delivered'?'':'disabled'}><i class="fas fa-coins" aria-hidden="true"></i></button>
+      <div class="owned-photo">${i.image_url?`<img src="${esc(i.image_url)}" alt="${esc(i.product_name)}" loading="lazy">`:'<span aria-hidden="true">🧸</span>'}</div>
+      <div class="owned-labels"><div class="owned-name">${esc(i.product_name)}</div></div>
+    </article>`).join('')||'<p>Bạn chưa có vật phẩm nào.</p>';
+  }
+  const sellDialog=document.createElement('dialog');
+  sellDialog.className='resale-dialog';
+  sellDialog.setAttribute('aria-labelledby','resaleTitle');
+  sellDialog.innerHTML=`<form id="resaleForm">
+    <button type="button" class="resale-close" aria-label="Đóng bán lại">×</button>
+    <div class="resale-decor" aria-hidden="true"><span>✿</span> 🧸 🌸</div>
+    <h2 id="resaleTitle">Bán lại vật phẩm</h2><p class="resale-product"></p>
+    <p class="resale-hint">Nhận lại 50% giá lúc mua vào tài khoản</p>
+    <label for="resaleQuantity">Số lượng cần bán <small id="resaleAvailable"></small></label>
+    <div class="resale-stepper"><button type="button" data-step="-1" aria-label="Giảm số lượng">−</button><input id="resaleQuantity" type="number" min="1" step="1" value="1" required inputmode="numeric"><button type="button" data-step="1" aria-label="Tăng số lượng">+</button></div>
+    <div class="resale-total"><span>Bạn sẽ nhận</span><strong id="resaleTotal" aria-live="polite"></strong></div>
+    <p class="resale-error" role="alert"></p>
+    <div class="resale-actions"><button type="button" class="resale-cancel">Để sau</button><button type="submit" class="resale-submit">Bán & nhận tiền</button></div>
+    <div class="resale-footer" aria-hidden="true">🌸 <span>✿</span> 🧸 <span>✿</span> 🌸</div>
+  </form>`;
+  document.body.append(sellDialog);
+  const quantityInput=sellDialog.querySelector('input'),sellForm=sellDialog.querySelector('form');
+  let sellingItem=null,selling=false,saleKey=null;
+  const saleError=message=>{sellDialog.querySelector('.resale-error').textContent=message;};
+  function updateSaleTotal(){
+    const n=Number(quantityInput.value),valid=quantityInput.validity.valid&&Number.isInteger(n);
+    $('#resaleTotal').textContent=valid?money(Number(sellingItem.unit_price)*n/2):'—';
+    sellDialog.querySelector('[data-step="-1"]').disabled=selling||n<=1;
+    sellDialog.querySelector('[data-step="1"]').disabled=selling||n>=Number(sellingItem.quantity);
+  }
+  const closeSale=()=>{if(!selling)sellDialog.close();};
+  sellDialog.querySelector('.resale-close').onclick=closeSale;
+  sellDialog.querySelector('.resale-cancel').onclick=closeSale;
+  sellDialog.addEventListener('cancel',e=>{if(selling)e.preventDefault();});
+  quantityInput.oninput=()=>{saleKey=null;saleError('');updateSaleTotal();};
+  sellDialog.querySelectorAll('[data-step]').forEach(button=>button.onclick=()=>{
+    quantityInput.value=Math.max(1,Math.min(Number(sellingItem.quantity),(Number(quantityInput.value)||1)+Number(button.dataset.step)));
+    quantityInput.oninput();
+  });
+  $('#ownedItems').onclick=e=>{
+    const button=e.target.closest('[data-sell]');if(!button||button.disabled)return;
+    sellingItem=ownedItems.find(i=>String(i.id)===button.dataset.sell);if(!sellingItem)return;
+    saleKey=null;quantityInput.value=1;quantityInput.max=sellingItem.quantity;
+    sellDialog.querySelector('.resale-product').textContent=sellingItem.product_name;
+    $('#resaleAvailable').textContent='· Đang có x'+sellingItem.quantity;
+    saleError('');updateSaleTotal();sellDialog.showModal();quantityInput.focus();quantityInput.select();
+  };
+  sellForm.onsubmit=async e=>{
+    e.preventDefault();if(selling||!sellForm.reportValidity())return;
+    const quantity=Number(quantityInput.value);if(!Number.isInteger(quantity))return;
+    selling=true;saleKey ||= crypto.randomUUID();
+    sellDialog.querySelectorAll('button,input').forEach(el=>el.disabled=true);
+    try{
+      const result=await api('/owned-items/'+sellingItem.id+'/sell','POST',{quantity,key:saleKey});
+      data.user.cash=result.cash;render();sellDialog.close();
+      notice('Đã bán lại. Cộng '+money(result.amount)+' vào tài khoản.');
+      await loadOwned();
+    }catch(error){saleError(error.message);}
+    finally{selling=false;sellDialog.querySelectorAll('button,input').forEach(el=>el.disabled=false);updateSaleTotal();}
+  };
+
   $('#ordersList').onclick=async e=>{
     const button=e.target.closest('[data-view-order],[data-cancel-order]');if(!button)return;
     if(button.dataset.viewOrder)return viewOrder(button.dataset.viewOrder);
@@ -128,7 +195,7 @@
   }
   function notificationLink(path) {
     if(typeof path!=='string'||!path.startsWith('/')||path.startsWith('//')||path.includes('\\'))return '';
-    try {const url=new URL(path,location.origin);return url.origin===location.origin && url.pathname.startsWith('/html/')?url.pathname+url.search+url.hash:'';}catch{return '';}
+    try {const url=new URL(path,location.origin);return url.origin===location.origin && (url.pathname.startsWith('/html/')||url.pathname==='/admin/admin.html')?url.pathname+url.search+url.hash:'';}catch{return '';}
   }
   async function loadNotifications() {
     const result=await notificationsRequest(`?page=${notificationPage}&limit=20&unread=${onlyUnread?1:0}`);
@@ -153,9 +220,16 @@
   };
   await Promise.allSettled([
     api('/orders').then(rows=>{orders=rows;renderOrders();document.querySelectorAll('.order-tab').forEach(b=>b.querySelector('.tab-count').textContent=rows.filter(o=>b.dataset.status==='all'||o.status===b.dataset.status).length);}).catch(e=>notice(e.message)),
+    loadOwned().catch(e=>{$('#ownedItems').textContent=e.message;}),
     loadWishlist().catch(e=>notice(e.message)),
     loadNotifications().catch(e=>notice(e.message)),
     api('/preferences').then(p=>{const panel=$('#tab-settings .content-card');panel.innerHTML='<div class="content-title">Cài đặt tài khoản</div>'+[['receive_newsletter','Nhận email bản tin'],['receive_sms','Nhận tin nhắn SMS']].map(([key,label])=>`<label class="setting-row">${label}<input type="checkbox" name="${key}" ${p[key]?'checked':''}></label>`).join('');panel.onchange=async e=>{const inputs=[...panel.querySelectorAll('input')];inputs.forEach(i=>i.disabled=true);try{await api('/preferences','PATCH',Object.fromEntries(inputs.map(i=>[i.name,i.checked?1:0])));notice('Đã lưu cài đặt.');}catch(error){e.target.checked=!e.target.checked;notice(error.message);}finally{inputs.forEach(i=>i.disabled=false);}};}).catch(e=>notice(e.message))
   ]);
+  let refreshingOrders=false;
+  setInterval(async()=>{
+    if(document.hidden||refreshingOrders||!document.querySelector('#tab-owned.active,#tab-orders.active'))return;
+    refreshingOrders=true;
+    try{orders=await api('/orders');renderOrders();await loadOwned();}catch{}finally{refreshingOrders=false;}
+  },10000);
   window.dispatchEvent(new Event('hashchange'));
 })();

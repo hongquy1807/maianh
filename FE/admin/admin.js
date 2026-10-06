@@ -194,9 +194,9 @@
             function renderCustomers(searchTerm=''){
                 document.querySelector('[data-tab="customers"] .nav-badge').textContent=customers.length;
                 const term=searchTerm.toLowerCase();
-                document.getElementById('customersTableBody').innerHTML=customers.filter(c=>[c.name,c.email,c.phone].some(v=>String(v||'').toLowerCase().includes(term))).map(c=>{
+                document.getElementById('customersTableBody').innerHTML=customers.filter(c=>[c.id,c.name,c.email,c.phone].some(v=>String(v||'').toLowerCase().includes(term))).map(c=>{
                     const button=(action,label,icon)=>`<button class="icon-action" data-customer-action="${action}" data-customer-id="${orderEscape(c.id)}" title="${label}" aria-label="${label}"><i class="fas fa-${icon}" aria-hidden="true"></i></button>`;
-                    return `<tr><td><strong>${orderEscape(c.name)}</strong></td><td>${orderEscape(c.email)}<br>${orderEscape(c.phone||'')}</td><td><strong class="customer-cash">${formatPrice(Number(c.cash))}</strong></td><td>${Number(c.orders)}</td><td>${formatPrice(Number(c.spent))}</td><td>${orderEscape(customerStatus[c.status]||c.status)}</td><td><div class="table-actions">${button('view','Xem khách hàng','eye')}${button('edit','Sửa thông tin','edit')}${button('gift','Tặng tiền','gift')}${button('status',c.status==='active'?'Khóa tài khoản':'Mở tài khoản',c.status==='active'?'ban':'unlock')}</div></td></tr>`;
+                    return `<tr><td>${orderEscape(c.id)}</td><td><strong>${orderEscape(c.name)}</strong></td><td>${orderEscape(c.email)}</td><td>${orderEscape(c.phone||'—')}</td><td>${orderEscape(customerStatus[c.status]||c.status)}</td><td>${orderEscape(c.created_at)}</td><td><div class="table-actions"><button class="btn-primary" data-customer-action="view" data-customer-id="${orderEscape(c.id)}">Xem thêm</button>${button('edit','Sửa thông tin','edit')}${button('gift','Tặng tiền','gift')}${button('status',c.status==='active'?'Khóa tài khoản':'Mở tài khoản',c.status==='active'?'ban':'unlock')}</div></td></tr>`;
                 }).join('')||'<tr><td colspan="7">Không có khách hàng phù hợp.</td></tr>';
             }
             async function reloadCustomers(){customers=await customerRequest();renderCustomers(document.getElementById('searchCustomers').value);}
@@ -215,7 +215,7 @@
                         await customerRequest('/'+id,'PATCH',{status:c.status==='active'?'banned':'active'});await reloadCustomers();showToast('Đã cập nhật trạng thái.',true);return;
                     }
                     if(action==='view'){
-                        showCustomerBox('Thông tin khách hàng',`<div class="customer-balance">Số dư tài khoản<strong>${formatPrice(Number(c.cash))}</strong></div><div class="admin-order-info"><section><h3>${orderEscape(c.name)}</h3><p>${orderEscape(c.email)}</p><p>${orderEscape(c.phone||'Chưa có số điện thoại')}</p><p>${orderEscape(c.address||'Chưa có địa chỉ hồ sơ')}</p></section><section><p>Ngày tham gia: ${orderEscape(c.created_at)}</p><p>Trạng thái: ${orderEscape(customerStatus[c.status])}</p><p>${c.orders} đơn hàng · Tổng chi: ${formatPrice(Number(c.spent))}</p></section></div><h3>Địa chỉ nhận hàng</h3>${c.addresses.map(a=>`<p>${orderEscape(a.recipient_name)} · ${orderEscape(a.phone)}<br>${orderEscape([a.address_line,a.ward,a.district,a.province].filter(Boolean).join(', '))}</p>`).join('')||'<p>Chưa có địa chỉ.</p>'}<h3>30 đơn hàng gần nhất</h3>${c.recent_orders.map(o=>`<p>#${orderEscape(o.order_number)} · ${orderEscape(orderStatus(o.status))} · ${formatPrice(Number(o.total_amount))}</p>`).join('')||'<p>Chưa có đơn hàng.</p>'}<h3>30 lần nhận quà gần nhất</h3>${c.gifts.map(g=>`<p>${orderEscape(g.created_at)} · +${formatPrice(Number(g.amount))}</p>`).join('')||'<p>Chưa có giao dịch tặng tiền.</p>'}`);return;
+                        showCustomerBox('Thông tin khách hàng',`<div class="customer-balance">Số dư tài khoản<strong>${formatPrice(Number(c.cash))}</strong></div><div class="admin-order-info"><section><h3>${orderEscape(c.name)}</h3><p>${orderEscape(c.email)}</p><p>${orderEscape(c.phone||'Chưa có số điện thoại')}</p><p>${orderEscape(c.address||'Chưa có địa chỉ hồ sơ')}</p></section><section><p>Ngày tham gia: ${orderEscape(c.created_at)}</p><p>Trạng thái: ${orderEscape(customerStatus[c.status])}</p><p>${c.orders} đơn hàng · Tổng chi: ${formatPrice(Number(c.spent))}</p></section></div><p>Tổng thanh toán đã ghi nhận (chưa trừ hoàn tiền): <strong>${formatPrice(Number(c.paid_total))}</strong></p><h3>Vật phẩm đang sở hữu</h3>${c.owned_items.map(i=>`<article class="admin-order-product"><div><strong>${orderEscape(i.product_name)} · x${Number(i.quantity)}</strong><p>${orderEscape([i.size_label,i.color_label].filter(Boolean).join(' · '))}</p><small>${orderEscape(i.order_number)} · ${orderEscape(orderStatus(i.status))}</small></div></article>`).join('')||'<p>Chưa có vật phẩm.</p>'}<h3>Địa chỉ nhận hàng</h3>${c.addresses.map(a=>`<p>${orderEscape(a.recipient_name)} · ${orderEscape(a.phone)}<br>${orderEscape([a.address_line,a.ward,a.district,a.province].filter(Boolean).join(', '))}</p>`).join('')||'<p>Chưa có địa chỉ.</p>'}<h3>30 đơn hàng gần nhất</h3>${c.recent_orders.map(o=>`<p>#${orderEscape(o.order_number)} · ${orderEscape(orderStatus(o.status))} · ${formatPrice(Number(o.total_amount))}</p>`).join('')||'<p>Chưa có đơn hàng.</p>'}<h3>30 lần nhận quà gần nhất</h3>${c.gifts.map(g=>`<p>${orderEscape(g.created_at)} · +${formatPrice(Number(g.amount))}</p>`).join('')||'<p>Chưa có giao dịch tặng tiền.</p>'}`);return;
                     }
                     const gift=action==='gift',key=crypto.randomUUID();
                     showCustomerBox(gift?'🎁 Tặng tiền cho khách hàng':'Chỉnh sửa thông tin',`<p><strong>${orderEscape(c.name)}</strong> · ${orderEscape(c.email)}</p><div class="customer-balance">Số dư hiện tại<strong>${formatPrice(Number(c.cash))}</strong></div><form class="customer-form">${gift?'<label>Số tiền muốn tặng (đ)<input name="amount" type="number" min="1" max="9999999999999" step="1" required placeholder="Nhập số tiền"></label>':customerField('name','Họ tên',c.name)+customerField('email','Email',c.email,'email',255)+customerField('phone','Số điện thoại',c.phone,'tel',24)+customerField('address','Địa chỉ hồ sơ',c.address,'text',500)+`<label>Trạng thái<select name="status">${Object.entries(customerStatus).map(([value,label])=>`<option value="${value}" ${value===c.status?'selected':''}>${label}</option>`).join('')}</select></label>`}<p class="customer-error" role="alert"></p><button type="submit" class="btn-primary">${gift?'Tặng tiền':'Lưu thay đổi'}</button></form>`);
@@ -270,67 +270,7 @@
             `).join('');
 
             // ============ POSTS ============
-            const posts = [
-                { title: 'Bộ sưu tập gấu bông pastel của mình sau 2 năm', author: 'Mai Anh', avatar: '👩', category: 'Khoe bộ sưu tập', likes: 342, comments: 28, date: '15/01/2025', status: 'published' },
-                { title: 'Review Gấu Nâu Mật Ong size 60cm', author: 'Minh Quân', avatar: '🧑', category: 'Đánh giá', likes: 218, comments: 45, date: '14/01/2025', status: 'published' },
-                { title: 'Hướng dẫn tự may gấu bông tại nhà', author: 'Thu Hà', avatar: '👧', category: 'DIY', likes: 456, comments: 67, date: '13/01/2025', status: 'published' },
-                { title: 'Gấu bông bị xẹp sau khi giặt phải làm sao?', author: 'Hoàng Long', avatar: '🧒', category: 'Hỏi đáp', likes: 125, comments: 23, date: '13/01/2025', status: 'pending' }
-            ];
-
-            document.getElementById('postsList').innerHTML = posts.map(p => `
-                <div class="activity-item" style="margin-bottom: 12px;">
-                    <div class="table-product-img" style="width: 50px; height: 50px; font-size: 1.6rem;">${p.avatar}</div>
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-dark); margin-bottom: 5px;">${p.title}</div>
-                        <div style="display: flex; gap: 15px; font-size: 0.75rem; color: var(--text-medium); font-weight: 700; flex-wrap: wrap;">
-                            <span><i class="fas fa-user"></i> ${p.author}</span>
-                            <span><i class="fas fa-tag"></i> ${p.category}</span>
-                            <span><i class="fas fa-heart"></i> ${p.likes}</span>
-                            <span><i class="fas fa-comment"></i> ${p.comments}</span>
-                            <span><i class="fas fa-calendar"></i> ${p.date}</span>
-                        </div>
-                    </div>
-                    <span class="status-badge ${p.status === 'published' ? 'delivered' : 'pending'}">
-                        <i class="fas ${p.status === 'published' ? 'fa-check' : 'fa-clock'}"></i>
-                        ${p.status === 'published' ? 'Đã đăng' : 'Chờ duyệt'}
-                    </span>
-                    <div style="display: flex; gap: 6px;">
-                        <button class="icon-action view" title="Xem"><i class="fas fa-eye"></i></button>
-                        <button class="icon-action" title="Sửa"><i class="fas fa-edit"></i></button>
-                        <button class="icon-action danger" title="Xoá"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-            `).join('');
-
             // ============ VOCABULARY ============
-            const vocabulary = [
-                { kr: '안녕하세요', roman: 'annyeonghaseyo', vi: 'Xin chào', cat: 'Chào hỏi' },
-                { kr: '감사합니다', roman: 'gamsahamnida', vi: 'Cảm ơn', cat: 'Chào hỏi' },
-                { kr: '사랑해요', roman: 'saranghaeyo', vi: 'Tôi yêu bạn', cat: 'Chào hỏi' },
-                { kr: '가족', roman: 'gajok', vi: 'Gia đình', cat: 'Gia đình' },
-                { kr: '엄마', roman: 'eomma', vi: 'Mẹ', cat: 'Gia đình' },
-                { kr: '밥', roman: 'bap', vi: 'Cơm', cat: 'Đồ ăn' },
-                { kr: '김치', roman: 'gimchi', vi: 'Kim chi', cat: 'Đồ ăn' },
-                { kr: '빨간색', roman: 'ppalgansaek', vi: 'Màu đỏ', cat: 'Màu sắc' },
-                { kr: '고양이', roman: 'goyangi', vi: 'Con mèo', cat: 'Động vật' },
-                { kr: '하나', roman: 'hana', vi: 'Một', cat: 'Số đếm' }
-            ];
-
-            document.getElementById('vocabTableBody').innerHTML = vocabulary.map(v => `
-                <tr>
-                    <td><strong style="font-size: 1.05rem; color: var(--pink-deep);">${v.kr}</strong></td>
-                    <td><em style="color: var(--text-medium); font-weight: 700;">${v.roman}</em></td>
-                    <td><strong>${v.vi}</strong></td>
-                    <td><span class="status-badge confirmed"><i class="fas fa-tag"></i> ${v.cat}</span></td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="icon-action" title="Sửa"><i class="fas fa-edit"></i></button>
-                            <button class="icon-action danger" title="Xoá"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
             // ============ CATEGORIES ============
             const categories = [
                 { name: 'Gấu cỡ nhỏ', emoji: '🧸', count: 8, color: '#ffc93c' },
@@ -341,7 +281,7 @@
                 { name: 'Gấu đôi', emoji: '💝', count: 4, color: '#ffab91' }
             ];
 
-            document.getElementById('categoriesList').innerHTML = categories.map(c => `
+            if(document.getElementById('categoriesList')) document.getElementById('categoriesList').innerHTML = categories.map(c => `
                 <div class="activity-item" style="margin-bottom: 10px;">
                     <div class="table-product-img" style="background: ${c.color}33; border: 2px solid ${c.color};">${c.emoji}</div>
                     <div style="flex: 1;">
@@ -384,15 +324,11 @@
                 showToast('📥 Đang xuất danh sách khách hàng...', true);
             });
 
-            document.getElementById('addPostBtn').addEventListener('click', () => {
-                showToast('✍️ Mở trình soạn bài viết mới...', true);
-            });
 
-            document.getElementById('addVocabBtn').addEventListener('click', () => {
-                showToast('📚 Mở form thêm từ vựng...', true);
-            });
 
-            document.getElementById('addCategoryBtn').addEventListener('click', () => {
+
+
+            document.getElementById('addCategoryBtn')?.addEventListener('click', () => {
                 showToast('📁 Mở form thêm danh mục...', true);
             });
 
@@ -409,8 +345,8 @@
                         if (!response.ok) throw new Error(body.error || 'Không thể tải dữ liệu quản trị.');
                         return body.data;
                     });
-                    const [dashboard, apiOrders, apiCustomers] = await Promise.all([
-                        request('dashboard'), request('orders'), request('customers')
+                    const [dashboard, apiOrders] = await Promise.all([
+                        request('dashboard'), request('orders')
                     ]);
 
                     paintDashboard(dashboard);
@@ -419,10 +355,7 @@
                         orders = apiOrders.map(order => ({ ...order, avatar: '👤', total: Number(order.total) }));
                         renderOrders();
                     }
-                    {
-                        customers = apiCustomers.map(customer => ({ ...customer, avatar: '👤', orders: Number(customer.orders), spent: Number(customer.spent) }));
-                        renderCustomers();
-                    }
+
                 } catch (error) {
                     showToast(error.message, false);
                 }
@@ -432,6 +365,7 @@
             renderOrders('all');
             renderCustomers();
             loadAdminApi();
+            reloadCustomers().catch(error=>{document.getElementById('customersTableBody').innerHTML='<tr><td colspan="7">'+orderEscape(error.message)+'</td></tr>';});
 
             // Welcome
             window.addEventListener('load', () => {

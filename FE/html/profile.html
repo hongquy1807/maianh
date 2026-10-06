@@ -94,10 +94,15 @@
                 <button class="sidebar-nav-item active" data-tab="info">
                     <i class="fas fa-user-circle"></i> Thông tin cá nhân
                 </button>
+                <button class="sidebar-nav-item" data-tab="owned">
+                    <i class="fas fa-gift"></i> Vật phẩm đã sở hữu
+                    <span class="nav-count">0</span>
+                </button>
                 <button class="sidebar-nav-item" data-tab="orders">
                     <i class="fas fa-box"></i> Đơn hàng
                     <span class="nav-count">4</span>
                 </button>
+
                 <button class="sidebar-nav-item" data-tab="addresses">
                     <i class="fas fa-map-marker-alt"></i> Địa chỉ
                     <span class="nav-count">2</span>
@@ -218,6 +223,13 @@
             </div>
 
             <!-- ========== TAB: ADDRESSES ========== -->
+            <div class="tab-panel" id="tab-owned">
+                <div class="content-card">
+                    <div class="content-title"><i class="fas fa-gift"></i> Vật phẩm đã sở hữu</div>
+                    <p class="owned-description">Bộ sưu tập của bạn. Nhấn biểu tượng đồng xu để bán lại vật phẩm đã giao, nhận 50% giá lúc mua vào tài khoản.</p>
+                    <div id="ownedItems" class="owned-items" aria-live="polite"><p>Đang tải vật phẩm…</p></div>
+                </div>
+            </div>
             <div class="tab-panel" id="tab-addresses">
                 <div class="content-card">
                     <div class="content-title">

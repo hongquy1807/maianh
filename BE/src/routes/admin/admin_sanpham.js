@@ -1,3 +1,4 @@
+import {notifyStockOut} from '../../services/stock-alerts.js';
 import { Router, raw } from 'express';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
@@ -134,13 +135,14 @@ async function save(req, res) {
       const [insert] = await conn.execute('INSERT INTO products(category_id,slug,name,description,is_active) VALUES(?,?,?,?,?)', values);
       id = String(insert.insertId);
     }
-    const [existing] = await conn.execute('SELECT id FROM product_variants WHERE product_id=? FOR UPDATE', [id]);
+    const [existing] = await conn.execute('SELECT id,stock_quantity FROM product_variants WHERE product_id=? FOR UPDATE', [id]);
     const existingIds = new Set(existing.map(v => String(v.id)));
     for (const v of p.variants) {
       const values = [v.sku,v.size_label,v.color_label,v.price,v.compare_at_price,v.stock_quantity,v.is_active];
       if (v.id) {
         if (!existingIds.has(v.id)) throw badRequest('Biến thể không thuộc sản phẩm này.');
         await conn.execute('UPDATE product_variants SET sku=?,size_label=?,color_label=?,price=?,compare_at_price=?,stock_quantity=?,is_active=? WHERE id=? AND product_id=?', [...values,v.id,id]);
+        if(Number(existing.find(x=>String(x.id)===v.id).stock_quantity)>0 && v.stock_quantity===0)await notifyStockOut(conn,{...v,name:p.name});
       } else await conn.execute('INSERT INTO product_variants(sku,size_label,color_label,price,compare_at_price,stock_quantity,is_active,product_id) VALUES(?,?,?,?,?,?,?,?)', [...values,id]);
     }
     for (const v of existing) {

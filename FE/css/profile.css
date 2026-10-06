@@ -1446,3 +1446,56 @@ html body .profile-inline-2.profile-inline-2 { text-decoration: none; display: i
 .order-grand-total strong { color:#bc7900; }
 .order-payment-info { padding:16px;background:#fff6dc;border-radius:16px; }
 @media(max-width:540px) { .profile-order-modal{padding:18px}.order-detail-product{grid-template-columns:60px minmax(0,1fr);gap:12px}.order-detail-product img,.order-photo-placeholder{width:60px;height:76px}.order-detail-product>strong{grid-column:2}.order-header{flex-wrap:wrap;overflow-wrap:anywhere}.order-modal-heading h2{font-size:19px} }
+
+.owned-description { color: #946c53; margin: 0 0 22px; line-height: 1.6; }
+.owned-items { display: grid; gap: 16px; }
+.owned-item { display: flex; gap: 20px; border: 1px solid #ffe7a4; border-radius: 20px; padding: 18px; background: #fffcf4; }
+.owned-photo { flex: 0 0 100px; height: 110px; display: grid; place-items: center; background: #fff2ca; border-radius: 14px; overflow: hidden; font-size: 40px; }
+.owned-photo img { width: 100%; height: 100%; object-fit: cover; }
+.owned-copy { min-width: 0; overflow-wrap: anywhere; }
+.owned-copy h3 { margin: 0 0 8px; color: #654632; }
+.owned-copy p { margin: 7px 0; }
+.owned-status { display: inline-block; padding: 4px 12px; border-radius: 20px; background: #fff0ba; color: #79520a; font-weight: 700; }
+.owned-date { color: #94735d; font-size: .85rem; }
+@media(max-width: 480px) { .owned-item { gap: 12px; padding: 12px; } .owned-photo { flex-basis: 70px; height: 80px; } }
+
+/* Allow the horizontal profile menu to scroll inside the mobile grid. */
+.profile-layout > * { min-width: 0; }
+.owned-copy button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+
+/* Owned collection cards */
+.owned-items { grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.owned-item { display:block; position:relative; padding:50px 18px 20px; border-radius:30px; background:#fffdf7; box-shadow:0 10px 24px #ffc83b18; }
+.owned-item::after { content:'🌸'; position:absolute; bottom:-8px; left:25%; font-size:18px; }
+.owned-photo { width:100%; height:auto; aspect-ratio:3/4; border-radius:22px; border-bottom:5px solid #ffe69a; font-size:60px; }
+.owned-status { position:absolute; left:15px; top:19px; background:#ffb1c8; color:#fff; font-size:10px; padding:5px 10px; }
+.owned-flower { position:absolute; top:8px; left:50%; font-size:17px; }
+.owned-sell { position:absolute; right:14px; top:16px; width:35px; height:35px; border:0; border-radius:50%; background:#ffb1c8; color:white; cursor:pointer; }
+.owned-sell:hover { background:#ef80a6; }.owned-sell:disabled{opacity:.4;cursor:not-allowed}.owned-sell:focus-visible{outline:3px solid #b47600;outline-offset:3px}
+.owned-labels { display:flex; align-items:stretch; gap:8px; margin-top:18px; }
+.owned-name,.owned-quantity { padding:12px 10px; border-radius:19px; background:linear-gradient(110deg,#ffce42,#ffe9a5); box-shadow:0 5px 0 #eaaa00; color:#654632; font-weight:700; font-size:14px; text-align:center; display:flex; align-items:center; justify-content:center; }
+.owned-name { flex:1; min-width:0; overflow-wrap:anywhere; }.owned-quantity{flex-shrink:0;}
+@media(max-width:1100px){.owned-items{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:480px){.owned-items{grid-template-columns:1fr;}.owned-item{padding:50px 20px 22px;}}
+
+.owned-edge{position:absolute;left:-9px;top:45%;display:grid;gap:1px;font-size:23px;pointer-events:none;transform:rotate(-12deg)}
+.owned-edge span,.resale-decor span,.resale-footer span{color:#ffc928;text-shadow:0 2px 2px #eaa80033;font-size:30px}
+.owned-status{font-size:12px;min-width:40px;text-align:center}
+.resale-dialog{position:fixed;inset:0;margin:auto;width:min(460px,calc(100vw - 32px));max-height:90dvh;overflow:auto;box-sizing:border-box;border:2px solid #ffe4a0;border-radius:32px;padding:30px;background:linear-gradient(145deg,#fffdf5,#fff8ed 65%,#fff0f5);color:#654632;box-shadow:0 25px 90px #65463240;font-family:inherit}
+.resale-dialog::backdrop{background:#4a302e70;backdrop-filter:blur(5px)}
+.resale-dialog button,.resale-dialog input{font:inherit}.resale-dialog button{cursor:pointer}.resale-dialog button:disabled{opacity:.5;cursor:wait}
+.resale-close{position:absolute;right:16px;top:14px;border:0;border-radius:50%;width:34px;height:34px;background:#ffe0eb;color:#9c526b;font-size:24px!important}
+.resale-decor{text-align:center;font-size:38px;letter-spacing:10px;margin:0 0 10px}
+.resale-dialog h2{text-align:center;font-size:24px;margin:8px 0}.resale-product{text-align:center;font-weight:700;overflow-wrap:anywhere;margin:8px 0;color:#b17b13}
+.resale-hint{text-align:center;font-size:13px;color:#987762;line-height:1.6;margin-bottom:24px}
+.resale-dialog label{display:block;font-weight:700;font-size:14px;margin-bottom:12px}.resale-dialog label small{font-weight:400;color:#a38272}
+.resale-stepper{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #ffe1a1;border-radius:20px;padding:10px}
+.resale-stepper button{flex-shrink:0;width:42px;height:42px;border:0;border-radius:14px;background:#ffedb4;color:#9c6900;font-size:24px}
+.resale-stepper input{min-width:0;width:100%;text-align:center;border:0;background:transparent;color:#654632;font-size:22px;font-weight:700;padding:6px;appearance:textfield}
+.resale-stepper input::-webkit-inner-spin-button{appearance:none}
+.resale-total{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px;margin-top:18px;border:1px dashed #edbe57;border-radius:18px;background:#fff2cd;font-size:14px}.resale-total strong{font-size:24px;color:#b57b00;overflow-wrap:anywhere}
+.resale-error{color:#b53657;font-size:13px;line-height:1.5;min-height:18px;margin:12px 0}
+.resale-actions{display:flex;gap:12px}.resale-actions button{padding:13px 16px;border-radius:20px;font-weight:700;border:0}.resale-cancel{background:#ffe3ed;color:#92576b}.resale-submit{flex:1;background:linear-gradient(110deg,#ffd044,#ffe8a1);color:#654632;box-shadow:0 4px 0 #e5aa00}
+.resale-footer{text-align:center;margin-top:24px;letter-spacing:12px;font-size:18px}.resale-footer span{font-size:20px}
+.resale-dialog :focus-visible{outline:3px solid #e7ac37;outline-offset:3px}
+@media(max-width:480px){.resale-dialog{padding:26px 20px}.resale-total strong{font-size:21px}}

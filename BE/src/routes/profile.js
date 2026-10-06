@@ -1,3 +1,4 @@
+import {advanceOrders} from '../services/order-lifecycle.js';
 import { mkdir, writeFile, unlink } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 ﻿import { Router, raw } from 'express';
@@ -94,12 +95,58 @@ router.delete('/addresses/:id',async(req,res)=>{
   res.json({data:await profile(req.user.id)});
 });
 router.get('/orders',async(req,res)=>{
+  await advanceOrders(null,req.user.id);
   const [data]=await pool.execute('SELECT id,order_number,status,total_amount,created_at FROM orders WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT 100',[req.user.id]);
   res.json({data});
+});
+router.get('/owned-items',async(req,res)=>{
+ await advanceOrders(null,req.user.id);
+ const [data]=await pool.execute(`SELECT oi.id,oi.product_name,oi.sku,oi.size_label,oi.color_label,(oi.quantity-COALESCE((SELECT SUM(quantity) FROM item_resales WHERE order_item_id=oi.id),0)) AS quantity,oi.unit_price,oi.line_total,
+ o.id AS order_id,o.order_number,o.status,o.created_at,
+ (SELECT MIN(paid_at) FROM payments WHERE order_id=o.id AND status='paid') AS paid_at,
+ (SELECT image_url FROM product_images WHERE product_id=v.product_id ORDER BY sort_order,id LIMIT 1) AS image_url
+ FROM orders o JOIN order_items oi ON oi.order_id=o.id LEFT JOIN product_variants v ON v.id=oi.variant_id
+ WHERE o.user_id=? AND o.status NOT IN ('cancelled','returned')
+ AND EXISTS(SELECT 1 FROM payments p WHERE p.order_id=o.id AND p.status='paid' AND p.amount>=o.total_amount)
+ AND NOT EXISTS(SELECT 1 FROM refunds r WHERE r.order_id=o.id AND r.status IN ('requested','approved','completed'))
+ HAVING quantity>0 ORDER BY o.created_at DESC,o.id DESC,oi.id`,[req.user.id]);
+ res.json({data});
+});
+router.post('/owned-items/:id/sell',async(req,res)=>{
+ const id=resourceId(req.params.id), {quantity,key}=req.body||{};
+ if(!Number.isInteger(quantity)||quantity<1||quantity>1000000||typeof key!=='string'||!/^[0-9a-f-]{36}$/i.test(key))throw badRequest('Số lượng hoặc mã giao dịch không hợp lệ.');
+ const conn=await pool.getConnection();
+ try{
+  await conn.beginTransaction();
+  await conn.execute('SELECT id FROM users WHERE id=? FOR UPDATE',[req.user.id]);
+  const [[prior]]=await conn.execute('SELECT * FROM item_resales WHERE user_id=? AND request_key=?',[req.user.id,key]);
+  if(prior){
+   if(String(prior.order_item_id)!==id||Number(prior.quantity)!==quantity)throw fail(409,'Mã giao dịch đã được sử dụng.');
+   const [[wallet]]=await conn.execute('SELECT cash FROM users WHERE id=?',[req.user.id]);
+   await conn.commit();return res.json({data:{amount:prior.amount,cash:wallet.cash}});
+  }
+  const [[item]]=await conn.execute(`SELECT oi.*,o.status,o.total_amount FROM order_items oi JOIN orders o ON o.id=oi.order_id
+   WHERE oi.id=? AND o.user_id=? FOR UPDATE`,[id,req.user.id]);
+  if(!item)throw fail(404,'Không tìm thấy vật phẩm.');
+  if(item.status!=='delivered')throw fail(409,'Chỉ bán lại vật phẩm đã giao thành công.');
+  const [[eligible]]=await conn.execute(`SELECT EXISTS(SELECT 1 FROM payments WHERE order_id=? AND status='paid' AND amount>=?) AS paid,
+   EXISTS(SELECT 1 FROM refunds WHERE order_id=? AND status IN ('requested','approved','completed')) AS refunded`,[item.order_id,item.total_amount,item.order_id]);
+  if(!Number(eligible.paid)||Number(eligible.refunded))throw fail(409,'Vật phẩm không đủ điều kiện bán lại.');
+  const [[sold]]=await conn.execute('SELECT COALESCE(SUM(quantity),0) AS n FROM item_resales WHERE order_item_id=?',[id]);
+  if(quantity>Number(item.quantity)-Number(sold.n))throw fail(409,'Số lượng sở hữu không đủ.');
+  // Decimal arithmetic stays in MySQL; the client never supplies the resale price.
+  await conn.execute(`INSERT INTO item_resales(user_id,order_item_id,request_key,quantity,amount)
+   SELECT ?,id,?,?,unit_price*?/2 FROM order_items WHERE id=?`,[req.user.id,key,quantity,quantity,id]);
+  const [[sale]]=await conn.execute('SELECT amount FROM item_resales WHERE user_id=? AND request_key=?',[req.user.id,key]);
+  await conn.execute('UPDATE users SET cash=cash+? WHERE id=?',[sale.amount,req.user.id]);
+  const [[wallet]]=await conn.execute('SELECT cash FROM users WHERE id=?',[req.user.id]);
+  await conn.commit();res.status(201).json({data:{amount:sale.amount,cash:wallet.cash}});
+ }catch(e){await conn.rollback();throw e;}finally{conn.release();}
 });
 // Order ownership is checked for every read and mutation.
 router.get('/orders/:id',async(req,res)=>{
   const id=resourceId(req.params.id);
+  await advanceOrders(id,req.user.id);
   const [[order]]=await pool.execute('SELECT * FROM orders WHERE id=? AND user_id=?',[id,req.user.id]);
   if(!order) throw fail(404,'Không tìm thấy đơn hàng.');
   const [items]=await pool.execute(`SELECT oi.*,

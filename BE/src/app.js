@@ -1,3 +1,5 @@
+import {createKoreanChatRouter} from './routes/korean-chat.js';
+import {requireAuth} from './routes/auth.js';
 import koreaRoutes from './routes/korea.js';
 import newsRoutes from './routes/tintuc.js';
 import notificationRoutes from './routes/thongbao.js';
@@ -46,6 +48,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/home', homeRoutes);
+app.use('/api/korea/chat', createKoreanChatRouter({authenticate:requireAuth}));
 app.use('/api/korea', koreaRoutes);
 app.use('/api/tintuc', newsRoutes);
 app.use('/api/admin', adminRoutes);

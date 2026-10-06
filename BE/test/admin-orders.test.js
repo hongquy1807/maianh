@@ -48,11 +48,11 @@ test('admin orders ownership, confirmation, timed delivery and single refund',as
   assert.equal((await call('/'+id+'/confirm','POST')).status,409);
   await advanceOrders(id);
   const state=async()=>{const [[o]]=await pool.execute('SELECT status FROM orders WHERE id=?',[id]);return o.status;};
-  assert.equal(await state(),'confirmed');
-  await pool.execute("UPDATE order_status_history SET created_at=UTC_TIMESTAMP()-INTERVAL 25 HOUR WHERE order_id=? AND status='confirmed'",[id]);
+  assert.equal(await state(),'shipping');
+  await pool.execute("UPDATE order_status_history SET created_at=UTC_TIMESTAMP()-INTERVAL 4 MINUTE WHERE order_id=? AND status='shipping'",[id]);
   await Promise.all([advanceOrders(id),advanceOrders(id)]);assert.equal(await state(),'shipping');
   assert.equal((await call('/'+id+'/cancel','POST')).status,409);
-  await pool.execute("UPDATE order_status_history SET created_at=UTC_TIMESTAMP()-INTERVAL 25 HOUR WHERE order_id=? AND status='shipping'",[id]);
+  await pool.execute("UPDATE order_status_history SET created_at=UTC_TIMESTAMP()-INTERVAL 6 MINUTE WHERE order_id=? AND status='shipping'",[id]);
   await advanceOrders(id);assert.equal(await state(),'delivered');
   const [[counts]]=await pool.execute("SELECT COUNT(*) AS n FROM order_status_history WHERE order_id=? AND status='shipping'",[id]);assert.equal(Number(counts.n),1);
   const missed=await createOrder();await call('/'+missed+'/confirm','POST');

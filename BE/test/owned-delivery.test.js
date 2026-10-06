@@ -1,0 +1,93 @@
+import {processOrderMail} from '../src/services/order-mail.js';
+import test,{after} from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID,randomBytes} from 'node:crypto';
+import {mkdir} from 'node:fs/promises';
+import {createRequire} from 'node:module';
+import app from '../src/app.js';
+import {pool} from '../src/config/database.js';
+import {hashToken} from '../src/lib/passwords.js';
+import {advanceOrders} from '../src/services/order-lifecycle.js';
+after(()=>pool.end());
+test('paid checkout ships immediately, delivers after five minutes, private inventory and stock alerts are idempotent',async()=>{
+ const tag='owned-'+randomUUID(),users=[],tokens=[0,1,2].map(()=>randomBytes(32).toString('hex'));
+ let category,product,variant,browser;
+ const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const origin='http://127.0.0.1:'+server.address().port;
+ const request=(path,body,who=0)=>fetch(origin+'/api/'+path,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','X-Requested-With':'maianh-web',...(who===null?{}:{Cookie:'maianh_session='+tokens[who]})},...(body?{body:JSON.stringify(body)}:{})});
+ try{
+ for(let i=0;i<3;i++){const [u]=await pool.execute('INSERT INTO users(email,password_hash,full_name,role,cash) VALUES(?,?,?,?,1000000)',[tag+i+'@example.invalid','disabled','Inventory test',i===2?'admin':'customer']);users.push(u.insertId);await pool.execute('INSERT INTO auth_sessions(user_id,token_hash,expires_at) VALUES(?,?,UTC_TIMESTAMP()+INTERVAL 1 HOUR)',[u.insertId,hashToken(tokens[i])]);}
+ const [c]=await pool.execute('INSERT INTO categories(name,slug) VALUES(?,?)',[tag,tag]);category=c.insertId;
+ const [p]=await pool.execute('INSERT INTO products(category_id,slug,name,is_active) VALUES(?,?,?,1)',[category,tag,'Gấu bông kiểm thử']);product=p.insertId;
+ const [v]=await pool.execute('INSERT INTO product_variants(product_id,sku,size_label,color_label,price,stock_quantity,is_active) VALUES(?,?,?, ?,100,1,1)',[product,tag,'M','Vàng']);variant=v.insertId;
+ await pool.execute('INSERT INTO cart_items(user_id,variant_id,quantity) VALUES(?,?,1)',[users[0],variant]);
+ const body={key:randomUUID(),method:'store_pay',items:[{variant_id:variant,quantity:1}],coupons:[],expected_total:30100,address:{full_name:'Test',phone:'0912345678',address:'123 Test'}};
+ assert.equal((await request('checkout',{...body,expected_total:1})).status,409);
+ const replies=await Promise.all([request('checkout',body),request('checkout',body)]);assert.deepEqual(replies.map(r=>r.status).sort(),[200,201]);
+ const data=(await replies[0].json()).data,id=data.id;
+ const [[mailCount]]=await pool.execute('SELECT COUNT(*) AS n FROM order_mail_outbox WHERE order_id=?',[id]);assert.equal(Number(mailCount.n),1);
+ let sent=0;
+ await processOrderMail({ready:()=>true,send:async()=>{throw Object.assign(new Error('test'),{code:'ETIMEDOUT'});}});
+ const [[failedMail]]=await pool.execute('SELECT status,last_error FROM order_mail_outbox WHERE order_id=?',[id]);assert.equal(failedMail.status,'pending');assert.equal(failedMail.last_error,'ETIMEDOUT');
+ await pool.execute('UPDATE order_mail_outbox SET next_attempt_at=UTC_TIMESTAMP() WHERE order_id=?',[id]);
+ await Promise.all([processOrderMail({ready:()=>true,send:async(to,message)=>{sent++;assert.equal(to,tag+'0@example.invalid');assert.ok(message.text.includes('Đã thanh toán thành công'));}}),processOrderMail({ready:()=>true,send:async()=>{sent++;}})]);
+ assert.equal(sent,1);
+ const [[sentMail]]=await pool.execute('SELECT status FROM order_mail_outbox WHERE order_id=?',[id]);assert.equal(sentMail.status,'sent');
+ const [[o]]=await pool.execute('SELECT status FROM orders WHERE id=?',[id]);assert.equal(o.status,'shipping');
+ const [[cash]]=await pool.execute('SELECT cash FROM users WHERE id=?',[users[0]]);assert.equal(Number(cash.cash),969900);
+ const [[stock]]=await pool.execute('SELECT stock_quantity FROM product_variants WHERE id=?',[variant]);assert.equal(stock.stock_quantity,0);
+ const [alerts]=await pool.execute("SELECT * FROM notifications WHERE user_id=? AND title LIKE 'Hết hàng:%'",[users[2]]);assert.equal(alerts.length,1);assert.ok(alerts[0].message.includes(tag));
+ const [[otherAlerts]]=await pool.execute("SELECT COUNT(*) AS n FROM notifications WHERE user_id=? AND title LIKE 'Hết hàng:%'",[users[1]]);assert.equal(Number(otherAlerts.n),0);
+ assert.equal((await request('profile/owned-items',undefined,null)).status,401);
+ let owned=(await (await request('profile/owned-items')).json()).data;assert.equal(owned.length,1);assert.equal(owned[0].product_name,'Gấu bông kiểm thử');assert.equal(Number(owned[0].quantity),1);
+ assert.equal((await (await request('profile/owned-items',undefined,1)).json()).data.length,0);
+ assert.equal((await request('profile/orders/'+id,undefined,1)).status,404);
+ assert.equal((await request('profile/orders/'+id+'/cancel',{})).status,409);
+ await pool.execute("UPDATE order_status_history SET created_at=UTC_TIMESTAMP()-INTERVAL 4 MINUTE WHERE order_id=? AND status='shipping'",[id]);await advanceOrders(id);
+ const state=async()=>{const [[x]]=await pool.execute('SELECT status FROM orders WHERE id=?',[id]);return x.status;};assert.equal(await state(),'shipping');
+ await pool.execute("UPDATE order_status_history SET created_at=UTC_TIMESTAMP()-INTERVAL 301 SECOND WHERE order_id=? AND status='shipping'",[id]);
+ await Promise.all([advanceOrders(id),advanceOrders(id)]);assert.equal(await state(),'delivered');
+ const [[events]]=await pool.execute("SELECT COUNT(*) AS n FROM order_status_history WHERE order_id=? AND status='delivered'",[id]);assert.equal(Number(events.n),1);
+ owned=(await (await request('profile/owned-items')).json()).data;assert.equal(owned[0].status,'delivered');
+ await pool.execute("UPDATE orders SET status='returned' WHERE id=?",[id]);assert.equal((await (await request('profile/owned-items')).json()).data.length,0);await pool.execute("UPDATE orders SET status='delivered' WHERE id=?",[id]);
+ await pool.execute('UPDATE product_variants SET stock_quantity=2 WHERE id=?',[variant]);await pool.execute('INSERT INTO cart_items(user_id,variant_id,quantity) VALUES(?,?,1)',[users[1],variant]);
+ const unpaid=await request('checkout',{...body,key:randomUUID(),method:'bank'},1);assert.equal(unpaid.status,201);const unpaidId=(await unpaid.json()).data.id;
+ await advanceOrders(unpaidId);const [[pending]]=await pool.execute('SELECT status FROM orders WHERE id=?',[unpaidId]);assert.equal(pending.status,'pending');assert.equal((await (await request('profile/owned-items',undefined,1)).json()).data.length,0);
+ // Catch up a payment persisted later, without requiring admin order confirmation.
+ await pool.execute("UPDATE payments SET status='paid',paid_at=UTC_TIMESTAMP()-INTERVAL 6 MINUTE WHERE order_id=?",[unpaidId]);await advanceOrders(unpaidId);
+ assert.equal((await (await request('profile/owned-items',undefined,1)).json()).data[0].status,'delivered');
+ if(process.env.UI_TEST==='1'){
+ const {chromium}=createRequire(import.meta.url)('../inference/runtime/browser/node_modules/playwright');browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+ const context=await browser.newContext();await context.addCookies([{name:'maianh_session',value:tokens[0],url:origin,httpOnly:true,sameSite:'Lax'}]);const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(origin+'/html/profile.html#owned');await page.locator('#tab-owned.active .owned-item').waitFor();assert.equal(await page.locator('.owned-name').textContent(),'Gấu bông kiểm thử');assert.equal(await page.locator('.owned-status').textContent(),'x1');
+ await mkdir(new URL('./artifacts/',import.meta.url),{recursive:true});await page.screenshot({path:'test/artifacts/owned-desktop.png',fullPage:true});await page.getByRole('button',{name:'Bán lại Gấu bông kiểm thử',exact:true}).click();
+ assert.equal(await page.locator('.resale-dialog').isVisible(),true);
+ assert.equal(await page.locator('#resaleTotal').textContent(),'50đ');
+ await page.locator('#resaleQuantity').fill('2');
+ assert.equal(await page.locator('#resaleQuantity').evaluate(el=>el.validity.valid),false);
+ await page.locator('#resaleQuantity').fill('1');
+ await page.screenshot({path:'test/artifacts/resale-dialog.png',fullPage:true});
+ await page.getByRole('button',{name:'Để sau',exact:true}).click();
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:'test/artifacts/owned-mobile.png',fullPage:true});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);assert.deepEqual(errors,[]);
+ }
+ const itemId=owned[0].id, sellPath='profile/owned-items/'+itemId+'/sell';
+ const sale={quantity:1,key:randomUUID()};
+ assert.equal((await request(sellPath,sale,1)).status,404);
+ assert.equal((await request(sellPath,{...sale,quantity:2})).status,409);
+ assert.equal((await request(sellPath,{...sale,quantity:0})).status,400);
+ await pool.execute("UPDATE orders SET status='shipping' WHERE id=?",[id]);
+ assert.equal((await request(sellPath,sale)).status,409);
+ await pool.execute("UPDATE orders SET status='delivered' WHERE id=?",[id]);
+ const soldResponses=await Promise.all([request(sellPath,sale),request(sellPath,sale)]);
+ assert.deepEqual(soldResponses.map(r=>r.status).sort(),[200,201]);
+ assert.equal(Number((await soldResponses[0].json()).data.amount),50);
+ const [[afterSale]]=await pool.execute('SELECT cash FROM users WHERE id=?',[users[0]]);assert.equal(Number(afterSale.cash),969950);
+ assert.equal((await (await request('profile/owned-items')).json()).data.length,0);
+ assert.equal((await request(sellPath,{quantity:1,key:randomUUID()})).status,409);
+ const [[original]]=await pool.execute('SELECT quantity FROM order_items WHERE id=?',[itemId]);assert.equal(Number(original.quantity),1);
+ }finally{
+ if(browser)await browser.close();
+ await pool.execute('DELETE FROM notifications WHERE message LIKE ?',['%'+tag+'%']);
+ for(const id of users)await pool.execute('DELETE FROM orders WHERE user_id=?',[id]);for(const id of users)await pool.execute('DELETE FROM users WHERE id=?',[id]);
+ if(product)await pool.execute('DELETE FROM products WHERE id=?',[product]);if(category)await pool.execute('DELETE FROM categories WHERE id=?',[category]);server.closeAllConnections();await new Promise(r=>server.close(r));
+ }
+});

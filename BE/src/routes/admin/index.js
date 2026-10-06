@@ -1,3 +1,5 @@
+import postsRoutes from './posts.js';
+import vocabularyRoutes from './vocabulary.js';
 import dashboardRoutes from './dashboard.js';
 import customerRoutes from './user.js';
 import orderRoutes from './donhang.js';
@@ -14,6 +16,9 @@ router.get('/me', (req, res) => {
 router.use(dashboardRoutes);
 router.use(orderRoutes);
 router.use(customerRoutes);
+router.use(postsRoutes);
 router.use(adminProductRoutes);
+router.use(vocabularyRoutes);
+
 
 export default router;

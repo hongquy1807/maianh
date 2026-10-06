@@ -22,17 +22,19 @@ router.get('/categories',async(req,res)=>{
     LEFT JOIN posts p ON p.category_id=c.id AND p.status='published' GROUP BY c.id,c.slug,c.name ORDER BY c.id`);
   res.json({data});
 });
-async function attachments(rows,userId=null) {
+export async function attachments(rows,userId=null) {
   if(!rows.length)return rows;
   const [files]=await pool.execute(`SELECT id,post_id,file_url,original_name,mime_type,kind,size_bytes FROM post_attachments WHERE post_id IN (${rows.map(()=>'?').join(',')}) ORDER BY id`,rows.map(p=>p.id));
   const [images]=await pool.execute(`SELECT post_id,image_url FROM post_images WHERE post_id IN (${rows.map(()=>'?').join(',')}) ORDER BY sort_order,id`,rows.map(p=>p.id));
   const [likes]=userId?await pool.execute(`SELECT post_id FROM post_likes WHERE user_id=? AND post_id IN (${rows.map(()=>'?').join(',')})`,[userId,...rows.map(p=>p.id)]):[[]];
   return rows.map(p=>({...p,can_edit:userId!=null&&String(p.author_id)===String(userId),is_liked:likes.some(l=>String(l.post_id)===String(p.id)),attachments:[...files.filter(f=>String(f.post_id)===String(p.id)),...images.filter(i=>String(i.post_id)===String(p.id)).map(i=>({kind:'image',file_url:i.image_url,original_name:p.title}))]}));
 }
-const postSelect=`SELECT p.id,p.category_id,p.title,p.content,p.created_at,p.author_id,p.is_pinned,c.name AS category_name,c.slug AS category_slug,
+export const postSelect=`SELECT p.id,p.category_id,p.title,p.content,p.created_at,p.author_id,p.is_pinned,c.name AS category_name,c.slug AS category_slug,
  (SELECT COUNT(*) FROM post_likes l WHERE l.post_id=p.id) AS like_count,
  (SELECT COUNT(*) FROM comments cm WHERE cm.post_id=p.id AND cm.status='published') AS comment_count,
- u.full_name AS author_name,u.avatar_url FROM posts p JOIN users u ON u.id=p.author_id JOIN post_categories c ON c.id=p.category_id`;
+ CASE WHEN u.role='admin' THEN 'hongquy sờtore' ELSE u.full_name END AS author_name,
+ CASE WHEN u.role='admin' THEN '/images/store-logo.svg' ELSE u.avatar_url END AS avatar_url,
+ (u.role='admin') AS is_store_author FROM posts p JOIN users u ON u.id=p.author_id JOIN post_categories c ON c.id=p.category_id`;
 router.get('/',async(req,res)=>{
   const {page,limit,offset}=pagination(req.query), category=textQuery(req.query,'category',80),sort=textQuery(req.query,'sort',20)||'new';
   if(!['new','old','pinned'].includes(sort))throw badRequest('Cách sắp xếp không hợp lệ.');
@@ -175,7 +177,7 @@ router.delete('/:id',requireAuth,guard,async(req,res)=>{
     await conn.beginTransaction();
     const [[post]]=await conn.execute('SELECT author_id FROM posts WHERE id=? FOR UPDATE',[id]);
     if(!post)throw fail(404,'Không tìm thấy bài viết.');
-    if(String(post.author_id)!==String(req.user.id))throw fail(403,'Chỉ chủ bài viết mới được xóa.');
+    if(String(post.author_id)!==String(req.user.id)&&req.user.role!=='admin')throw fail(403,'Chỉ chủ bài viết hoặc admin mới được xóa.');
     [files]=await conn.execute('SELECT file_url FROM post_attachments WHERE post_id=?',[id]);
     await conn.execute('DELETE FROM posts WHERE id=?',[id]);
     await conn.commit();

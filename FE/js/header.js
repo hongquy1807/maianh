@@ -106,7 +106,11 @@
         }
       });
       document.addEventListener('click', event => { if (!this.contains(event.target)) closeMenu(); });
-      this.addEventListener('focusout', () => { queueMicrotask(() => { if (!this.contains(document.activeElement)) closeMenu(); }); });
+      // Use the destination of keyboard focus, not transient body focus during a touch.
+      // Closing on that transient focus hides the link before the browser dispatches click.
+      this.addEventListener('focusout', event => {
+        if (event.relatedTarget && !this.contains(event.relatedTarget)) closeMenu();
+      });
       this.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
       window.MaianhAuth?.getSession().then(user => {
         const account = this.querySelector('.sh-actions a:last-child');

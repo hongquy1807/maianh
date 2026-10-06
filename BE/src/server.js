@@ -1,3 +1,4 @@
+import {startOrderMail} from './services/order-mail.js';
 import { startOrderLifecycle } from './services/order-lifecycle.js';
 import app from './app.js';
 import { checkDatabase, pool } from './config/database.js';
@@ -18,13 +19,16 @@ try {
   process.exit(1);
 }
 
-const stopOrderLifecycle=startOrderLifecycle();
+let stopOrderLifecycle=()=>{},stopOrderMail=()=>{};
 const server = app.listen(port, host, () => {
+  stopOrderLifecycle=startOrderLifecycle();
+  stopOrderMail=startOrderMail();
   console.log(`Server running at http://${host}:${port}`);
 });
 
 server.on('error', async (error) => {
   stopOrderLifecycle();
+  stopOrderMail();
   console.error(`Cannot start server: ${error.message}`);
   process.exitCode = 1;
   await pool.end();
@@ -35,6 +39,7 @@ function shutdown() {
   if (stopping) return;
   stopping = true;
   stopOrderLifecycle();
+  stopOrderMail();
   const timeout = setTimeout(() => process.exit(1), 10000);
   timeout.unref();
   server.close(async () => { await pool.end(); clearTimeout(timeout); });
