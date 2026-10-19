@@ -1499,3 +1499,23 @@ html body .profile-inline-2.profile-inline-2 { text-decoration: none; display: i
 .resale-footer{text-align:center;margin-top:24px;letter-spacing:12px;font-size:18px}.resale-footer span{font-size:20px}
 .resale-dialog :focus-visible{outline:3px solid #e7ac37;outline-offset:3px}
 @media(max-width:480px){.resale-dialog{padding:26px 20px}.resale-total strong{font-size:21px}}
+
+/* Keep profile content inside the mobile flex/grid tracks. */
+@media (max-width: 1000px) {
+    .sidebar-nav-item { width: auto; flex: 0 0 auto; }
+    .sidebar-nav { max-width: 100%; }
+}
+@media (max-width: 768px) {
+    .profile-hero-card { flex-wrap: nowrap; }
+    .hero-info { flex: none; width: 100%; min-width: 0; }
+    .hero-name-row h1, .hero-info > p span { min-width: 0; overflow-wrap: anywhere; }
+    .hero-info > p { gap: 8px 12px; }
+    .hero-info > p span { max-width: 100%; }
+    #heroBalance { width: 100%; }
+    .hero-stats-row { gap: 8px; }
+    .hero-stat { min-width: 0; flex-wrap: wrap; justify-content: center; }
+    .hero-actions { min-width: 0; }
+    .hero-actions .btn-hero { min-width: 0; flex: 1 1 140px; white-space: normal; }
+    .content-title { flex-wrap: wrap; gap: 10px; }
+    .info-value { overflow-wrap: anywhere; min-width: 0; }
+}

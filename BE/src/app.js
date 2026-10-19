@@ -19,6 +19,8 @@ import { hashToken } from './lib/passwords.js';
 const app = express();
 const frontendPath = fileURLToPath(new URL('../../FE/', import.meta.url));
 
+// Only trust the local tunnel connector, never arbitrary remote proxies.
+if (process.env.TRUST_LOCAL_PROXY === 'true') app.set('trust proxy', 'loopback');
 app.disable('x-powered-by');
 app.use(express.json({ limit: '1mb' }));
 app.use('/uploads/tintuc', (req,res,next)=>{

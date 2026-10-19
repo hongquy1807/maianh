@@ -34,3 +34,7 @@ checkpoints/
 *.zip
 # Private database export; keep local only
 /DB/maianh.sql
+
+# Local tunnel executable and runtime logs
+/cloudflared.exe
+/.local-deploy/
